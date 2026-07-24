@@ -116,7 +116,7 @@ export function QuickViewCard({
                     </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-3"> 
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                         Active Workspace Features
                     </p>
