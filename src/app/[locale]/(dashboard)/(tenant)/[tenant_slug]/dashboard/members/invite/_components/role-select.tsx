@@ -40,7 +40,7 @@ export function RoleSelect<T extends FieldValues>({
         onValueChange = onChange as any
     }
 
-    const membershipRoles = ["ADMIN", "OWNER"]
+    const membershipRoles = ["ADMIN"]
 
     return (
         <Select

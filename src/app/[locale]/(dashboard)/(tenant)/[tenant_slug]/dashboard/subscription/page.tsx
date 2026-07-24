@@ -3,8 +3,8 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { SidebarInset } from "@/components/ui/sidebar";
 
-import { Dir } from "@/shared/_components/Dirs";
-import DashboardContainer from "@/shared/_components/DashboardContainer";
+import { Dir } from "@/shared/_components/dirs";
+import DashboardContainer from "@/shared/_components/dashboard-container";
 
 
 import { SiteHeader } from "../_components/site-header";

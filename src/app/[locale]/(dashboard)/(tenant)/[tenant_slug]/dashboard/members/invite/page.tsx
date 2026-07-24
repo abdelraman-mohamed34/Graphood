@@ -1,5 +1,7 @@
 import { SidebarInset } from "@/components/ui/sidebar";
 import { SiteHeader } from "../../_components/site-header";
+import DashboardContainer from "@/shared/_components/dashboard-container";
+
 import InviteMemberForm from "./_components/invite-member-form";
 
 type Props = {
@@ -18,12 +20,12 @@ export default async function InviteMemberPage({
         <SidebarInset>
             <SiteHeader title="Invite Member" />
 
-            <main className="flex flex-1 flex-col p-5">
+            <DashboardContainer>
                 <InviteMemberForm
                     locale={locale}
                     tenantSlug={tenant_slug}
                 />
-            </main>
+            </DashboardContainer>
         </SidebarInset>
     );
 }

@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Dir } from "@/shared/_components/Dirs";
+import { Dir } from "@/shared/_components/dirs";
 import { useSystem } from "@/shared/lib/hooks/systems/use-system";
 import Loading from "../_components/test/loading";
 import { Card } from "@/components/ui/card";

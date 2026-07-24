@@ -26,6 +26,7 @@ export const rolePermissions: Record<
         "members.remove",
         "members.invite",
         "members.read",
+        "members.transfer_ownership",
 
         "billing.manage",
         "billing.read",

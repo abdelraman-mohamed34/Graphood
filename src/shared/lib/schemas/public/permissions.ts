@@ -11,6 +11,7 @@ export const permissions = [
     "members.invite",
     "members.remove",
     "members.manage",
+    "members.transfer_ownership",
 
     "billing.read",
     "billing.manage",

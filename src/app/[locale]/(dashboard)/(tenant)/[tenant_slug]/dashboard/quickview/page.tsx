@@ -3,7 +3,7 @@
 
 import { Suspense } from "react";
 import { SidebarInset } from "@/components/ui/sidebar";
-import { Dir } from "@/shared/_components/Dirs";
+import { Dir } from "@/shared/_components/dirs";
 import { SiteHeader } from "../_components/site-header";
 import { SectionCards } from "../_components/section-cards";
 import GoLive from "./_components/go-live";
