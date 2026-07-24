@@ -1,0 +1,142 @@
+{
+    "global": {
+        "name_error": "Name must be at least 3 characters",
+        "phone_error": "Phone number is too short"
+    },
+    "header": {
+        "nav": {
+            "features": "Features",
+            "pricing": "Pricing",
+            "resources": "Resources",
+            "company": "Company"
+        },
+        "auth": {
+            "login": "Login",
+            "getStarted": "Get Started"
+        }
+    },
+    "home": {
+        "loading": "Loading smart systems...",
+        "error": {
+            "heading": "Unable to load systems"
+        },
+        "hero": {
+            "title": "Welcome To Graphood 🚀",
+            "description": "Your all-in-one cloud SaaS launchpad. Pick a system and start managing it instantly."
+        },
+        "categoryFallback": "General",
+        "billing": {
+            "subscription": "Monthly Subscription",
+            "one_time": "One-Time Purchase",
+            "free": "Free"
+        },
+        "pricing": {
+            "perMonth": "/month"
+        },
+        "cta": {
+            "buyNow": "Buy Now ←"
+        }
+    },
+    "auth": {
+        "success": {
+            "logged_in": "Welcome back!",
+            "register": "Account created successfully!",
+            "signout": "Logged out successfully!"
+        },
+        "errors": {
+            "generic_login_error": "Invalid email or password. Please try again.",
+            "generic_logout_error": "Something went wrong. Please try again.",
+            "generic_register_error": "An error occurred during registration. Please try again.",
+            "confirm_email": "Please check your email to confirm your account."
+        },
+        "login": {
+            "title": "Welcome back",
+            "subtitle": "Login to your Graphood account",
+            "email": "Email",
+            "password": "Password",
+            "forgotPassword": "Forgot your password?",
+            "loggingIn": "Logging in...",
+            "submit": "Login",
+            "socialDivider": "Or continue with",
+            "socialApple": "Login with Apple",
+            "socialGoogle": "Login with Google",
+            "socialMeta": "Login with Meta",
+            "signupPrompt": "Don't have an account?",
+            "signup": "Sign up",
+            "termsPrefix": "By clicking continue, you agree to our",
+            "termsLink": "Terms of Service",
+            "andText": "and",
+            "privacyLink": "Privacy Policy",
+            "errors": {
+                "generic_login_error": "Invalid email or password. Please try again."
+            }
+        }
+    },
+    "footer": {
+        "description": "The ultimate global ecosystem to discover, compare, and instantly deploy enterprise-grade SaaS solutions.",
+        "rights": "All rights reserved.",
+        "categories": {
+            "platform": "Platform",
+            "marketplace": "Marketplace",
+            "resources": "Resources",
+            "company": "Company"
+        },
+        "links": {
+            "features": "Features",
+            "pricing": "Pricing",
+            "explore": "Explore Software",
+            "trending": "Trending SaaS",
+            "bundles": "SaaS Bundles",
+            "docs": "Documentation",
+            "api": "API Integration",
+            "status": "System Status",
+            "about": "About Graphood",
+            "blog": "Blog",
+            "careers": "Careers",
+            "contact": "Contact Sales"
+        }
+    },
+    "settings": {
+        "title": "System Settings",
+        "description": "Manage the current workspace settings, permissions, and subscriptions.",
+        "tabs": {
+            "profile": "Profile",
+            "notifications": "Notifications",
+            "developer": "Developer"
+        },
+        "profile": {
+            "accountInfoTitle": "Personal Account Details",
+            "accountInfoDescription": "Update your basic information that appears across the workspace.",
+            "fullNameLabel": "Full Name",
+            "fullNamePlaceholder": "Graphood Company",
+            "usernameLabel": "Username (Slug)",
+            "usernamePlaceholder": "Graphood",
+            "emailLabel": "Email Address",
+            "emailDisabledNotice": "Email address cannot be changed as it is linked to your primary account.",
+            "avatarTitle": "Profile Picture",
+            "avatarRequirements": "Supports JPG or PNG. Maximum size 2MB.",
+            "avatarUploadBtn": "Update Picture",
+            "roleTitle": "Current Account Permissions",
+            "roleDescription": "Your current role within this system and the assigned permissions.",
+            "rolePermissionsNotice": "You possess full administrative privileges to manage systems, billing, and members.",
+            "cancelBtn": "Cancel Changes",
+            "saveBtn": "Save Changes"
+        }
+    },
+    "dashboard": {
+        "welcome": {
+            "greeting": "Welcome",
+            "subtitle": "Choose the workspace you want to manage or create a new one.",
+            "defaultUserName": "Developer",
+            "createWorkspaceTitle": "Create Workspace",
+            "createWorkspaceDesc": "Start by creating a new workspace to manage your system efficiently.",
+            "customize": "Customize",
+            "unauthorizedAccess": "Sorry, you do not have permission to access this workspace."
+        }
+    },
+    "NotFoundPage": {
+        "title": "Page Not Found",
+        "description": "The page you are looking for doesn't exist or has been moved.",
+        "goHome": "Go back home"
+    }
+}

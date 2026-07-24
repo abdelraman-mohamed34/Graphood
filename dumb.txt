@@ -1,0 +1,135 @@
+# SaaS Architecture (Core Domain Model)
+
+## Overview
+
+This document defines the core architecture of a multi-system, multi-tenant SaaS platform with role-based access control via memberships.
+
+---
+
+# Entity Relationships
+
+## Profile (User Layer)
+
+Represents the authenticated user profile linked to auth system.
+
+Relationships:
+- owns → System (owner_id)
+- owns → Tenant (owner_id)
+- joins → Membership
+
+---
+
+## System (Product Layer)
+
+Represents a SaaS product or platform definition.
+
+Relationships:
+- has many → Tenants
+- owned by → Profile (owner_id)
+
+---
+
+## Tenant (Workspace Layer)
+
+Represents an isolated workspace inside a System.
+
+Relationships:
+- belongs to → System
+- has many → Memberships
+- owned by → Profile (owner_id)
+
+---
+
+## Membership (Access Control Layer)
+
+Represents user access inside a Tenant.
+
+Relationships:
+- belongs to → Profile
+- belongs to → Tenant
+
+Responsibilities:
+- Defines role: OWNER | ADMIN | STAFF | MEMBER
+- Stores permissions overrides
+- Controls access level inside tenant
+
+---
+
+# Relationship Graph
+
+Profile
+├── owns → System (owner_id)
+├── owns → Tenant (owner_id)
+└── joins → Membership
+
+System
+└── has many → Tenants
+
+Tenant
+└── has many → Memberships
+
+Membership
+├── belongs to → Profile
+└── belongs to → Tenant
+
+---
+
+# Invitation Flow
+
+1. Owner/Admin invites user via email
+2. Invitation record is created (future table)
+3. User receives invitation link
+4. User accepts invitation
+5. Profile is resolved or created
+6. Membership is created and assigned to Tenant
+
+---
+
+# Authentication Flow
+
+auth.users
+   ↓ (trigger)
+Profile
+   ↓
+Membership → Tenant access
+
+---
+
+# Access Resolution Flow
+
+User → Profile → Membership → Tenant → Permissions
+
+---
+
+# Core Rules
+
+- Profile can belong to multiple Tenants
+- Tenant can have multiple Profiles
+- System can have multiple Tenants
+- Membership is the ONLY access gateway to a Tenant
+
+---
+
+# Design Principles
+
+- Multi-system architecture
+- Strict tenant isolation
+- Membership-based authorization
+- Profile as identity layer
+- System as product layer
+
+---
+
+# Future Extensions
+
+- Invitations table
+- RBAC / Permissions system expansion
+- Audit logs
+- Billing / subscriptions
+- Feature flags per tenant
+- Activity tracking
+
+--
+
+Important Rules 
+   -Tenant slug must be unique within system_id scope

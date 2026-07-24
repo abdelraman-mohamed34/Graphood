@@ -1,0 +1,142 @@
+{
+    "global": {
+        "name_error": "يجب أن يتكون الاسم من 3 أحرف على الأقل",
+        "phone_error": "رقم الهاتف قصير جدًا"
+    },
+    "header": {
+        "nav": {
+            "features": "المميزات",
+            "pricing": "الأسعار",
+            "resources": "المصادر",
+            "company": "الشركة"
+        },
+        "auth": {
+            "login": "تسجيل الدخول",
+            "getStarted": "ابدأ الآن"
+        }
+    },
+    "home": {
+        "loading": "جاري تحميل الأنظمة الذكية...",
+        "error": {
+            "heading": "غير قادر على تحميل الأنظمة"
+        },
+        "hero": {
+            "title": "مرحباً بك في جرافهود 🚀",
+            "description": "منصتك السحابية الشاملة لإطلاق وإدارة الـ SaaS. اختر نظامك وابدأ في إدارته فوراً."
+        },
+        "categoryFallback": "عام",
+        "billing": {
+            "subscription": "اشتراك شهري",
+            "one_time": "شراء لمرة واحدة",
+            "free": "مجاني"
+        },
+        "pricing": {
+            "perMonth": "/شهرياً"
+        },
+        "cta": {
+            "buyNow": "اشترِ الآن ←"
+        }
+    },
+    "auth": {
+        "success": {
+            "logged_in": "مرحباً بعودتك!",
+            "register": "تم إنشاء الحساب بنجاح!",
+            "signout": "تم تسجيل الخروج بنجاح!"
+        },
+        "errors": {
+            "generic_login_error": "البريد الإلكتروني أو كلمة المرور غير صالحة. يرجى المحاولة مرة أخرى.",
+            "generic_logout_error": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+            "generic_register_error": "حدث خطأ أثناء التسجيل. يرجى المحاولة مرة أخرى.",
+            "confirm_email": "يرجى التحقق من بريدك الإلكتروني لتأكيد حسابك."
+        },
+        "login": {
+            "title": "مرحباً بعودتك",
+            "subtitle": "تسجيل الدخول إلى حساب Graphood الخاص بك",
+            "email": "البريد الإلكتروني",
+            "password": "كلمة المرور",
+            "forgotPassword": "هل نسيت كلمة المرور؟",
+            "loggingIn": "جاري تسجيل الدخول...",
+            "submit": "تسجيل الدخول",
+            "socialDivider": "أو تابع باستخدام",
+            "socialApple": "تسجيل الدخول باستخدام Apple",
+            "socialGoogle": "تسجيل الدخول باستخدام Google",
+            "socialMeta": "تسجيل الدخول باستخدام Meta",
+            "signupPrompt": "ليس لديك حساب؟",
+            "signup": "إنشاء حساب",
+            "termsPrefix": "بإكمالك المتابعة، فإنك توافق على",
+            "termsLink": "شروط الاستخدام",
+            "andText": "و",
+            "privacyLink": "سياسة الخصوصية",
+            "errors": {
+                "generic_login_error": "البريد الإلكتروني أو كلمة المرور غير صالحة. يرجى المحاولة مرة أخرى."
+            }
+        }
+    },
+    "footer": {
+        "description": "النظام البيئي العالمي الشامل لاستكشاف، مقارنة، ونشر حلول البرمجيات كخدمة (SaaS) للمؤسسات بشكل فوري.",
+        "rights": "جميع الحقوق محفوظة.",
+        "categories": {
+            "platform": "المنصة",
+            "marketplace": "سوق البرمجيات",
+            "resources": "المصادر",
+            "company": "الشركة"
+        },
+        "links": {
+            "features": "المميزات",
+            "pricing": "الأسعار",
+            "explore": "تصفح البرامج",
+            "trending": "الأكثر رواجاً",
+            "bundles": "حزم الـ SaaS",
+            "docs": "مركز التوثيق",
+            "api": "ربط الـ API",
+            "status": "حالة النظام",
+            "about": "عن جرافهود",
+            "blog": "المدونة",
+            "careers": "الوظائف",
+            "contact": "التواصل مع المبيعات"
+        }
+    },
+    "settings": {
+        "title": "إعدادات النظام",
+        "description": "إدارة إعدادات مساحة العمل الحالية والصلاحيات والاشتراكات.",
+        "tabs": {
+            "profile": "الملف الشخصي",
+            "notifications": "الإشعارات",
+            "developer": "أدوات المطورين"
+        },
+        "profile": {
+            "accountInfoTitle": "تفاصيل الحساب الشخصية",
+            "accountInfoDescription": "حدّث معلوماتك الأساسية التي تظهر عبر مساحة العمل.",
+            "fullNameLabel": "الاسم الكامل",
+            "fullNamePlaceholder": "شركة Graphood",
+            "usernameLabel": "اسم المستخدم (الرابط)",
+            "usernamePlaceholder": "Graphood",
+            "emailLabel": "البريد الإلكتروني",
+            "emailDisabledNotice": "لا يمكن تغيير عنوان البريد الإلكتروني لأنه مرتبط بحسابك الأساسي.",
+            "avatarTitle": "الصورة الشخصية",
+            "avatarRequirements": "يدعم JPG أو PNG. الحد الأقصى 2MB.",
+            "avatarUploadBtn": "تحديث الصورة",
+            "roleTitle": "صلاحيات الحساب الحالية",
+            "roleDescription": "دورك الحالي داخل هذا النظام والصلاحيات المعينة لك.",
+            "rolePermissionsNotice": "لديك صلاحيات إدارية كاملة لإدارة الأنظمة والفوترة والأعضاء.",
+            "cancelBtn": "إلغاء التغييرات",
+            "saveBtn": "حفظ التغييرات"
+        }
+    },
+    "dashboard": {
+        "welcome": {
+            "greeting": "مرحباً",
+            "subtitle": "اختر مساحة العمل التي ترغب في إدارتها أو أنشئ واحدة جديدة.",
+            "defaultUserName": "المطور",
+            "createWorkspaceTitle": "إنشاء مساحة عمل",
+            "createWorkspaceDesc": "ابدأ بإنشاء مساحة جديدة لإدارة نظامك بكفاءة.",
+            "customize": "تخصيص",
+            "unauthorizedAccess": "عذراً، لا تملك الصلاحية لدخول هذه المساحة."
+        }
+    },
+    "NotFoundPage": {
+        "title": "الصفحة غير موجودة",
+        "description": "عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها لمكان آخر.",
+        "goHome": "العودة للرئيسية"
+    }
+}
