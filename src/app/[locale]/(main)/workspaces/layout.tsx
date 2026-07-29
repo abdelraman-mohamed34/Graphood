@@ -5,6 +5,7 @@ import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.s
 import { getMembershipsByProfileId } from "@/shared/lib/supabase/services/auth/membership/get-memberships-by-profile-id.service";
 import { OnboardingProvider } from "@/shared/lib/providers/onboarding-provider";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
+import { requireUser } from "@/shared/lib/auth/requires/require-user";
 
 interface WorkSpacesLayoutProps {
     children: React.ReactNode;
@@ -19,9 +20,7 @@ export default async function WorkSpacesLayout({
 }: WorkSpacesLayoutProps) {
 
     const { locale } = await params
-    const supabase = await createSupabaseServerClient()
-
-    const user = await fetchUser(supabase);
+    const { user, supabase } = await requireUser(locale)
 
     if (!user) {
         redirect(`/${locale}/login`);

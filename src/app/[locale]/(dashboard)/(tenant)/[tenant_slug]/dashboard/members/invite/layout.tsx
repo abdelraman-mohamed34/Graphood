@@ -1,5 +1,5 @@
 import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
-import { hasAnyPermission } from "@/shared/lib/auth/requires/require-permission";
+import { hasAnyPermission, hasPermission } from "@/shared/lib/auth/requires/require-permission";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
 import { redirect } from "next/navigation";
 
@@ -23,9 +23,8 @@ export default async function AddTenantMemberLayout({
         tenantSlug: tenant_slug,
         userId: user.id,
         supabase,
-        redirectTo: `/${locale}/workspaces`,
+        redirectTo: `/${locale}/workspaces?error=unauthorized`,
     });
-
     if (
         !hasAnyPermission(membership, ["members.invite", "tenant.manage"])
     ) {

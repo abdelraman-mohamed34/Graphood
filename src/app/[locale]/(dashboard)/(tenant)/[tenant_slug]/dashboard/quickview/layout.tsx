@@ -1,13 +1,13 @@
-import { ReactNode } from "react";
-import { redirect } from "next/navigation";
+import { ReactNode, cache } from "react";
 import {
   QueryClient,
   dehydrate,
   HydrationBoundary,
 } from "@tanstack/react-query";
-import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
-import { getMembershipBySlug } from "@/shared/lib/supabase/services/memberships/get-membership.service";
+
 import { getSubscriptionByTenantID } from "@/shared/lib/supabase/services/subscriptions";
+import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
+import { requireUser } from "@/shared/lib/auth/requires/require-user";
 
 type QuickViewLayoutProps = {
   children: ReactNode;
@@ -17,33 +17,24 @@ type QuickViewLayoutProps = {
   }>;
 };
 
+const getCachedMembership = cache(requireMembership);
+
 export default async function QuickViewLayout({
   children,
   params,
 }: QuickViewLayoutProps) {
   const { locale, tenant_slug } = await params;
 
-  const supabase = await createSupabaseServerClient();
   const queryClient = new QueryClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, supabase } = await requireUser(locale);
 
-  if (!user) {
-    redirect(`/${locale}/login`);
-  }
-
-  // Membership is needed only to resolve the tenant id
-  const membership = await getMembershipBySlug({
-    supabase,
-    userId: user.id,
+  const membership = await getCachedMembership({
     tenantSlug: tenant_slug,
+    userId: user.id,
+    supabase,
+    redirectTo: `/${locale}/workspaces?error=unauthorized`,
   });
-
-  if (!membership) {
-    redirect(`/${locale}/workspaces?error=unauthorized`);
-  }
 
   await queryClient.prefetchQuery({
     queryKey: ["subscriptions", membership.tenant_id],

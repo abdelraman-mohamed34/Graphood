@@ -1,14 +1,21 @@
+"use server";
+
+import { ReactNode } from "react";
 import { redirect } from "next/navigation";
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
-import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
-import { getMembershipBySlug } from "@/shared/lib/supabase/services/memberships/get-membership.service";
-import { hasPermission } from "@/shared/lib/auth/requires/require-permission";
-import { AppSidebar } from "./dashboard/_components/app-sidebar";
+import {
+    QueryClient,
+    dehydrate,
+    HydrationBoundary,
+} from "@tanstack/react-query";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "./dashboard/_components/app-sidebar";
+import { requireUser } from "@/shared/lib/auth/requires/require-user";
+import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
+import { hasPermission } from "@/shared/lib/auth/requires/require-permission";
 import { getMembershipsByTenantSlug } from "@/shared/lib/supabase/services/memberships/get-memberships-by-slug.service";
 
 interface TenantLayoutProps {
-    children: React.ReactNode;
+    children: ReactNode;
     params: Promise<{
         locale: string;
         tenant_slug: string;
@@ -20,38 +27,36 @@ export default async function TenantLayout({
     params,
 }: TenantLayoutProps) {
     const { locale, tenant_slug } = await params;
-    const supabase = await createSupabaseServerClient();
+
     const queryClient = new QueryClient();
 
-    const { data: { user }, } = await supabase.auth.getUser();
+    const { user, supabase } = await requireUser(locale);
 
-    if (!user) {
-        redirect(`/${locale}/login`);
-    }
-
-    const membershipData = await queryClient.fetchQuery({
-        queryKey: ["membership", tenant_slug, user.id],
-        queryFn: () =>
-            getMembershipBySlug({
-                supabase: supabase,
-                userId: user.id,
-                tenantSlug: tenant_slug,
-            }),
+    const membership = await requireMembership({
+        supabase,
+        tenantSlug: tenant_slug,
+        userId: user.id,
+        redirectTo: `/${locale}/workspaces?error=unauthorized`,
     });
 
-    if (!membershipData || !hasPermission(membershipData, "dashboard.read")) {
+    if (!hasPermission(membership, "dashboard.read")) {
         redirect(`/${locale}/workspaces?error=unauthorized`);
     }
 
-    // fetch all tenant memberships
+    queryClient.setQueryData(
+        ["membership", tenant_slug, user.id],
+        membership
+    );
+
     await queryClient.prefetchQuery({
         queryKey: ["memberships", tenant_slug],
         queryFn: () =>
             getMembershipsByTenantSlug({
-                supabase: supabase,
+                supabase,
                 tenantSlug: tenant_slug,
             }),
     });
+
 
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>

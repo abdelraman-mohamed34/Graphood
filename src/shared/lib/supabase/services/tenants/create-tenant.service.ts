@@ -24,7 +24,7 @@ export async function createTenant({
         .maybeSingle();
 
     if (existingTenant) {
-        throw new Error("هذا الرابط محجوز مسبقاً، اختر رابطاً آخر.");
+        throw new Error("This URL is already taken, please choose another one.");
     }
 
     const { data: newTenant, error: tenantError } = await supabase

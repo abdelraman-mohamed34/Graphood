@@ -1,4 +1,3 @@
-import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { createAdminClient } from "../../admin";
 
 export async function getTenantBySlug(
