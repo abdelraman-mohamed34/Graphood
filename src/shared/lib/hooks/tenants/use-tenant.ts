@@ -1,17 +1,30 @@
 "use client";
 
 import { useMemo } from "react";
-import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useParams, useRouter } from "next/navigation";
+import {
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from "@tanstack/react-query";
+import { toast } from "sonner";
 import { createClient } from "@/shared/lib/supabase/client";
 import { useAuth } from "@/shared/lib/auth/auth-context";
-import { getMembershipBySlug } from "@/shared/lib/supabase/services/memberships/get-membership.service";
 import { hasPermission } from "@/shared/lib/auth/requires/require-permission";
+import { getMembershipBySlug } from "@/shared/lib/supabase/services/memberships/get-membership.service";
+import { updateTenantAction } from "@/shared/lib/actions/tenants/update-tenant.action";
+import type { UpdateTenant } from "@/shared/lib/schemas/tenants.schema";
 
 export function useTenant() {
-    const { tenant_slug } = useParams<{
+    const router = useRouter();
+
+    const { tenant_slug, locale } = useParams<{
         tenant_slug: string;
+        locale: string;
     }>();
+
+    const queryClient = useQueryClient();
+
     const { user, isLoading: authLoading } = useAuth();
 
     const {
@@ -25,11 +38,61 @@ export function useTenant() {
         staleTime: 1000 * 60 * 5,
         queryFn: async () => {
             const supabase = createClient();
+
             return getMembershipBySlug({
                 supabase,
                 userId: user!.id,
                 tenantSlug: tenant_slug,
             });
+        },
+    });
+
+    const {
+        mutate: updateTenant,
+        mutateAsync: updateTenantAsync,
+        isPending: isUpdating,
+    } = useMutation({
+        mutationKey: ["tenant", tenant_slug, "update"],
+
+        mutationFn: (data: UpdateTenant) =>
+            updateTenantAction({
+                tenantSlug: tenant_slug,
+                locale,
+                data,
+            }),
+
+        onSuccess: async (result) => {
+            if (!result.success) {
+                toast.error(result.message);
+                return;
+            }
+
+            toast.success(result.message);
+
+            const newSlug = result.tenant?.slug;
+
+            if (newSlug && newSlug !== tenant_slug) {
+                queryClient.removeQueries({
+                    queryKey: ["membership", tenant_slug, user?.id],
+                });
+
+                router.replace(
+                    `/${locale}/${newSlug}/dashboard/settings`
+                );
+
+                return;
+            }
+
+            await queryClient.invalidateQueries({
+                queryKey: ["membership", tenant_slug, user?.id],
+            });
+
+            router.refresh();
+        },
+
+        onError: (error) => {
+            console.error(error);
+            toast.error("Failed to update tenant.");
         },
     });
 
@@ -78,7 +141,10 @@ export function useTenant() {
         permissions,
         hasAccess: !!membership,
         isLoading: authLoading || membershipLoading,
+        isUpdating,
         error,
         refetch,
+        updateTenant,
+        updateTenantAsync,
     };
 }

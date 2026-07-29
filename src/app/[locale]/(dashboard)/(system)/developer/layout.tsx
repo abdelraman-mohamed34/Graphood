@@ -1,5 +1,6 @@
 'use server';
 
+import { requireUser } from "@/shared/lib/auth/requires/require-user";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { getCurrentSystems } from "@/shared/lib/supabase/services/systems/get-current-systems.service";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
@@ -17,8 +18,7 @@ export default async function SystemLayout({
     params,
 }: SystemLayoutProps) {
     const { locale } = await params;
-    const supabase = await createSupabaseServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const { user, supabase } = await requireUser(locale)
 
     if (!user) { redirect(`/${locale}/login`); }
     const queryClient = new QueryClient();

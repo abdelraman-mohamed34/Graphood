@@ -29,7 +29,7 @@ export default function Page() {
 
     return (
         <SidebarInset>
-            <SiteHeader title="document" />
+            <SiteHeader title="Quick view" />
 
             <Dir />
 

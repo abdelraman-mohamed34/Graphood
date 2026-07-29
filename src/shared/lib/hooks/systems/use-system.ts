@@ -7,6 +7,7 @@ import { SystemInsert, SystemUpdate } from "../../schemas/systems.schema";
 import { createClient } from "../../supabase/client";
 import { getCurrentSystems } from "../../supabase/services/systems/get-current-systems.service";
 import { getSystemAction } from "../../actions/developer/systems";
+import { requireUser } from "../../auth/requires/require-user";
 
 export const SYSTEM_QUERY_KEYS = {
     public: ["public-systems"] as const,

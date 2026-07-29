@@ -1,7 +1,9 @@
-// src/shared/lib/supabase/services/memberships/get-membership.ts
+// src/shared/lib/supabase/services/memberships/get-membership.service.ts
+
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { membershipSchema } from "@/shared/lib/schemas/memberships.schema";
+import { tenantSchema } from "@/shared/lib/schemas/tenants.schema";
 
 interface GetMembershipParams {
     userId: string;
@@ -10,17 +12,12 @@ interface GetMembershipParams {
 }
 
 const membershipWithTenantSchema = membershipSchema.extend({
-    tenant: z
-        .object({
-            id: z.string().uuid(),
-            slug: z.string(),
-            name: z.string(),
-        })
-        .nullable()
-        .optional(),
+    tenant: tenantSchema.nullable().optional(),
 });
 
-export type MembershipWithTenant = z.infer<typeof membershipWithTenantSchema>;
+export type MembershipWithTenant = z.infer<
+    typeof membershipWithTenantSchema
+>;
 
 export async function getMembershipBySlug({
     userId,
@@ -41,18 +38,23 @@ export async function getMembershipBySlug({
             joined_at,
             created_at,
             updated_at,
-            tenant:tenants!inner(id, slug, name)
+            tenant:tenants!inner(*)
         `)
         .eq("profile_id", userId)
         .eq("tenants.slug", tenantSlug)
         .maybeSingle();
 
     if (error) {
-        console.error("Error fetching membership:", error);
+        console.error("[Membership] Supabase Error:", error);
         throw error;
     }
 
     if (!data) {
+        console.warn("[Membership] Membership not found.", {
+            userId,
+            tenantSlug,
+        });
+
         return null;
     }
 
@@ -64,11 +66,22 @@ export async function getMembershipBySlug({
             : data.tenant ?? null,
     };
 
-    const parsed = membershipWithTenantSchema.safeParse(sanitizedData);
+    const parsed =
+        membershipWithTenantSchema.safeParse(sanitizedData);
 
     if (!parsed.success) {
-        console.error("Invalid membership payload:", JSON.stringify(parsed.error.flatten(), null, 2));
-        return null;
+        console.error(
+            "[Membership] Zod validation failed."
+        );
+
+        console.error(
+            "Validation Errors:",
+            parsed.error.flatten()
+        );
+
+        throw new Error(
+            "Membership validation failed. Check server logs for details."
+        );
     }
 
     return parsed.data;

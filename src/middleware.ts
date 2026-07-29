@@ -9,15 +9,10 @@ const handleI18nRouting = createMiddleware(routing);
 export async function middleware(req: NextRequest) {
     const pathname = req.nextUrl.pathname;
 
-    // 1. استخراج الـ locale من المسار
     const locale = pathname.split("/")[1] || routing.defaultLocale;
 
-    // 2. حساب المسار النظيف (بدون الـ locale)
     const cleanPath = pathname.replace(`/${locale}`, "");
 
-    // -------------------------------------------------------------
-    // 🔥 التعديل هنا: التوجيه التلقائي من المسار الرئيسي إلى /home
-    // -------------------------------------------------------------
     if (cleanPath === "" || cleanPath === "/") {
         return NextResponse.redirect(
             new URL(`/${locale}/home`, req.url)
