@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
     Card,
@@ -6,33 +6,49 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 
 import {
     Table,
     TableBody,
     TableCell,
     TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
-import type { SubscriptionCapabilities } from "@/shared/lib/auth/requires/require-subscription"
+import { useTenantUsage } from "@/shared/lib/hooks";
 
+export default function PlanLimits() {
+    const {
+        admins,
+        members,
+        storage,
+        isLoading,
+    } = useTenantUsage();
 
-type PlanLimitsProps = {
-    capabilities: SubscriptionCapabilities
-}
-
-
-export default function PlanLimits({
-    capabilities,
-}: PlanLimitsProps) {
+    if (isLoading) {
+        return null;
+    }
 
     const limits = [
         {
             name: "Administrators",
-            value: capabilities.limits.maxAdmins,
+            value: admins.unlimited
+                ? "Unlimited"
+                : admins.limit,
         },
-    ]
+        {
+            name: "Members",
+            value: members.unlimited
+                ? "Unlimited"
+                : members.limit,
+        },
+        {
+            name: "Storage",
+            value: storage.unlimited
+                ? "Unlimited"
+                : `${storage.limit} GB`,
+        },
+    ];
 
     return (
         <Card>
@@ -42,7 +58,8 @@ export default function PlanLimits({
                 </CardTitle>
 
                 <CardDescription>
-                    Current limits included with your subscription.
+                    Current limits included with your
+                    subscription.
                 </CardDescription>
             </CardHeader>
 
@@ -64,5 +81,5 @@ export default function PlanLimits({
                 </Table>
             </CardContent>
         </Card>
-    )
+    );
 }

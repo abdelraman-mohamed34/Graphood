@@ -3,6 +3,9 @@
 export const PLAN_LIMITS = {
     STARTER: {
         maxAdmins: 1,
+        maxMembers: 100,
+        maxStorage: 5, // GB
+
         hasReports: false,
         hasWordAssistant: false,
         api: false,
@@ -10,6 +13,9 @@ export const PLAN_LIMITS = {
 
     PRO: {
         maxAdmins: 5,
+        maxMembers: 500,
+        maxStorage: 50, // GB
+
         hasReports: true,
         hasWordAssistant: true,
         api: true,
@@ -17,6 +23,9 @@ export const PLAN_LIMITS = {
 
     BUSINESS: {
         maxAdmins: 10,
+        maxMembers: 5000,
+        maxStorage: 500, // GB
+
         hasReports: true,
         hasWordAssistant: true,
         api: true,
@@ -30,6 +39,8 @@ export type FeatureKey =
     | "hasWordAssistant"
     | "api"
     | "maxAdmins"
+    | "maxMembers"
+    | "maxStorage";
 
 export function getPlanLimits(planName: string | null | undefined) {
     const normalizedPlan = (planName?.toUpperCase() || "STARTER") as PlanType;

@@ -38,8 +38,8 @@ export default function Page() {
             </Suspense>
 
             <div className="@container/main flex flex-1 flex-col gap-6 p-4 md:p-6">
-                <SectionCards tenantId={tenantId} />
-                <QuickViewCard tenantId={tenantId} />
+                <SectionCards />
+                <QuickViewCard />
             </div>
         </SidebarInset>
     );

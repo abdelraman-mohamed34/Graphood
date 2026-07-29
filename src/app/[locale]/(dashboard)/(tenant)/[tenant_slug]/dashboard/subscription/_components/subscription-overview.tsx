@@ -6,19 +6,25 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+
+import { LICENSE_MODELS } from "@/shared/config/licensing";
+import { useTenantUsage } from "@/shared/lib/hooks";
+
 import SubscriptionStatusBadge from "./subscription-status-badge";
 
 type SubscriptionOverviewProps = {
-    capabilities: any;
     subscription?: any;
-    isLoading: boolean;
 };
 
 export default function SubscriptionOverview({
-    capabilities,
     subscription,
-    isLoading,
 }: SubscriptionOverviewProps) {
+    const {
+        plan,
+        licenseType,
+        isLoading,
+    } = useTenantUsage();
+
     if (isLoading) {
         return (
             <Card>
@@ -46,9 +52,13 @@ export default function SubscriptionOverview({
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Subscription Overview</CardTitle>
+                <CardTitle>
+                    Subscription Overview
+                </CardTitle>
+
                 <CardDescription>
-                    Manage your current workspace subscription.
+                    Manage your current workspace
+                    subscription.
                 </CardDescription>
             </CardHeader>
 
@@ -56,31 +66,42 @@ export default function SubscriptionOverview({
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardDescription>Current Plan</CardDescription>
+                            <CardDescription>
+                                Current Plan
+                            </CardDescription>
+
                             <CardTitle>
-                                {capabilities?.planName ?? "-"}
+                                {plan}
                             </CardTitle>
                         </CardHeader>
                     </Card>
 
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardDescription>License Type</CardDescription>
+                            <CardDescription>
+                                License Type
+                            </CardDescription>
+
                             <CardTitle>
-                                {capabilities?.license?.label ?? "-"}
+                                {
+                                    LICENSE_MODELS[
+                                        licenseType
+                                    ].label
+                                }
                             </CardTitle>
                         </CardHeader>
                     </Card>
 
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardDescription>Status</CardDescription>
+                            <CardDescription>
+                                Status
+                            </CardDescription>
 
                             <SubscriptionStatusBadge
                                 status={
-                                    capabilities?.isActive
-                                        ? "ACTIVE"
-                                        : "EXPIRED"
+                                    subscription?.status ??
+                                    "UNKNOWN"
                                 }
                             />
                         </CardHeader>
@@ -88,18 +109,26 @@ export default function SubscriptionOverview({
 
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardDescription>Renewal Date</CardDescription>
+                            <CardDescription>
+                                Renewal Date
+                            </CardDescription>
+
                             <CardTitle>
-                                {subscription?.renewalDate ?? "-"}
+                                {subscription?.renewalDate ??
+                                    "-"}
                             </CardTitle>
                         </CardHeader>
                     </Card>
 
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardDescription>Billing Interval</CardDescription>
+                            <CardDescription>
+                                Billing Interval
+                            </CardDescription>
+
                             <CardTitle>
-                                {subscription?.billingInterval ?? "-"}
+                                {subscription?.billingInterval ??
+                                    "-"}
                             </CardTitle>
                         </CardHeader>
                     </Card>

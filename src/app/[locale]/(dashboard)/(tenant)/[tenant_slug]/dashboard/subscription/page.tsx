@@ -6,14 +6,18 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import { Dir } from "@/shared/_components/dirs";
 import DashboardContainer from "@/shared/_components/dashboard-container";
 
-
 import { SiteHeader } from "../_components/site-header";
+
 import SubscriptionOverview from "./_components/subscription-overview";
 import UsageCards from "./_components/usage-cards";
 import PlanLimits from "./_components/plan-limits";
 import BillingSummary from "./_components/billing-summary";
-import { useMemberships, useTenant } from "@/shared/lib/hooks";
-import { useSubscription } from "@/shared/lib/hooks";
+
+import {
+    useSubscription,
+    useTenant,
+    useTenantUsage,
+} from "@/shared/lib/hooks";
 
 function SubscriptionSkeleton() {
     return (
@@ -76,16 +80,15 @@ function SubscriptionSkeleton() {
 }
 
 export default function SubscriptionPage() {
-    const { memberships } = useMemberships();
-    const { membership } = useTenant();
-
-    const tenantId = membership?.tenant_id;
+    const { tenantId } = useTenant();
+    const { subscription, isLoading: subscriptionLoading } = useSubscription(tenantId ?? undefined);
 
     const {
-        subscription,
-        capabilities,
-        isLoading,
-    } = useSubscription(tenantId);
+        isLoading: usageLoading,
+    } = useTenantUsage();
+
+    const isLoading =
+        subscriptionLoading || usageLoading;
 
     if (isLoading) {
         return (
@@ -100,7 +103,7 @@ export default function SubscriptionPage() {
         );
     }
 
-    if (!subscription || !capabilities) {
+    if (!subscription) {
         return null;
     }
 
@@ -112,18 +115,11 @@ export default function SubscriptionPage() {
             <DashboardContainer className="space-y-5">
                 <SubscriptionOverview
                     subscription={subscription}
-                    capabilities={capabilities}
-                    isLoading={false}
                 />
 
-                <UsageCards
-                    capabilities={capabilities}
-                    memberships={memberships}
-                />
+                <UsageCards />
 
-                <PlanLimits
-                    capabilities={capabilities}
-                />
+                <PlanLimits />
 
                 <BillingSummary />
             </DashboardContainer>

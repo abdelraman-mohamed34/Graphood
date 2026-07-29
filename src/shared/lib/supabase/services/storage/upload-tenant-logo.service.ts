@@ -11,7 +11,6 @@ export async function uploadTenantLogoService({
     tenantId,
     file,
 }: UploadTenantLogoProps) {
-    // حذف أي لوجو قديم داخل فولدر الـ Tenant
     const { data: files, error: listError } = await supabase.storage
         .from("tenant-logos")
         .list(tenantId);

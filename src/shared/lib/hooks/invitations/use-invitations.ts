@@ -1,38 +1,33 @@
-'use client'
+"use client";
 
 import {
     useMutation,
     useQuery,
     useQueryClient,
-} from '@tanstack/react-query'
-import { useParams } from 'next/navigation'
+} from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 
-import { createClient } from '@/shared/lib/supabase/client'
-
-import { getPendingInvitations } from '@/shared/lib/supabase/services/invitations/get-pending-invitations.service'
-
-import { cancelInvitationAction } from '@/shared/lib/actions/invitations/cancel-invitation.action'
-import { resendInvitationAction } from '@/shared/lib/actions/invitations/resend-invitation.action'
-import { useTenant } from '@/shared/lib/hooks'
-
+import { createClient } from "@/shared/lib/supabase/client";
+import { getPendingInvitations } from "@/shared/lib/supabase/services/invitations/get-pending-invitations.service";
+import { cancelInvitationAction } from "@/shared/lib/actions/invitations/cancel-invitation.action";
+import { resendInvitationAction } from "@/shared/lib/actions/invitations/resend-invitation.action";
+import { useTenant } from "@/shared/lib/hooks";
 
 export function useInvitations() {
     const { locale, tenant_slug } = useParams<{
-        locale: string
-        tenant_slug: string
-    }>()
+        locale: string;
+        tenant_slug: string;
+    }>();
 
-    const supabase = createClient()
-    const queryClient = useQueryClient()
+    const supabase = createClient();
+    const queryClient = useQueryClient();
 
-    const { membership } = useTenant()
-
+    const { membership } = useTenant();
 
     const invalidateInvitations = () =>
         queryClient.invalidateQueries({
-            queryKey: ['pending-invitations', tenant_slug],
-        })
-
+            queryKey: ["pending-invitations", tenant_slug],
+        });
 
     // Read pending invitations
     const {
@@ -41,24 +36,23 @@ export function useInvitations() {
         error,
         refetch,
     } = useQuery({
-        queryKey: ['pending-invitations', tenant_slug],
+        queryKey: ["pending-invitations", tenant_slug],
 
         queryFn: async () => {
-            const tenantId = membership?.tenant_id
+            const tenantId = membership?.tenant_id;
 
             if (!tenantId) {
-                throw new Error('Tenant not found')
+                throw new Error("Tenant not found");
             }
 
             return getPendingInvitations({
                 supabase,
                 tenantId,
-            })
+            });
         },
 
         enabled: !!tenant_slug && !!membership?.tenant_id,
-    })
-
+    });
 
     // Cancel invitation
     const cancelMutation = useMutation({
@@ -67,24 +61,23 @@ export function useInvitations() {
                 locale,
                 tenant_slug,
                 invitationId
-            )
+            );
 
             if (!result.success) {
-                throw new Error(result.code)
+                throw new Error(result.code);
             }
 
-            return result
+            return result;
         },
 
         onError: (error) => {
-            console.error('Cancel invitation error:', error)
+            console.error("Cancel invitation error:", error);
         },
 
         onSuccess: async () => {
-            await invalidateInvitations()
+            await invalidateInvitations();
         },
-    })
-
+    });
 
     // Resend invitation
     const resendMutation = useMutation({
@@ -93,24 +86,23 @@ export function useInvitations() {
                 locale,
                 tenant_slug,
                 invitationId
-            )
+            );
 
             if (!result.success) {
-                throw new Error(result.code)
+                throw new Error(result.code);
             }
 
-            return result
+            return result;
         },
 
         onError: (error) => {
-            console.error('Resend invitation error:', error)
+            console.error("Resend invitation error:", error);
         },
 
         onSuccess: async () => {
-            await invalidateInvitations()
+            await invalidateInvitations();
         },
-    })
-
+    });
 
     return {
         pendingInvitations,
@@ -128,5 +120,5 @@ export function useInvitations() {
         resendInvitation: resendMutation.mutate,
         resendInvitationAsync: resendMutation.mutateAsync,
         isResending: resendMutation.isPending,
-    }
+    };
 }

@@ -3,7 +3,7 @@
 export const licenseTypes = [
     "SUBSCRIPTION",
     "RESELLER",
-    "EXCLUSIVE"
+    "EXCLUSIVE",
 ] as const;
 
 export type LicenseType = (typeof licenseTypes)[number];
@@ -14,14 +14,25 @@ export const LICENSE_MODELS = {
         isExclusive: false,
         label: "Subscription",
     },
+
     RESELLER: {
         canBeResold: true,
         isExclusive: false,
         label: "Reseller Asset",
     },
+
     EXCLUSIVE: {
         canBeResold: false,
         isExclusive: true,
         label: "Exclusive Buyout",
-    }
+    },
 } as const;
+
+export function isUnlimitedLicense(
+    licenseType: LicenseType | null | undefined
+) {
+    return (
+        licenseType === "RESELLER" ||
+        licenseType === "EXCLUSIVE"
+    );
+}

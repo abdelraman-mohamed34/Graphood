@@ -11,9 +11,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { uploadTenantLogoService } from "@/shared/lib/supabase/services/storage/upload-tenant-logo.service";
 import { createClient } from "@/shared/lib/supabase/client";
 import Image from "next/image";
+import { toast } from "sonner";
+import { uploadTenantLogoService } from "@/shared/lib/supabase/services/storage";
 
 type FormValues = {
     name: string;
@@ -77,7 +78,6 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
     }, [preview]);
 
 
-
     useEffect(() => {
         reset({
             name: tenant.name,
@@ -98,6 +98,29 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
         let logo_url = tenant.logo_url;
 
         if (file) {
+            const allowedTypes = [
+                "image/png",
+                "image/jpeg",
+                "image/jpg",
+                "image/webp",
+            ];
+
+            const maxSize = 2 * 1024 * 1024; // 2 MB
+
+            if (!allowedTypes.includes(file.type)) {
+                toast.error(
+                    "Only PNG, JPG, JPEG and WEBP images are allowed."
+                );
+                return;
+            }
+
+            if (file.size > maxSize) {
+                toast.error(
+                    "Image size must not exceed 2 MB."
+                );
+                return;
+            }
+
             logo_url = await uploadTenantLogo(
                 tenant.id,
                 file
@@ -263,15 +286,8 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
                                     {...logoRegister}
                                     onChange={(e) => {
                                         logoRegister.onChange(e);
-
                                         const file = e.target.files?.[0];
-
                                         if (!file) return;
-
-                                        if (preview?.startsWith("blob:")) {
-                                            URL.revokeObjectURL(preview);
-                                        }
-
                                         setPreview(URL.createObjectURL(file));
                                     }}
                                 />

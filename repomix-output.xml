@@ -136,7 +136,6 @@ src/
                 page.tsx
               settings/
                 _components/
-                  branding-settings.tsx
                   danger-zone.tsx
                   delete-workspace.tsx
                   general-settings-form.tsx
@@ -144,7 +143,6 @@ src/
                   leave-workspace.tsx
                   localization-form.tsx
                   localization-settings.tsx
-                  logo-upload.tsx
                 page.tsx
               subscription/
                 _components/
@@ -406,6 +404,7 @@ src/
         tenants/
           index.ts
           use-tenant-limit.ts
+          use-tenant-usage.ts
           use-tenant.ts
         index.ts
       providers/
@@ -486,6 +485,10 @@ src/
             insert-membership.service.ts
             remove-membership-from-tenant.service.ts
             update-membership-role.service.ts
+          storage/
+            delete-tenant-logo.service.ts
+            index.ts
+            upload-tenant-logo.service.ts
           subscriptions/
             get-subscription-by-system-and-tenant.service.ts
             get-subscription-by-tenant-id.service.ts
@@ -553,820 +556,6 @@ This section contains the contents of the repository's files.
 }
 </file>
 
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/branding-settings.tsx">
-"use client";
-
-import { Skeleton } from "@/components/ui/skeleton";
-import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
-import { LogoUpload } from "./logo-upload";
-
-export function BrandingSettings() {
-    const {
-        tenant,
-        permissions,
-        isLoading,
-    } = useTenant();
-
-    if (isLoading) {
-        return (
-            <div className="space-y-6">
-                <Skeleton className="h-96 w-full rounded-xl" />
-            </div>
-        );
-    }
-
-    if (!permissions.canManageWorkspace || !tenant) {
-        return null;
-    }
-
-    return <LogoUpload tenant={tenant} />;
-}
-</file>
-
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/danger-zone.tsx">
-"use client";
-
-import { Skeleton } from "@/components/ui/skeleton";
-import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
-import { DeleteWorkspace } from "./delete-workspace";
-import { LeaveWorkspace } from "./leave-workspace";
-
-export function DangerZone() {
-    const {
-        permissions,
-        isLoading,
-    } = useTenant();
-
-    if (isLoading) {
-        return (
-            <Skeleton className="h-72 w-full rounded-xl" />
-        );
-    }
-
-    if (!permissions.canManageWorkspace) {
-        return null;
-    }
-
-    return (
-        <div className="space-y-6 rounded-xl border border-destructive/30 p-6">
-            <div>
-                <h2 className="text-xl font-semibold text-destructive">
-                    Danger Zone
-                </h2>
-
-                <p className="text-sm text-muted-foreground">
-                    These actions are permanent and should be used carefully.
-                </p>
-            </div>
-
-            <LeaveWorkspace />
-
-            {permissions.canDeleteWorkspace && (
-                <DeleteWorkspace />
-            )}
-        </div>
-    );
-}
-</file>
-
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/delete-workspace.tsx">
-"use client";
-
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
-export function DeleteWorkspace() {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <div className="flex items-center justify-between rounded-lg border border-destructive/30 p-5">
-            <div>
-                <h3 className="font-semibold text-destructive">
-                    Delete Workspace
-                </h3>
-
-                <p className="text-sm text-muted-foreground">
-                    Permanently delete this workspace and all of its data. This action cannot be undone.
-                </p>
-            </div>
-
-            <AlertDialog
-                open={open}
-                onOpenChange={setOpen}
-            >
-                <AlertDialogTrigger asChild>
-                    <Button variant="destructive">
-                        Delete Workspace
-                    </Button>
-                </AlertDialogTrigger>
-
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>
-                            Delete Workspace?
-                        </AlertDialogTitle>
-
-                        <AlertDialogDescription>
-                            Workspace deletion is not implemented yet.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>
-                            Cancel
-                        </AlertDialogCancel>
-
-                        <AlertDialogAction>
-                            Continue
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </div>
-    );
-}
-</file>
-
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/general-settings-form.tsx">
-"use client";
-
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { Tenant } from "@/shared/lib/schemas/tenants.schema";
-import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
-import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-type FormValues = {
-    name: string;
-    slug: string;
-    email: string;
-    phone: string;
-    country: string;
-    city: string;
-    address: string;
-    timezone: string;
-    logo_url: string;
-    primary_color: string;
-};
-
-export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
-    const { updateTenant, isUpdating } = useTenant();
-
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors },
-    } = useForm<FormValues>({
-        defaultValues: {
-            name: tenant.name,
-            slug: tenant.slug,
-            email: tenant.email,
-            phone: tenant.phone ?? "",
-            country: tenant.country ?? "",
-            city: tenant.city ?? "",
-            address: tenant.address ?? "",
-            timezone: tenant.timezone ?? "Africa/Cairo",
-            logo_url: tenant.logo_url ?? "",
-            primary_color: tenant.primary_color ?? "#000000",
-        },
-    });
-
-    useEffect(() => {
-        reset({
-            name: tenant.name,
-            slug: tenant.slug,
-            email: tenant.email,
-            phone: tenant.phone ?? "",
-            country: tenant.country ?? "",
-            city: tenant.city ?? "",
-            address: tenant.address ?? "",
-            timezone: tenant.timezone ?? "Africa/Cairo",
-            logo_url: tenant.logo_url ?? "",
-            primary_color: tenant.primary_color ?? "#000000",
-        });
-    }, [tenant, reset]);
-
-    function onSubmit(values: FormValues) {
-        updateTenant(values);
-    }
-
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>General Settings</CardTitle>
-            </CardHeader>
-
-            <CardContent>
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-6"
-                >
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <div className="space-y-2">
-                            <Label htmlFor="name">Workspace Name</Label>
-                            <Input
-                                id="name"
-                                {...register("name")}
-                            />
-                            {errors.name && (
-                                <p className="text-sm text-destructive">
-                                    {errors.name.message}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="slug">Slug</Label>
-                            <Input
-                                id="slug"
-                                {...register("slug")}
-                            />
-                            {errors.slug && (
-                                <p className="text-sm text-destructive">
-                                    {errors.slug.message}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                {...register("email")}
-                            />
-                            {errors.email && (
-                                <p className="text-sm text-destructive">
-                                    {errors.email.message}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="phone">Phone</Label>
-                            <Input
-                                id="phone"
-                                {...register("phone")}
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="country">Country</Label>
-                            <Input
-                                id="country"
-                                {...register("country")}
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="city">City</Label>
-                            <Input
-                                id="city"
-                                {...register("city")}
-                            />
-                        </div>
-
-                        <div className="space-y-2 md:col-span-2">
-                            <Label htmlFor="address">Address</Label>
-                            <Input
-                                id="address"
-                                {...register("address")}
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="timezone">Timezone</Label>
-                            <Input
-                                id="timezone"
-                                {...register("timezone")}
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="primary_color">
-                                Primary Color
-                            </Label>
-                            <Input
-                                id="primary_color"
-                                type="color"
-                                {...register("primary_color")}
-                            />
-                        </div>
-
-                        <div className="space-y-2 md:col-span-2">
-                            <Label htmlFor="logo_url">Logo URL</Label>
-                            <Input
-                                id="logo_url"
-                                {...register("logo_url")}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex justify-end">
-                        <Button
-                            type="submit"
-                            disabled={isUpdating}
-                        >
-                            {isUpdating ? "Saving..." : "Save Changes"}
-                        </Button>
-                    </div>
-                </form>
-            </CardContent>
-        </Card>
-    );
-}
-</file>
-
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/general-settings.tsx">
-"use client";
-
-import { useEffect } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
-import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
-import { GeneralSettingsForm } from "./general-settings-form";
-
-export function GeneralSettings() {
-    const {
-        tenant,
-        permissions,
-        isLoading,
-    } = useTenant();
-
-    useEffect(() => {
-        if (!isLoading && !permissions.canManageWorkspace) {
-            toast.error("You don't have permission to manage this workspace.");
-        }
-    }, [isLoading, permissions.canManageWorkspace]);
-
-    useEffect(() => {
-        if (!isLoading && !tenant) {
-            toast.error("Workspace not found.");
-        }
-    }, [isLoading, tenant]);
-
-    if (isLoading) {
-        return (
-            <div className="space-y-6">
-                <Skeleton className="h-10 w-64" />
-                <Skeleton className="h-96 w-full rounded-xl" />
-            </div>
-        );
-    }
-
-    if (!permissions.canManageWorkspace || !tenant) {
-        return null;
-    }
-
-    return <GeneralSettingsForm tenant={tenant} />;
-}
-</file>
-
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/leave-workspace.tsx">
-"use client";
-
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
-export function LeaveWorkspace() {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <div className="flex items-center justify-between rounded-lg border p-5">
-            <div>
-                <h3 className="font-semibold">
-                    Leave Workspace
-                </h3>
-
-                <p className="text-sm text-muted-foreground">
-                    Leave this workspace. You can be invited again later.
-                </p>
-            </div>
-
-            <AlertDialog
-                open={open}
-                onOpenChange={setOpen}
-            >
-                <AlertDialogTrigger asChild>
-                    <Button variant="outline">
-                        Leave Workspace
-                    </Button>
-                </AlertDialogTrigger>
-
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>
-                            Leave Workspace?
-                        </AlertDialogTitle>
-
-                        <AlertDialogDescription>
-                            This feature is not implemented yet.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>
-                            Cancel
-                        </AlertDialogCancel>
-
-                        <AlertDialogAction>
-                            Continue
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </div>
-    );
-}
-</file>
-
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/localization-form.tsx">
-"use client";
-
-import { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { Tenant } from "@/shared/lib/schemas/tenants.schema";
-import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
-import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-
-type Props = {
-    tenant: Tenant;
-};
-
-type FormValues = {
-    timezone: string;
-    country: string;
-    city: string;
-    address: string;
-};
-
-export function LocalizationForm({ tenant }: Props) {
-    const { updateTenant, isUpdating } = useTenant();
-
-    const {
-        register,
-        handleSubmit,
-        control,
-        reset,
-        formState: { errors },
-    } = useForm<FormValues>({
-        defaultValues: {
-            timezone: tenant.timezone ?? "Africa/Cairo",
-            country: tenant.country ?? "",
-            city: tenant.city ?? "",
-            address: tenant.address ?? "",
-        },
-    });
-
-    useEffect(() => {
-        reset({
-            timezone: tenant.timezone ?? "Africa/Cairo",
-            country: tenant.country ?? "",
-            city: tenant.city ?? "",
-            address: tenant.address ?? "",
-        });
-    }, [tenant, reset]);
-
-    function onSubmit(values: FormValues) {
-        updateTenant(values);
-    }
-
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Localization Settings</CardTitle>
-            </CardHeader>
-
-            <CardContent>
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-6"
-                >
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <div className="space-y-2">
-                            <Label>Timezone</Label>
-
-                            <Controller
-                                control={control}
-                                name="timezone"
-                                render={({ field }) => (
-                                    <Select
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select timezone" />
-                                        </SelectTrigger>
-
-                                        <SelectContent>
-                                            <SelectItem value="Africa/Cairo">
-                                                Africa/Cairo
-                                            </SelectItem>
-
-                                            <SelectItem value="UTC">
-                                                UTC
-                                            </SelectItem>
-
-                                            <SelectItem value="Europe/London">
-                                                Europe/London
-                                            </SelectItem>
-
-                                            <SelectItem value="Europe/Paris">
-                                                Europe/Paris
-                                            </SelectItem>
-
-                                            <SelectItem value="Asia/Dubai">
-                                                Asia/Dubai
-                                            </SelectItem>
-
-                                            <SelectItem value="America/New_York">
-                                                America/New_York
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-
-                            {errors.timezone && (
-                                <p className="text-sm text-destructive">
-                                    {errors.timezone.message}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="country">
-                                Country
-                            </Label>
-
-                            <Input
-                                id="country"
-                                {...register("country")}
-                            />
-
-                            {errors.country && (
-                                <p className="text-sm text-destructive">
-                                    {errors.country.message}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="city">
-                                City
-                            </Label>
-
-                            <Input
-                                id="city"
-                                {...register("city")}
-                            />
-
-                            {errors.city && (
-                                <p className="text-sm text-destructive">
-                                    {errors.city.message}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2 md:col-span-2">
-                            <Label htmlFor="address">
-                                Address
-                            </Label>
-
-                            <Textarea
-                                id="address"
-                                rows={4}
-                                {...register("address")}
-                            />
-
-                            {errors.address && (
-                                <p className="text-sm text-destructive">
-                                    {errors.address.message}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="flex justify-end">
-                        <Button
-                            type="submit"
-                            disabled={isUpdating}
-                        >
-                            {isUpdating
-                                ? "Saving..."
-                                : "Save Location"}
-                        </Button>
-                    </div>
-                </form>
-            </CardContent>
-        </Card>
-    );
-}
-</file>
-
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/localization-settings.tsx">
-"use client";
-
-import { useEffect } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
-import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
-import { LocalizationForm } from "./localization-form";
-
-export function LocalizationSettings() {
-    const {
-        tenant,
-        permissions,
-        isLoading,
-    } = useTenant();
-
-    useEffect(() => {
-        if (!isLoading && !permissions.canManageWorkspace) {
-            toast.error("You don't have permission to manage this workspace.");
-        }
-    }, [isLoading, permissions.canManageWorkspace]);
-
-    if (isLoading) {
-        return (
-            <div className="space-y-6">
-                <Skeleton className="h-96 w-full rounded-xl" />
-            </div>
-        );
-    }
-
-    if (!permissions.canManageWorkspace || !tenant) {
-        return null;
-    }
-
-    return <LocalizationForm tenant={tenant} />;
-}
-</file>
-
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/logo-upload.tsx">
-"use client";
-
-import { useState } from "react";
-import { Tenant } from "@/shared/lib/schemas/tenants.schema";
-import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-type Props = {
-    tenant: Tenant;
-};
-
-export function LogoUpload({ tenant }: Props) {
-    const { updateTenant, isUpdating } = useTenant();
-
-    const [primaryColor, setPrimaryColor] = useState(
-        tenant.primary_color ?? "#000000"
-    );
-
-    function handleSave() {
-        updateTenant({
-            primary_color: primaryColor,
-        });
-    }
-
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Branding</CardTitle>
-            </CardHeader>
-
-            <CardContent className="space-y-8">
-                <div className="flex items-center gap-4">
-                    <Avatar className="h-20 w-20">
-                        <AvatarImage src={tenant.logo_url ?? ""} />
-                        <AvatarFallback>
-                            {tenant.name.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                    </Avatar>
-
-                    <Button
-                        type="button"
-                        disabled
-                    >
-                        Upload Logo
-                    </Button>
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="primary_color">
-                        Primary Color
-                    </Label>
-
-                    <Input
-                        id="primary_color"
-                        type="color"
-                        value={primaryColor}
-                        onChange={(e) =>
-                            setPrimaryColor(e.target.value)
-                        }
-                    />
-                </div>
-
-                <div className="flex justify-end">
-                    <Button
-                        type="button"
-                        onClick={handleSave}
-                        disabled={isUpdating}
-                    >
-                        {isUpdating
-                            ? "Saving..."
-                            : "Save Branding"}
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
-    );
-}
-</file>
-
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/page.tsx">
-import DashboardContainer from "@/shared/_components/dashboard-container";
-import { SiteHeader } from "../_components/site-header";
-import { Button } from "@/components/ui/button";
-import { GeneralSettings } from "./_components/general-settings";
-import { SidebarInset } from "@/components/ui/sidebar";
-import { Suspense } from "react";
-import { Dir } from "@/shared/_components/dirs";
-
-export default function TenantSettingsPage() {
-    return (
-        <>
-            <SidebarInset>
-                <SiteHeader
-                    title="Settings"
-                />
-                <Dir />
-
-                <div className="@container/main flex flex-1 flex-col gap-6 p-4 md:p-6">
-                    <DashboardContainer>
-                        <GeneralSettings />
-                    </DashboardContainer>
-                </div>
-            </SidebarInset>
-        </>
-    );
-}
-</file>
-
 <file path="src/shared/_components/dirs.tsx">
 "use client";
 
@@ -1421,114 +610,180 @@ export function Dir() {
 }
 </file>
 
-<file path="src/shared/lib/actions/tenants/update-tenant.action.ts">
-"use server";
+<file path="src/shared/lib/hooks/tenants/use-tenant-usage.ts">
+"use client";
 
-import { getTenantBySlug } from "@/shared/lib/supabase/services/tenants/get-tenant-by-slug.service";
-import { updateTenantService } from "@/shared/lib/supabase/services/tenants/update-tenant.service";
-import { requireMembership } from "../../auth/requires/require-membership";
-import { hasAnyPermission } from "../../auth/requires/require-permission";
-import { requireUser } from "../../auth/requires/require-user";
-import { UpdateTenant } from "../../schemas/tenants.schema";
+import { useMemo } from "react";
 
-type UpdateTenantActionProps = {
-    tenantSlug: string;
-    data: UpdateTenant;
-    locale: string;
-};
+import {
+    getPlanLimits,
+    type PlanType,
+} from "@/shared/config/plans";
 
-export async function updateTenantAction({
-    tenantSlug,
-    data,
-    locale,
-}: UpdateTenantActionProps) {
-    try {
-        const { user, supabase } = await requireUser(locale);
+import {
+    isUnlimitedLicense,
+    type LicenseType,
+} from "@/shared/config/licensing";
 
-        const tenant = await getTenantBySlug(tenantSlug);
-        console.log("tenant", tenant);
-        if (!tenant) {
-            return {
-                success: false,
-                message: "Tenant not found.",
-            };
-        }
+import { useTenant } from "./use-tenant";
+import { useMemberships } from "../memberships";
+import { useInvitations } from "../invitations";
+import { useSubscription } from "../subscriptions";
 
-        const membership = await requireMembership({
-            supabase,
-            tenantSlug,
-            userId: user.id,
-            redirectTo: `/${locale}/workspaces`,
-        });
-        console.log("membership", membership);
+export function useTenantUsage() {
+    const {
+        tenantId,
+        isLoading: tenantLoading,
+        error: tenantError,
+    } = useTenant();
 
-        const allowed = hasAnyPermission(membership, [
-            "tenant.manage",
-            "tenant.read",
-        ]);
+    const {
+        memberships,
+        isLoading: membershipsLoading,
+        error: membershipsError,
+    } = useMemberships();
 
-        if (!allowed) {
-            return {
-                success: false,
-                message: "Unauthorized.",
-            };
-        }
+    const {
+        pendingInvitations,
+        isLoading: invitationsLoading,
+        error: invitationsError,
+    } = useInvitations();
 
-        const updatedTenant = await updateTenantService({
-            supabase,
-            tenantId: tenant.id,
-            data,
-        });
-        console.log("updatedTenant", updatedTenant);
+    const {
+        subscription,
+        isLoading: subscriptionLoading,
+        error: subscriptionError,
+    } = useSubscription(
+        tenantId ?? undefined
+    );
+
+    const usage = useMemo(() => {
+        const plan = (
+            subscription?.plan ?? "STARTER"
+        ) as PlanType;
+
+        const licenseType = (
+            subscription?.license_type ??
+            "SUBSCRIPTION"
+        ) as LicenseType;
+
+        const limits = getPlanLimits(plan);
+
+        const unlimited = isUnlimitedLicense(licenseType);
+
+        const adminsCurrent = memberships.filter(
+            (membership) =>
+                membership.role === "OWNER" ||
+                membership.role === "ADMIN"
+        ).length;
+
+        const adminsLimit = unlimited
+            ? null
+            : limits.maxAdmins;
 
         return {
-            success: true,
-            message: "Tenant updated successfully.",
-            tenant: updatedTenant,
-        };
-    } catch (error) {
-        console.error(error);
+            plan,
 
-        return {
-            success: false,
-            message:
-                error instanceof Error
-                    ? error.message
-                    : "Failed to update tenant.",
+            licenseType,
+
+            admins: {
+                current: adminsCurrent,
+
+                limit: adminsLimit,
+
+                remaining:
+                    adminsLimit === null
+                        ? null
+                        : Math.max(
+                            adminsLimit -
+                            adminsCurrent,
+                            0
+                        ),
+
+                percent:
+                    adminsLimit === null
+                        ? null
+                        : Math.round(
+                            (adminsCurrent / adminsLimit) * 100
+                        ),
+
+                unlimited,
+            },
+
+            members: {
+                limit: unlimited
+                    ? null
+                    : limits.maxMembers,
+
+                unlimited,
+            },
+
+            storage: {
+                limit: unlimited
+                    ? null
+                    : limits.maxStorage,
+
+                unlimited,
+            },
+
+            invitations: {
+                current:
+                    pendingInvitations?.length ??
+                    0,
+            },
+
+            features: {
+                api: limits.api,
+                reports: limits.hasReports,
+                wordAssistant:
+                    limits.hasWordAssistant,
+            },
         };
-    }
+    }, [
+        memberships,
+        pendingInvitations,
+        subscription,
+    ]);
+
+    const isLoading = useMemo(
+        () =>
+            tenantLoading ||
+            membershipsLoading ||
+            invitationsLoading ||
+            subscriptionLoading,
+        [
+            tenantLoading,
+            membershipsLoading,
+            invitationsLoading,
+            subscriptionLoading,
+        ]
+    );
+
+    const error = useMemo(
+        () =>
+            tenantError ??
+            membershipsError ??
+            invitationsError ??
+            subscriptionError,
+        [
+            tenantError,
+            membershipsError,
+            invitationsError,
+            subscriptionError,
+        ]
+    );
+
+    return {
+        ...usage,
+        isLoading,
+        error,
+    };
 }
 </file>
 
-<file path="src/shared/lib/supabase/services/tenants/update-tenant.service.ts">
-import { UpdateTenant } from "@/shared/lib/schemas/tenants.schema";
-import { SupabaseClient } from "@supabase/supabase-js";
-
-type UpdateTenantServiceProps = {
-    supabase: SupabaseClient;
-    tenantId: string;
-    data: UpdateTenant;
-};
-
-export async function updateTenantService({
-    supabase,
-    tenantId,
-    data,
-}: UpdateTenantServiceProps) {
-    const { data: tenant, error } = await supabase
-        .from("tenants")
-        .update(data)
-        .eq("id", tenantId)
-        .select()
-        .single();
-
-
-    if (error) {
-        throw error;
-    }
-
-    return tenant;
-}
+<file path="src/shared/lib/supabase/services/storage/index.ts">
+export * from "./delete-tenant-logo.service"
+export * from "./upload-tenant-logo.service"
 </file>
 
 <file path="public/data.json">
@@ -2093,44 +1348,6 @@ export default function page({ params }: PageProps) {
 }
 </file>
 
-<file path="src/app/[locale]/(dashboard)/(system)/developer/layout.tsx">
-'use server';
-
-import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
-import { getCurrentSystems } from "@/shared/lib/supabase/services/systems/get-current-systems.service";
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
-import { redirect } from "next/navigation";
-
-interface SystemLayoutProps {
-    children: React.ReactNode;
-    params: Promise<{
-        locale: string;
-    }>;
-}
-
-export default async function SystemLayout({
-    children,
-    params,
-}: SystemLayoutProps) {
-    const { locale } = await params;
-    const supabase = await createSupabaseServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) { redirect(`/${locale}/login`); }
-    const queryClient = new QueryClient();
-
-    await queryClient.fetchQuery({
-        queryKey: ["develop", "current-systems"],
-        queryFn: () => getCurrentSystems(user.id, supabase),
-    });
-    return (
-        <HydrationBoundary state={dehydrate(queryClient)}>
-            {children}
-        </HydrationBoundary>
-    );
-}
-</file>
-
 <file path="src/app/[locale]/(dashboard)/(system)/developer/page.tsx">
 'use client';
 
@@ -2188,184 +1405,6 @@ export default function Page() {
             )}
         </div>
     );
-}
-</file>
-
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/_components/app-sidebar.tsx">
-"use client"
-
-import * as React from "react"
-import {
-    IconCamera,
-    IconDatabase,
-    IconFileAi,
-    IconFileDescription,
-    IconFileWord,
-    IconHelp,
-    IconInnerShadowTop,
-    IconListDetails,
-    IconPill,
-    IconReport,
-    IconSettings,
-    IconUsers,
-} from "@tabler/icons-react"
-
-import { NavDocuments } from "./nav-documents"
-import { NavSecondary } from "./nav-secondary"
-import { NavUser } from "./nav-user"
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { useAuth } from "@/shared/lib/auth/auth-context"
-import { NavMain } from "./nav-main"
-import { Link } from "@/i18n/navigation"
-import brandConfig from "../../../../../../../../public/data.json"
-
-// mock data
-const data = {
-    user: {
-        name: "shad",
-        email: "m@example.com",
-        avatar: "/avatars/shadcn.jpg",
-    },
-    navMain: [
-        {
-            title: "Quick view",
-            url: "quickview",
-            icon: IconListDetails,
-        },
-        {
-            title: "subscription",
-            url: "subscription",
-            icon: IconPill,
-        },
-        {
-            title: "Members",
-            url: "members",
-            icon: IconUsers,
-        },
-        {
-            title: "Settings",
-            url: "settings",
-            icon: IconSettings,
-        }
-    ],
-    navClouds: [
-        {
-            title: "Capture",
-            icon: IconCamera,
-            isActive: true,
-            url: "#",
-            items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "/members",
-                },
-            ],
-        },
-        {
-            title: "Proposal",
-            icon: IconFileDescription,
-            url: "#",
-            items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Prompts",
-            icon: IconFileAi,
-            url: "#",
-            items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "#",
-                },
-            ],
-        },
-    ],
-    navSecondary: [
-        {
-            title: "Settings",
-            url: "/settings/profile",
-            icon: IconSettings,
-        },
-        {
-            title: "Get Help",
-            url: "#",
-            icon: IconHelp,
-        }
-    ],
-    documents: [
-        {
-            name: "Data Library",
-            url: "#",
-            icon: IconDatabase,
-        },
-        {
-            name: "Reports",
-            url: "#",
-            icon: IconReport,
-        },
-        {
-            name: "Word Assistant",
-            url: "#",
-            icon: IconFileWord,
-        },
-    ],
-}
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-
-    const { user } = useAuth()
-
-    return (
-        <Sidebar collapsible="offcanvas" {...props}>
-            <SidebarHeader>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton
-                            asChild
-                            className="data-[slot=sidebar-menu-button]:p-1.5!"
-                        >
-                            <Link href="#">
-                                <IconInnerShadowTop className="size-5!" />
-                                <span className="text-base font-semibold">{brandConfig.brand}</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarHeader>
-            <SidebarContent>
-                <NavMain items={data.navMain} />
-                <NavDocuments items={data.documents} />
-                <NavSecondary items={data.navSecondary} className="mt-auto" />
-            </SidebarContent>
-            <SidebarFooter>
-                <NavUser user={user} />
-            </SidebarFooter>
-        </Sidebar>
-    )
 }
 </file>
 
@@ -3851,9 +2890,9 @@ export function NavUser({
 </file>
 
 <file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/_components/section-cards.tsx">
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardAction,
@@ -3861,139 +2900,181 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Users, Sparkles, CheckCircle2, ShieldAlert } from "lucide-react"
-import { useSubscription } from "@/shared/lib/hooks"
-import { useMemberships } from "@/shared/lib/hooks"
+} from "@/components/ui/card";
+import {
+  Users,
+  Sparkles,
+  CheckCircle2,
+  ShieldAlert,
+} from "lucide-react";
 
-type SectionCardsProps = {
-  tenantId: string
-}
+import { LICENSE_MODELS } from "@/shared/config/licensing";
+import { useTenantUsage } from "@/shared/lib/hooks";
 
-export function SectionCards({ tenantId }: SectionCardsProps) {
-  const { capabilities, isLoading: subLoading } = useSubscription(tenantId)
-  const { memberships, isLoading: membershipLoading } = useMemberships()
-  const isLoading = subLoading || membershipLoading
+export function SectionCards() {
+  const {
+    plan,
+    licenseType,
+    admins,
+    features,
+    isLoading,
+  } = useTenantUsage();
 
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-[180px] animate-pulse rounded-xl border border-border/50 bg-muted/20" />
+          <div
+            key={i}
+            className="h-[180px] animate-pulse rounded-xl border border-border/50 bg-muted/20"
+          />
         ))}
       </div>
-    )
+    );
   }
 
-  const maxAdmins = capabilities?.limits?.maxAdmins ?? 0
-  const isExclusive = capabilities?.license?.isExclusive ?? false
-  const planName = capabilities?.planName ?? "No Active"
-  const licenseLabel = capabilities?.license?.label ?? "No License"
-  const hasAI = capabilities?.limits?.hasWordAssistant ?? false
+  const licenseLabel =
+    LICENSE_MODELS[licenseType].label;
+
+  const hasAI = features.wordAssistant;
 
   return (
     <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-3 dark:*:data-[slot=card]:bg-card">
-
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Workspace Plan</CardDescription>
+          <CardDescription>
+            Workspace Plan
+          </CardDescription>
+
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {planName}
+            {plan}
           </CardTitle>
+
           <CardAction>
-            <Badge variant="outline" className="gap-1 border-primary/20 bg-primary/5 text-primary">
+            <Badge
+              variant="outline"
+              className="gap-1 border-primary/20 bg-primary/5 text-primary"
+            >
               Active
             </Badge>
           </CardAction>
         </CardHeader>
+
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium items-center">
+          <div className="flex items-center gap-2 font-medium">
             Type: {licenseLabel}
           </div>
+
           <div className="text-muted-foreground">
-            {isExclusive ? "Permanent life-time access" : "Standard subscription terms"}
+            {admins.unlimited
+              ? "Unlimited workspace license."
+              : "Standard subscription terms."}
           </div>
         </CardFooter>
       </Card>
 
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Administrators Limit</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl flex items-baseline">
-            {memberships?.length ?? 0}
-            <span className="text-primary/50 text-xl ml-0.5 font-normal">
-              /{maxAdmins}
-            </span>
-            <span className="text-sm font-normal text-muted-foreground ml-1">
-              Users
-            </span>
+          <CardDescription>
+            Administrators
+          </CardDescription>
+
+          <CardTitle className="flex items-baseline text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            {admins.unlimited ? (
+              <>
+                Unlimited
+              </>
+            ) : (
+              <>
+                {admins.current}
+
+                <span className="ml-0.5 text-xl font-normal text-primary/50">
+                  /{admins.limit}
+                </span>
+
+                <span className="ml-1 text-sm font-normal text-muted-foreground">
+                  Users
+                </span>
+              </>
+            )}
           </CardTitle>
+
           <CardAction>
-            <Badge variant="outline" className="gap-1">
+            <Badge
+              variant="outline"
+              className="gap-1"
+            >
               <Users className="size-3" />
               Seats
             </Badge>
           </CardAction>
         </CardHeader>
+
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium items-center">
-            Access Control Enabled <CheckCircle2 className="size-4 text-emerald-500" />
+          <div className="flex items-center gap-2 font-medium">
+            Access Control Enabled
+
+            <CheckCircle2 className="size-4 text-emerald-500" />
           </div>
+
           <div className="text-muted-foreground">
-            Maximum seat capacity allowed for team scale
+            {admins.unlimited
+              ? "Unlimited administrator seats."
+              : `${admins.remaining} seat(s) remaining.`}
           </div>
         </CardFooter>
       </Card>
 
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>AI Word Assistant</CardDescription>
+          <CardDescription>
+            AI Word Assistant
+          </CardDescription>
+
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {hasAI ? "Enabled" : "Disabled"}
+            {hasAI
+              ? "Enabled"
+              : "Disabled"}
           </CardTitle>
+
           <CardAction>
-            <Badge variant="outline" className={`gap-1 ${hasAI ? 'border-amber-500/20 bg-amber-500/5 text-amber-600' : ''}`}>
+            <Badge
+              variant="outline"
+              className={`gap-1 ${hasAI
+                ? "border-amber-500/20 bg-amber-500/5 text-amber-600"
+                : ""
+                }`}
+            >
               <Sparkles className="size-3" />
               AI Tools
             </Badge>
           </CardAction>
         </CardHeader>
+
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium items-center">
+          <div className="flex items-center gap-2 font-medium">
             {hasAI ? (
-              <>Smart Editing Active <CheckCircle2 className="size-4 text-emerald-500" /></>
+              <>
+                Smart Editing Active
+
+                <CheckCircle2 className="size-4 text-emerald-500" />
+              </>
             ) : (
-              <>Upgrade Required <ShieldAlert className="size-4 text-amber-500" /></>
+              <>
+                Upgrade Required
+
+                <ShieldAlert className="size-4 text-amber-500" />
+              </>
             )}
           </div>
+
           <div className="text-muted-foreground">
-            AI-powered document writing and context enhancement
+            AI-powered document writing and context enhancement.
           </div>
         </CardFooter>
       </Card>
-
     </div>
-  )
-}
-</file>
-
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/_components/site-header.tsx">
-import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/ui/sidebar"
-
-export function SiteHeader({ title }: { title: string }) {
-  return (
-    <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
-      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
-        <SidebarTrigger className="-ml-1" />
-        <Separator
-          orientation="vertical"
-          className="mx-2 data-[orientation=vertical]:h-8"
-        />
-        <h1 className="text-base font-medium">{title}</h1>
-      </div>
-    </header>
-  )
+  );
 }
 </file>
 
@@ -5117,45 +4198,6 @@ export default function PermissionsSelect({
 }
 </file>
 
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/members/invite/layout.tsx">
-import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
-import { hasAnyPermission } from "@/shared/lib/auth/requires/require-permission";
-import { requireUser } from "@/shared/lib/auth/requires/require-user";
-import { redirect } from "next/navigation";
-
-type AddTenantMemberType = {
-    children: React.ReactNode;
-    params: Promise<{
-        locale: string;
-        tenant_slug: string;
-    }>;
-};
-
-export default async function AddTenantMemberLayout({
-    params,
-    children,
-}: AddTenantMemberType) {
-    const { locale, tenant_slug } = await params;
-
-    const { user, supabase } = await requireUser(locale);
-
-    const membership = await requireMembership({
-        tenantSlug: tenant_slug,
-        userId: user.id,
-        supabase,
-        redirectTo: `/${locale}/workspaces?error=unauthorized`,
-    });
-
-    if (
-        !hasAnyPermission(membership, ["members.invite", "tenant.manage"])
-    ) {
-        redirect(`/${locale}/workspaces?error=unauthorized`);
-    }
-
-    return children;
-}
-</file>
-
 <file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/quickview/_components/go-live.tsx">
 'use client'
 import { Button } from '@/components/ui/button'
@@ -5190,57 +4232,814 @@ export default function GoLive() {
 }
 </file>
 
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/quickview/layout.tsx">
-import { ReactNode } from "react";
-import { redirect } from "next/navigation";
-import {
-  QueryClient,
-  dehydrate,
-  HydrationBoundary,
-} from "@tanstack/react-query";
-import { getSubscriptionByTenantID } from "@/shared/lib/supabase/services/subscriptions";
-import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
-import { requireUser } from "@/shared/lib/auth/requires/require-user";
+<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/danger-zone.tsx">
+"use client";
 
-type QuickViewLayoutProps = {
-  children: ReactNode;
-  params: Promise<{
-    locale: string;
-    tenant_slug: string;
-  }>;
+import { Skeleton } from "@/components/ui/skeleton";
+import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
+import { DeleteWorkspace } from "./delete-workspace";
+import { LeaveWorkspace } from "./leave-workspace";
+
+export function DangerZone() {
+    const {
+        permissions,
+        isLoading,
+    } = useTenant();
+
+    if (isLoading) {
+        return (
+            <Skeleton className="h-72 w-full rounded-xl" />
+        );
+    }
+
+    if (!permissions.canManageWorkspace) {
+        return null;
+    }
+
+    return (
+        <div className="space-y-6 rounded-xl border border-destructive/30 p-6">
+            <div>
+                <h2 className="text-xl font-semibold text-destructive">
+                    Danger Zone
+                </h2>
+
+                <p className="text-sm text-muted-foreground">
+                    These actions are permanent and should be used carefully.
+                </p>
+            </div>
+
+            <LeaveWorkspace />
+
+            {permissions.canDeleteWorkspace && (
+                <DeleteWorkspace />
+            )}
+        </div>
+    );
+}
+</file>
+
+<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/delete-workspace.tsx">
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+export function DeleteWorkspace() {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <div className="flex items-center justify-between rounded-lg border border-destructive/30 p-5">
+            <div>
+                <h3 className="font-semibold text-destructive">
+                    Delete Workspace
+                </h3>
+
+                <p className="text-sm text-muted-foreground">
+                    Permanently delete this workspace and all of its data. This action cannot be undone.
+                </p>
+            </div>
+
+            <AlertDialog
+                open={open}
+                onOpenChange={setOpen}
+            >
+                <AlertDialogTrigger asChild>
+                    <Button variant="destructive">
+                        Delete Workspace
+                    </Button>
+                </AlertDialogTrigger>
+
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            Delete Workspace?
+                        </AlertDialogTitle>
+
+                        <AlertDialogDescription>
+                            Workspace deletion is not implemented yet.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>
+                            Cancel
+                        </AlertDialogCancel>
+
+                        <AlertDialogAction>
+                            Continue
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </div>
+    );
+}
+</file>
+
+<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/general-settings-form.tsx">
+"use client";
+
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Tenant } from "@/shared/lib/schemas/tenants.schema";
+import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
+import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { createClient } from "@/shared/lib/supabase/client";
+import Image from "next/image";
+import { toast } from "sonner";
+import { uploadTenantLogoService } from "@/shared/lib/supabase/services/storage";
+
+type FormValues = {
+    name: string;
+    slug: string;
+    email: string;
+    phone: string;
+    country: string;
+    city: string;
+    address: string;
+    timezone: string;
+    logo: FileList;
+    primary_color: string;
 };
 
-export default async function QuickViewLayout({
-  children,
-  params,
-}: QuickViewLayoutProps) {
-  const { locale, tenant_slug } = await params;
+export async function uploadTenantLogo(
+    tenantId: string,
+    file: File
+) {
+    const supabase = createClient();
 
-  const queryClient = new QueryClient();
-
-  const { user, supabase } = await requireUser(locale);
-
-  const membership = await requireMembership({
-    tenantSlug: tenant_slug,
-    userId: user.id,
-    supabase,
-    redirectTo: `/${locale}/workspaces?error=unauthorized`,
-  });
-
-  await queryClient.prefetchQuery({
-    queryKey: ["subscriptions", membership.tenant_id],
-    queryFn: () =>
-      getSubscriptionByTenantID(
+    return uploadTenantLogoService({
         supabase,
-        membership.tenant_id
-      ),
-  });
+        tenantId,
+        file,
+    });
+}
 
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      {children}
-    </HydrationBoundary>
-  );
+export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
+    const { updateTenant, isUpdating } = useTenant();
+    const [preview, setPreview] = useState<string | null>(
+        tenant.logo_url || null
+    );
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<FormValues>({
+        defaultValues: {
+            name: tenant.name,
+            slug: tenant.slug,
+            email: tenant.email,
+            phone: tenant.phone ?? "",
+            country: tenant.country ?? "",
+            city: tenant.city ?? "",
+            address: tenant.address ?? "",
+            timezone: tenant.timezone ?? "Africa/Cairo",
+            primary_color: tenant.primary_color ?? "#000000",
+        },
+    });
+
+    const logoRegister = register("logo");
+
+    useEffect(() => {
+        return () => {
+            if (preview?.startsWith("blob:")) {
+                URL.revokeObjectURL(preview);
+            }
+        };
+    }, [preview]);
+
+
+    useEffect(() => {
+        reset({
+            name: tenant.name,
+            slug: tenant.slug,
+            email: tenant.email,
+            phone: tenant.phone ?? "",
+            country: tenant.country ?? "",
+            city: tenant.city ?? "",
+            address: tenant.address ?? "",
+            timezone: tenant.timezone ?? "Africa/Cairo",
+            primary_color: tenant.primary_color ?? "#000000",
+        });
+    }, [tenant, reset]);
+
+    async function onSubmit(values: FormValues) {
+        const file = values.logo?.[0];
+
+        let logo_url = tenant.logo_url;
+
+        if (file) {
+            const allowedTypes = [
+                "image/png",
+                "image/jpeg",
+                "image/jpg",
+                "image/webp",
+            ];
+
+            const maxSize = 2 * 1024 * 1024; // 2 MB
+
+            if (!allowedTypes.includes(file.type)) {
+                toast.error(
+                    "Only PNG, JPG, JPEG and WEBP images are allowed."
+                );
+                return;
+            }
+
+            if (file.size > maxSize) {
+                toast.error(
+                    "Image size must not exceed 2 MB."
+                );
+                return;
+            }
+
+            logo_url = await uploadTenantLogo(
+                tenant.id,
+                file
+            );
+        }
+
+        updateTenant({
+            name: values.name,
+            slug: values.slug,
+            email: values.email,
+            phone: values.phone,
+            country: values.country,
+            city: values.city,
+            address: values.address,
+            timezone: values.timezone,
+            primary_color: values.primary_color,
+            logo_url,
+        });
+    }
+
+    return (
+        <Card className="ring-0 border-0 shadow-none flex items-center">
+            <CardContent className="p-2 max-w-5xl w-full">
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className="space-y-6"
+                >
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Workspace Name</Label>
+                            <Input
+                                id="name"
+                                {...register("name")}
+                            />
+                            {errors.name && (
+                                <p className="text-sm text-destructive">
+                                    {errors.name.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="slug">Slug</Label>
+                            <Input
+                                id="slug"
+                                {...register("slug")}
+                            />
+                            {errors.slug && (
+                                <p className="text-sm text-destructive">
+                                    {errors.slug.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                {...register("email")}
+                            />
+                            {errors.email && (
+                                <p className="text-sm text-destructive">
+                                    {errors.email.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="phone">Phone</Label>
+                            <Input
+                                id="phone"
+                                {...register("phone")}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="country">Country</Label>
+                            <Input
+                                id="country"
+                                {...register("country")}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="city">City</Label>
+                            <Input
+                                id="city"
+                                {...register("city")}
+                            />
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                            <Label htmlFor="address">Address</Label>
+                            <Input
+                                id="address"
+                                {...register("address")}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="timezone">Timezone</Label>
+                            <Input
+                                id="timezone"
+                                {...register("timezone")}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="primary_color">
+                                Primary Color
+                            </Label>
+                            <Input
+                                id="primary_color"
+                                type="color"
+                                {...register("primary_color")}
+                            />
+                        </div>
+
+                        <div className="space-y-3 md:col-span-2">
+                            <Label>Workspace Logo</Label>
+
+                            <label
+                                htmlFor="logo"
+                                className="group flex cursor-pointer items-center gap-5 rounded-xl border-2 border-dashed border-muted-foreground/25 p-5 transition hover:border-primary hover:bg-muted/40"
+                            >
+                                <div className="relative h-24 w-24 overflow-hidden rounded-xl border bg-muted">
+                                    {preview ? (
+                                        <Image
+                                            src={preview}
+                                            alt="Workspace Logo"
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    ) : (
+                                        <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+                                            No Logo
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="flex-1">
+                                    <p className="font-medium">
+                                        Click to choose a logo
+                                    </p>
+
+                                    <p className="mt-1 text-sm text-muted-foreground">
+                                        PNG, JPG, WEBP • Max 5 MB
+                                    </p>
+
+                                    {preview?.startsWith("blob:") && (
+                                        <p className="mt-2 text-sm text-primary">
+                                            ✓ New image selected
+                                        </p>
+                                    )}
+                                </div>
+
+                                <Input
+                                    id="logo"
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    {...logoRegister}
+                                    onChange={(e) => {
+                                        logoRegister.onChange(e);
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+                                        setPreview(URL.createObjectURL(file));
+                                    }}
+                                />
+                            </label>
+                        </div>
+
+
+                    </div>
+
+                    <div className="flex justify-end">
+                        <Button
+                            type="submit"
+                            disabled={isUpdating}
+                        >
+                            {isUpdating ? "Saving..." : "Save Changes"}
+                        </Button>
+                    </div>
+                </form>
+            </CardContent>
+        </Card>
+    );
+}
+</file>
+
+<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/general-settings.tsx">
+"use client";
+
+import { useEffect } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
+import { GeneralSettingsForm } from "./general-settings-form";
+
+export function GeneralSettings() {
+    const {
+        tenant,
+        permissions,
+        isLoading,
+    } = useTenant();
+
+    useEffect(() => {
+        if (!isLoading && !permissions.canManageWorkspace) {
+            toast.error("You don't have permission to manage this workspace.");
+        }
+    }, [isLoading, permissions.canManageWorkspace]);
+
+    useEffect(() => {
+        if (!isLoading && !tenant) {
+            toast.error("Workspace not found.");
+        }
+    }, [isLoading, tenant]);
+
+    if (isLoading) {
+        return (
+            <div className="space-y-6">
+                <Skeleton className="h-10 w-64" />
+                <Skeleton className="h-96 w-full rounded-xl" />
+            </div>
+        );
+    }
+
+    if (!permissions.canManageWorkspace || !tenant) {
+        return null;
+    }
+
+    return <GeneralSettingsForm tenant={tenant} />;
+}
+</file>
+
+<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/leave-workspace.tsx">
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+export function LeaveWorkspace() {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <div className="flex items-center justify-between rounded-lg border p-5">
+            <div>
+                <h3 className="font-semibold">
+                    Leave Workspace
+                </h3>
+
+                <p className="text-sm text-muted-foreground">
+                    Leave this workspace. You can be invited again later.
+                </p>
+            </div>
+
+            <AlertDialog
+                open={open}
+                onOpenChange={setOpen}
+            >
+                <AlertDialogTrigger asChild>
+                    <Button variant="outline">
+                        Leave Workspace
+                    </Button>
+                </AlertDialogTrigger>
+
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            Leave Workspace?
+                        </AlertDialogTitle>
+
+                        <AlertDialogDescription>
+                            This feature is not implemented yet.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>
+                            Cancel
+                        </AlertDialogCancel>
+
+                        <AlertDialogAction>
+                            Continue
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </div>
+    );
+}
+</file>
+
+<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/localization-form.tsx">
+"use client";
+
+import { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Tenant } from "@/shared/lib/schemas/tenants.schema";
+import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
+import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+
+type Props = {
+    tenant: Tenant;
+};
+
+type FormValues = {
+    timezone: string;
+    country: string;
+    city: string;
+    address: string;
+};
+
+export function LocalizationForm({ tenant }: Props) {
+    const { updateTenant, isUpdating } = useTenant();
+
+    const {
+        register,
+        handleSubmit,
+        control,
+        reset,
+        formState: { errors },
+    } = useForm<FormValues>({
+        defaultValues: {
+            timezone: tenant.timezone ?? "Africa/Cairo",
+            country: tenant.country ?? "",
+            city: tenant.city ?? "",
+            address: tenant.address ?? "",
+        },
+    });
+
+    useEffect(() => {
+        reset({
+            timezone: tenant.timezone ?? "Africa/Cairo",
+            country: tenant.country ?? "",
+            city: tenant.city ?? "",
+            address: tenant.address ?? "",
+        });
+    }, [tenant, reset]);
+
+    function onSubmit(values: FormValues) {
+        updateTenant(values);
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Localization Settings</CardTitle>
+            </CardHeader>
+
+            <CardContent>
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className="space-y-6"
+                >
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label>Timezone</Label>
+
+                            <Controller
+                                control={control}
+                                name="timezone"
+                                render={({ field }) => (
+                                    <Select
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select timezone" />
+                                        </SelectTrigger>
+
+                                        <SelectContent>
+                                            <SelectItem value="Africa/Cairo">
+                                                Africa/Cairo
+                                            </SelectItem>
+
+                                            <SelectItem value="UTC">
+                                                UTC
+                                            </SelectItem>
+
+                                            <SelectItem value="Europe/London">
+                                                Europe/London
+                                            </SelectItem>
+
+                                            <SelectItem value="Europe/Paris">
+                                                Europe/Paris
+                                            </SelectItem>
+
+                                            <SelectItem value="Asia/Dubai">
+                                                Asia/Dubai
+                                            </SelectItem>
+
+                                            <SelectItem value="America/New_York">
+                                                America/New_York
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+
+                            {errors.timezone && (
+                                <p className="text-sm text-destructive">
+                                    {errors.timezone.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="country">
+                                Country
+                            </Label>
+
+                            <Input
+                                id="country"
+                                {...register("country")}
+                            />
+
+                            {errors.country && (
+                                <p className="text-sm text-destructive">
+                                    {errors.country.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="city">
+                                City
+                            </Label>
+
+                            <Input
+                                id="city"
+                                {...register("city")}
+                            />
+
+                            {errors.city && (
+                                <p className="text-sm text-destructive">
+                                    {errors.city.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                            <Label htmlFor="address">
+                                Address
+                            </Label>
+
+                            <Textarea
+                                id="address"
+                                rows={4}
+                                {...register("address")}
+                            />
+
+                            {errors.address && (
+                                <p className="text-sm text-destructive">
+                                    {errors.address.message}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                        <Button
+                            type="submit"
+                            disabled={isUpdating}
+                        >
+                            {isUpdating
+                                ? "Saving..."
+                                : "Save Location"}
+                        </Button>
+                    </div>
+                </form>
+            </CardContent>
+        </Card>
+    );
+}
+</file>
+
+<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/_components/localization-settings.tsx">
+"use client";
+
+import { useEffect } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
+import { LocalizationForm } from "./localization-form";
+
+export function LocalizationSettings() {
+    const {
+        tenant,
+        permissions,
+        isLoading,
+    } = useTenant();
+
+    useEffect(() => {
+        if (!isLoading && !permissions.canManageWorkspace) {
+            toast.error("You don't have permission to manage this workspace.");
+        }
+    }, [isLoading, permissions.canManageWorkspace]);
+
+    if (isLoading) {
+        return (
+            <div className="space-y-6">
+                <Skeleton className="h-96 w-full rounded-xl" />
+            </div>
+        );
+    }
+
+    if (!permissions.canManageWorkspace || !tenant) {
+        return null;
+    }
+
+    return <LocalizationForm tenant={tenant} />;
+}
+</file>
+
+<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/settings/page.tsx">
+import DashboardContainer from "@/shared/_components/dashboard-container";
+import { SiteHeader } from "../_components/site-header";
+import { Button } from "@/components/ui/button";
+import { GeneralSettings } from "./_components/general-settings";
+import { SidebarInset } from "@/components/ui/sidebar";
+import { Suspense } from "react";
+import { Dir } from "@/shared/_components/dirs";
+
+export default function TenantSettingsPage() {
+    return (
+        <>
+            <SidebarInset>
+                <SiteHeader
+                    title="Settings"
+                />
+                <Dir />
+
+                <div className="@container/main flex flex-1 flex-col gap-6 p-4 md:p-6">
+                    <DashboardContainer>
+                        <GeneralSettings />
+                    </DashboardContainer>
+                </div>
+            </SidebarInset>
+        </>
+    );
 }
 </file>
 
@@ -5410,7 +5209,7 @@ export default function FeatureAvailability({
 </file>
 
 <file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/subscription/_components/plan-limits.tsx">
-"use client"
+"use client";
 
 import {
     Card,
@@ -5418,33 +5217,49 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 
 import {
     Table,
     TableBody,
     TableCell,
     TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
-import type { SubscriptionCapabilities } from "@/shared/lib/auth/requires/require-subscription"
+import { useTenantUsage } from "@/shared/lib/hooks";
 
+export default function PlanLimits() {
+    const {
+        admins,
+        members,
+        storage,
+        isLoading,
+    } = useTenantUsage();
 
-type PlanLimitsProps = {
-    capabilities: SubscriptionCapabilities
-}
-
-
-export default function PlanLimits({
-    capabilities,
-}: PlanLimitsProps) {
+    if (isLoading) {
+        return null;
+    }
 
     const limits = [
         {
             name: "Administrators",
-            value: capabilities.limits.maxAdmins,
+            value: admins.unlimited
+                ? "Unlimited"
+                : admins.limit,
         },
-    ]
+        {
+            name: "Members",
+            value: members.unlimited
+                ? "Unlimited"
+                : members.limit,
+        },
+        {
+            name: "Storage",
+            value: storage.unlimited
+                ? "Unlimited"
+                : `${storage.limit} GB`,
+        },
+    ];
 
     return (
         <Card>
@@ -5454,7 +5269,8 @@ export default function PlanLimits({
                 </CardTitle>
 
                 <CardDescription>
-                    Current limits included with your subscription.
+                    Current limits included with your
+                    subscription.
                 </CardDescription>
             </CardHeader>
 
@@ -5476,7 +5292,7 @@ export default function PlanLimits({
                 </Table>
             </CardContent>
         </Card>
-    )
+    );
 }
 </file>
 
@@ -5489,19 +5305,25 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+
+import { LICENSE_MODELS } from "@/shared/config/licensing";
+import { useTenantUsage } from "@/shared/lib/hooks";
+
 import SubscriptionStatusBadge from "./subscription-status-badge";
 
 type SubscriptionOverviewProps = {
-    capabilities: any;
     subscription?: any;
-    isLoading: boolean;
 };
 
 export default function SubscriptionOverview({
-    capabilities,
     subscription,
-    isLoading,
 }: SubscriptionOverviewProps) {
+    const {
+        plan,
+        licenseType,
+        isLoading,
+    } = useTenantUsage();
+
     if (isLoading) {
         return (
             <Card>
@@ -5529,9 +5351,13 @@ export default function SubscriptionOverview({
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Subscription Overview</CardTitle>
+                <CardTitle>
+                    Subscription Overview
+                </CardTitle>
+
                 <CardDescription>
-                    Manage your current workspace subscription.
+                    Manage your current workspace
+                    subscription.
                 </CardDescription>
             </CardHeader>
 
@@ -5539,31 +5365,42 @@ export default function SubscriptionOverview({
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardDescription>Current Plan</CardDescription>
+                            <CardDescription>
+                                Current Plan
+                            </CardDescription>
+
                             <CardTitle>
-                                {capabilities?.planName ?? "-"}
+                                {plan}
                             </CardTitle>
                         </CardHeader>
                     </Card>
 
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardDescription>License Type</CardDescription>
+                            <CardDescription>
+                                License Type
+                            </CardDescription>
+
                             <CardTitle>
-                                {capabilities?.license?.label ?? "-"}
+                                {
+                                    LICENSE_MODELS[
+                                        licenseType
+                                    ].label
+                                }
                             </CardTitle>
                         </CardHeader>
                     </Card>
 
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardDescription>Status</CardDescription>
+                            <CardDescription>
+                                Status
+                            </CardDescription>
 
                             <SubscriptionStatusBadge
                                 status={
-                                    capabilities?.isActive
-                                        ? "ACTIVE"
-                                        : "EXPIRED"
+                                    subscription?.status ??
+                                    "UNKNOWN"
                                 }
                             />
                         </CardHeader>
@@ -5571,18 +5408,26 @@ export default function SubscriptionOverview({
 
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardDescription>Renewal Date</CardDescription>
+                            <CardDescription>
+                                Renewal Date
+                            </CardDescription>
+
                             <CardTitle>
-                                {subscription?.renewalDate ?? "-"}
+                                {subscription?.renewalDate ??
+                                    "-"}
                             </CardTitle>
                         </CardHeader>
                     </Card>
 
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardDescription>Billing Interval</CardDescription>
+                            <CardDescription>
+                                Billing Interval
+                            </CardDescription>
+
                             <CardTitle>
-                                {subscription?.billingInterval ?? "-"}
+                                {subscription?.billingInterval ??
+                                    "-"}
                             </CardTitle>
                         </CardHeader>
                     </Card>
@@ -5654,45 +5499,44 @@ export default function SubscriptionStatusBadge({
 </file>
 
 <file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/subscription/_components/usage-cards.tsx">
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { SubscriptionCapabilities } from "@/shared/lib/auth/requires/require-subscription"
-import { Membership } from "@/shared/lib/schemas/memberships.schema"
-import { Shield } from "lucide-react"
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
+import { Shield } from "lucide-react";
 
-type UsageCardsProps = {
-    capabilities: SubscriptionCapabilities;
-    memberships?: Membership[] | null;
-};
+import { useTenantUsage } from "@/shared/lib/hooks";
 
-export default function UsageCards({
-    capabilities,
-    memberships = [],
-}: UsageCardsProps) {
+export default function UsageCards() {
+    const {
+        admins,
+        isLoading,
+    } = useTenantUsage();
 
-    const adminsUsed = memberships?.length ?? 0;
-    const adminsMax = capabilities?.limits?.maxAdmins ?? 0
-
-    const adminsProgress =
-        adminsMax > 0
-            ? (adminsUsed / adminsMax) * 100
-            : 0
+    if (isLoading) {
+        return null;
+    }
 
     return (
         <section className="space-y-4">
             <div>
-                <h2 className="text-lg font-semibold">Usage</h2>
+                <h2 className="text-lg font-semibold">
+                    Usage
+                </h2>
+
                 <p className="text-sm text-muted-foreground">
-                    Monitor your current workspace limits.
+                    Monitor your current workspace
+                    limits.
                 </p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-
-                {/* Admins */}
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-sm font-medium">
@@ -5703,25 +5547,50 @@ export default function UsageCards({
                     </CardHeader>
 
                     <CardContent className="space-y-3">
-                        <div className="text-2xl font-bold">
-                            {adminsUsed}
-                            <span className="text-base font-normal text-muted-foreground">
-                                {" "}
-                                / {adminsMax}
-                            </span>
-                        </div>
+                        {admins.unlimited ? (
+                            <>
+                                <div className="text-2xl font-bold">
+                                    Unlimited
+                                </div>
 
-                        <Progress value={adminsProgress} />
+                                <p className="text-xs text-muted-foreground">
+                                    Your license has
+                                    unlimited administrator
+                                    accounts.
+                                </p>
+                            </>
+                        ) : (
+                            <>
+                                <div className="text-2xl font-bold">
+                                    {admins.current}
 
-                        <p className="text-xs text-muted-foreground">
-                            Admin accounts currently assigned.
-                        </p>
+                                    <span className="text-base font-normal text-muted-foreground">
+                                        {" "}
+                                        / {admins.limit}
+                                    </span>
+                                </div>
+
+                                <Progress
+                                    value={
+                                        admins.percent ?? 0
+                                    }
+                                />
+
+                                <p className="text-xs text-muted-foreground">
+                                    {admins.remaining}{" "}
+                                    administrator
+                                    {admins.remaining === 1
+                                        ? ""
+                                        : "s"}{" "}
+                                    remaining.
+                                </p>
+                            </>
+                        )}
                     </CardContent>
                 </Card>
-
             </div>
         </section>
-    )
+    );
 }
 </file>
 
@@ -6340,91 +6209,6 @@ export default function UsageCards({
         "reviewer": "Assign reviewer"
     }
 ]
-</file>
-
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/layout.tsx">
-"use server";
-
-import { ReactNode } from "react";
-import { redirect } from "next/navigation";
-import {
-    QueryClient,
-    dehydrate,
-    HydrationBoundary,
-} from "@tanstack/react-query";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "./dashboard/_components/app-sidebar";
-import { requireUser } from "@/shared/lib/auth/requires/require-user";
-import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
-import { hasPermission } from "@/shared/lib/auth/requires/require-permission";
-import { getMembershipsByTenantSlug } from "@/shared/lib/supabase/services/memberships/get-memberships-by-slug.service";
-
-interface TenantLayoutProps {
-    children: ReactNode;
-    params: Promise<{
-        locale: string;
-        tenant_slug: string;
-    }>;
-}
-
-export default async function TenantLayout({
-    children,
-    params,
-}: TenantLayoutProps) {
-    const { locale, tenant_slug } = await params;
-
-    const queryClient = new QueryClient();
-
-    const { user, supabase } = await requireUser(locale);
-
-    const membership = await requireMembership({
-        supabase,
-        tenantSlug: tenant_slug,
-        userId: user.id,
-        redirectTo: `/${locale}/workspaces?error=unauthorized`,
-    });
-    console.log("layout membership", membership);
-
-    console.log(
-        "dashboard.read",
-        hasPermission(membership, "dashboard.read")
-    );
-
-    if (!hasPermission(membership, "dashboard.read")) {
-        redirect(`/${locale}/workspaces?error=unauthorized`);
-    }
-
-    queryClient.setQueryData(
-        ["membership", tenant_slug, user.id],
-        membership
-    );
-
-    await queryClient.prefetchQuery({
-        queryKey: ["memberships", tenant_slug],
-        queryFn: () =>
-            getMembershipsByTenantSlug({
-                supabase,
-                tenantSlug: tenant_slug,
-            }),
-    });
-
-
-    return (
-        <HydrationBoundary state={dehydrate(queryClient)}>
-            <SidebarProvider
-                style={
-                    {
-                        "--sidebar-width": "calc(var(--spacing) * 72)",
-                        "--header-height": "calc(var(--spacing) * 12)",
-                    } as React.CSSProperties
-                }
-            >
-                <AppSidebar variant="inset" />
-                {children}
-            </SidebarProvider>
-        </HydrationBoundary>
-    );
-}
 </file>
 
 <file path="src/app/[locale]/(home)/home/page.tsx">
@@ -9569,115 +9353,6 @@ export function CreateWorkspaceCard() {
                 </div>
             </Button>
         </Link>
-    );
-}
-</file>
-
-<file path="src/app/[locale]/(main)/workspaces/_components/workspace-card.tsx">
-"use client";
-
-import { Badge } from "@/components/ui/badge";
-import {
-    Card,
-    CardAction,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Link } from "@/i18n/navigation";
-import Image from "next/image";
-
-interface WorkspaceCardProps {
-    title: string;
-    description?: string;
-    image: string;
-    role?: string;
-    href: string;
-}
-
-export function WorkspaceCard({
-    title,
-    description,
-    image,
-    role,
-    href,
-}: WorkspaceCardProps) {
-    return (
-        <Link href={href} className="block">
-            <Card className="group overflow-hidden pt-0 transition-all duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-xl">
-                <div className="relative aspect-video overflow-hidden">
-                    <Image
-                        src={image}
-                        alt={title}
-                        fill
-                        priority={false}
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover brightness-60 grayscale transition-all duration-300 group-hover:scale-105 group-hover:brightness-75 dark:brightness-40"
-                    />
-                    <div className="absolute inset-0 bg-black/30 transition-colors duration-300 group-hover:bg-black/20" />
-                </div>
-
-                <CardHeader className="space-y-3">
-                    {role && (
-                        <CardAction>
-                            <Badge variant="secondary">
-                                {role}
-                            </Badge>
-                        </CardAction>
-                    )}
-
-                    <CardTitle className="line-clamp-1">
-                        {title}
-                    </CardTitle>
-
-                    {description && (
-                        <CardDescription className="line-clamp-2">
-                            {description}
-                        </CardDescription>
-                    )}
-                </CardHeader>
-            </Card>
-        </Link>
-    );
-}
-</file>
-
-<file path="src/app/[locale]/(main)/workspaces/layout.tsx">
-// src/app/[locale]/(main)/workspaces
-import { redirect } from "next/navigation";
-
-import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
-import { getMembershipsByProfileId } from "@/shared/lib/supabase/services/auth/membership/get-memberships-by-profile-id.service";
-import { OnboardingProvider } from "@/shared/lib/providers/onboarding-provider";
-import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
-
-interface WorkSpacesLayoutProps {
-    children: React.ReactNode;
-    params: Promise<{
-        locale: string
-    }>
-}
-
-export default async function WorkSpacesLayout({
-    params,
-    children,
-}: WorkSpacesLayoutProps) {
-
-    const { locale } = await params
-    const supabase = await createSupabaseServerClient()
-
-    const user = await fetchUser(supabase);
-
-    if (!user) {
-        redirect(`/${locale}/login`);
-    }
-
-    const memberships = await getMembershipsByProfileId(supabase, user.id);
-
-    return (
-        <OnboardingProvider memberships={memberships}>
-            {children}
-        </OnboardingProvider>
     );
 }
 </file>
@@ -14572,7 +14247,7 @@ export default function DashboardContainer({
 export const licenseTypes = [
     "SUBSCRIPTION",
     "RESELLER",
-    "EXCLUSIVE"
+    "EXCLUSIVE",
 ] as const;
 
 export type LicenseType = (typeof licenseTypes)[number];
@@ -14583,17 +14258,28 @@ export const LICENSE_MODELS = {
         isExclusive: false,
         label: "Subscription",
     },
+
     RESELLER: {
         canBeResold: true,
         isExclusive: false,
         label: "Reseller Asset",
     },
+
     EXCLUSIVE: {
         canBeResold: false,
         isExclusive: true,
         label: "Exclusive Buyout",
-    }
+    },
 } as const;
+
+export function isUnlimitedLicense(
+    licenseType: LicenseType | null | undefined
+) {
+    return (
+        licenseType === "RESELLER" ||
+        licenseType === "EXCLUSIVE"
+    );
+}
 </file>
 
 <file path="src/shared/config/plans.ts">
@@ -14602,6 +14288,9 @@ export const LICENSE_MODELS = {
 export const PLAN_LIMITS = {
     STARTER: {
         maxAdmins: 1,
+        maxMembers: 100,
+        maxStorage: 5, // GB
+
         hasReports: false,
         hasWordAssistant: false,
         api: false,
@@ -14609,6 +14298,9 @@ export const PLAN_LIMITS = {
 
     PRO: {
         maxAdmins: 5,
+        maxMembers: 500,
+        maxStorage: 50, // GB
+
         hasReports: true,
         hasWordAssistant: true,
         api: true,
@@ -14616,6 +14308,9 @@ export const PLAN_LIMITS = {
 
     BUSINESS: {
         maxAdmins: 10,
+        maxMembers: 5000,
+        maxStorage: 500, // GB
+
         hasReports: true,
         hasWordAssistant: true,
         api: true,
@@ -14629,6 +14324,8 @@ export type FeatureKey =
     | "hasWordAssistant"
     | "api"
     | "maxAdmins"
+    | "maxMembers"
+    | "maxStorage";
 
 export function getPlanLimits(planName: string | null | undefined) {
     const normalizedPlan = (planName?.toUpperCase() || "STARTER") as PlanType;
@@ -16001,6 +15698,84 @@ export async function transferOwnershipAction(
 }
 </file>
 
+<file path="src/shared/lib/actions/tenants/update-tenant.action.ts">
+"use server";
+
+import { getTenantBySlug } from "@/shared/lib/supabase/services/tenants/get-tenant-by-slug.service";
+import { updateTenantService } from "@/shared/lib/supabase/services/tenants/update-tenant.service";
+import { requireMembership } from "../../auth/requires/require-membership";
+import { hasAnyPermission } from "../../auth/requires/require-permission";
+import { requireUser } from "../../auth/requires/require-user";
+import { UpdateTenant } from "../../schemas/tenants.schema";
+
+type UpdateTenantActionProps = {
+    tenantSlug: string;
+    locale: string;
+    data: UpdateTenant;
+};
+
+export async function updateTenantAction({
+    tenantSlug,
+    locale,
+    data,
+}: UpdateTenantActionProps) {
+    try {
+        const { user, supabase } = await requireUser(locale);
+
+        const tenant = await getTenantBySlug(tenantSlug);
+
+        if (!tenant) {
+            return {
+                success: false,
+                message: "Tenant not found.",
+            };
+        }
+
+        const membership = await requireMembership({
+            supabase,
+            tenantSlug,
+            userId: user.id,
+            redirectTo: `/${locale}/workspaces`,
+        });
+
+        const allowed = hasAnyPermission(membership, [
+            "tenant.manage",
+            "tenant.read",
+        ]);
+
+        if (!allowed) {
+            return {
+                success: false,
+                message: "Unauthorized.",
+            };
+        }
+
+        const updatedTenant = await updateTenantService({
+            supabase,
+            tenantId: tenant.id,
+            data,
+        });
+
+        return {
+            success: true,
+            message: "Tenant updated successfully.",
+            tenant: updatedTenant,
+        };
+    } catch (error) {
+        console.error("UPDATE TENANT ACTION ERROR");
+        console.error(error);
+
+        return {
+            success: false,
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Failed to update tenant.",
+        };
+    }
+}
+</file>
+
 <file path="src/shared/lib/api/developer/guards/require-api-access.ts">
 import { DeveloperApiErrorCodes } from "@/shared/lib/api/developer/errors";
 import { requireSubscription } from "@/shared/lib/auth/requires/require-subscription";
@@ -16658,26 +16433,6 @@ export type SubscriptionCapabilities = ReturnType<
 >;
 </file>
 
-<file path="src/shared/lib/auth/requires/require-user.ts">
-import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
-
-export async function requireUser(locale: string) {
-    const supabase = await createSupabaseServerClient();
-
-    const { data: { user }, } = await supabase.auth.getUser();
-
-    if (!user) {
-        redirect(`/${locale}/login`);
-    }
-
-    return {
-        supabase,
-        user,
-    };
-}
-</file>
-
 <file path="src/shared/lib/auth/auth-context.tsx">
 "use client";
 
@@ -16940,41 +16695,36 @@ export * from "./use-invitations"
 </file>
 
 <file path="src/shared/lib/hooks/invitations/use-invitations.ts">
-'use client'
+"use client";
 
 import {
     useMutation,
     useQuery,
     useQueryClient,
-} from '@tanstack/react-query'
-import { useParams } from 'next/navigation'
+} from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 
-import { createClient } from '@/shared/lib/supabase/client'
-
-import { getPendingInvitations } from '@/shared/lib/supabase/services/invitations/get-pending-invitations.service'
-
-import { cancelInvitationAction } from '@/shared/lib/actions/invitations/cancel-invitation.action'
-import { resendInvitationAction } from '@/shared/lib/actions/invitations/resend-invitation.action'
-import { useTenant } from '@/shared/lib/hooks'
-
+import { createClient } from "@/shared/lib/supabase/client";
+import { getPendingInvitations } from "@/shared/lib/supabase/services/invitations/get-pending-invitations.service";
+import { cancelInvitationAction } from "@/shared/lib/actions/invitations/cancel-invitation.action";
+import { resendInvitationAction } from "@/shared/lib/actions/invitations/resend-invitation.action";
+import { useTenant } from "@/shared/lib/hooks";
 
 export function useInvitations() {
     const { locale, tenant_slug } = useParams<{
-        locale: string
-        tenant_slug: string
-    }>()
+        locale: string;
+        tenant_slug: string;
+    }>();
 
-    const supabase = createClient()
-    const queryClient = useQueryClient()
+    const supabase = createClient();
+    const queryClient = useQueryClient();
 
-    const { membership } = useTenant()
-
+    const { membership } = useTenant();
 
     const invalidateInvitations = () =>
         queryClient.invalidateQueries({
-            queryKey: ['pending-invitations', tenant_slug],
-        })
-
+            queryKey: ["pending-invitations", tenant_slug],
+        });
 
     // Read pending invitations
     const {
@@ -16983,24 +16733,23 @@ export function useInvitations() {
         error,
         refetch,
     } = useQuery({
-        queryKey: ['pending-invitations', tenant_slug],
+        queryKey: ["pending-invitations", tenant_slug],
 
         queryFn: async () => {
-            const tenantId = membership?.tenant_id
+            const tenantId = membership?.tenant_id;
 
             if (!tenantId) {
-                throw new Error('Tenant not found')
+                throw new Error("Tenant not found");
             }
 
             return getPendingInvitations({
                 supabase,
                 tenantId,
-            })
+            });
         },
 
         enabled: !!tenant_slug && !!membership?.tenant_id,
-    })
-
+    });
 
     // Cancel invitation
     const cancelMutation = useMutation({
@@ -17009,24 +16758,23 @@ export function useInvitations() {
                 locale,
                 tenant_slug,
                 invitationId
-            )
+            );
 
             if (!result.success) {
-                throw new Error(result.code)
+                throw new Error(result.code);
             }
 
-            return result
+            return result;
         },
 
         onError: (error) => {
-            console.error('Cancel invitation error:', error)
+            console.error("Cancel invitation error:", error);
         },
 
         onSuccess: async () => {
-            await invalidateInvitations()
+            await invalidateInvitations();
         },
-    })
-
+    });
 
     // Resend invitation
     const resendMutation = useMutation({
@@ -17035,24 +16783,23 @@ export function useInvitations() {
                 locale,
                 tenant_slug,
                 invitationId
-            )
+            );
 
             if (!result.success) {
-                throw new Error(result.code)
+                throw new Error(result.code);
             }
 
-            return result
+            return result;
         },
 
         onError: (error) => {
-            console.error('Resend invitation error:', error)
+            console.error("Resend invitation error:", error);
         },
 
         onSuccess: async () => {
-            await invalidateInvitations()
+            await invalidateInvitations();
         },
-    })
-
+    });
 
     return {
         pendingInvitations,
@@ -17070,7 +16817,7 @@ export function useInvitations() {
         resendInvitation: resendMutation.mutate,
         resendInvitationAsync: resendMutation.mutateAsync,
         isResending: resendMutation.isPending,
-    }
+    };
 }
 </file>
 
@@ -17164,116 +16911,10 @@ export function useSubscription(tenantId?: string) {
 export * from "./use-system"
 </file>
 
-<file path="src/shared/lib/hooks/systems/use-system.ts">
-"use client";
-
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getPublicSystemsClient } from "../../supabase/services/systems";
-import { createSystemAction, deleteSystemAction, updateSystemAction } from "../../actions/developer/systems";
-import { SystemInsert, SystemUpdate } from "../../schemas/systems.schema";
-import { createClient } from "../../supabase/client";
-import { getCurrentSystems } from "../../supabase/services/systems/get-current-systems.service";
-import { getSystemAction } from "../../actions/developer/systems";
-
-export const SYSTEM_QUERY_KEYS = {
-    public: ["public-systems"] as const,
-    user: ["develop", "current-systems"] as const,
-    single: (id?: string) => ["develop", "system", id] as const,
-};
-
-export function useSystem(systemId?: string) {
-    const queryClient = useQueryClient();
-    const supabase = createClient();
-
-    const publicQuery = useQuery({
-        queryKey: SYSTEM_QUERY_KEYS.public,
-        queryFn: () => getPublicSystemsClient(supabase),
-        staleTime: 1000 * 60 * 10,
-        refetchOnWindowFocus: false,
-    });
-
-    const currentSystemsQuery = useQuery({
-        queryKey: SYSTEM_QUERY_KEYS.user,
-        queryFn: async () => {
-            const { data: { user }, error } = await supabase.auth.getUser();
-            if (error || !user) throw new Error("required user");
-
-            return getCurrentSystems(user.id, supabase);
-        },
-        staleTime: 1000 * 60 * 10,
-        refetchOnWindowFocus: false,
-    });
-
-    const singleSystemQuery = useQuery({
-        queryKey: SYSTEM_QUERY_KEYS.single(systemId),
-        queryFn: async () => {
-            if (!systemId) return null;
-            return getSystemAction(systemId, supabase);
-        },
-        enabled: !!systemId,
-        staleTime: 1000 * 60 * 10,
-        refetchOnWindowFocus: false,
-    });
-
-    // Mutations
-    const createMutation = useMutation({
-        mutationFn: async (data: SystemInsert) => createSystemAction(data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.public });
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.user });
-        },
-    });
-
-    const updateMutation = useMutation({
-        mutationFn: ({ id, data }: { id: string; data: SystemUpdate }) => updateSystemAction(id, data),
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.public });
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.user });
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.single(variables.id) });
-        },
-    });
-
-    const deleteMutation = useMutation({
-        mutationFn: (id: string) => deleteSystemAction(id),
-        onSuccess: (_, id) => {
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.public });
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.user });
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.single(id) });
-        },
-    });
-
-    return {
-        // Data
-        systems: publicQuery.data || [],
-        currentSystems: currentSystemsQuery.data || [],
-        system: singleSystemQuery.data || null,
-
-        // Loading & Error states
-        isLoading: publicQuery.isLoading || currentSystemsQuery.isLoading,
-        isSingleLoading: singleSystemQuery.isLoading,
-        error: publicQuery.error?.message || currentSystemsQuery.error?.message || singleSystemQuery.error?.message || null,
-
-        // Refresh functions
-        refreshPublic: publicQuery.refetch,
-        refreshCurrent: currentSystemsQuery.refetch,
-        refreshSingle: singleSystemQuery.refetch,
-
-        // Actions
-        createSystem: createMutation.mutateAsync,
-        isCreating: createMutation.isPending,
-
-        updateSystem: updateMutation.mutateAsync,
-        isUpdating: updateMutation.isPending,
-
-        deleteSystem: deleteMutation.mutateAsync,
-        isDeleting: deleteMutation.isPending,
-    };
-}
-</file>
-
 <file path="src/shared/lib/hooks/tenants/index.ts">
 export * from "./use-tenant"
 export * from "./use-tenant-limit"
+export * from "./use-tenant-usage";
 </file>
 
 <file path="src/shared/lib/hooks/tenants/use-tenant-limit.ts">
@@ -17293,161 +16934,6 @@ export function useTenantLimit(tenantId: string, featureKey: FeatureKey) {
         enabled: !!tenantId && !!featureKey,
         staleTime: 1000 * 60 * 5,
     })
-}
-</file>
-
-<file path="src/shared/lib/hooks/tenants/use-tenant.ts">
-"use client";
-
-import { useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
-import {
-    useMutation,
-    useQuery,
-    useQueryClient,
-} from "@tanstack/react-query";
-import { toast } from "sonner";
-import { createClient } from "@/shared/lib/supabase/client";
-import { useAuth } from "@/shared/lib/auth/auth-context";
-import { hasPermission } from "@/shared/lib/auth/requires/require-permission";
-import { getMembershipBySlug } from "@/shared/lib/supabase/services/memberships/get-membership.service";
-import { updateTenantAction } from "@/shared/lib/actions/tenants/update-tenant.action";
-import type { UpdateTenant } from "@/shared/lib/schemas/tenants.schema";
-
-export function useTenant() {
-    const router = useRouter();
-
-    const { tenant_slug, locale } = useParams<{
-        tenant_slug: string;
-        locale: string;
-    }>();
-
-    const queryClient = useQueryClient();
-
-    const { user, isLoading: authLoading } = useAuth();
-
-    const {
-        data: membership,
-        isLoading: membershipLoading,
-        error,
-        refetch,
-    } = useQuery({
-        queryKey: ["membership", tenant_slug, user?.id],
-        enabled: !!user && !!tenant_slug,
-        staleTime: 1000 * 60 * 5,
-        queryFn: async () => {
-            const supabase = createClient();
-
-            return getMembershipBySlug({
-                supabase,
-                userId: user!.id,
-                tenantSlug: tenant_slug,
-            });
-        },
-    });
-
-    const {
-        mutate: updateTenant,
-        mutateAsync: updateTenantAsync,
-        isPending: isUpdating,
-    } = useMutation({
-        mutationKey: ["tenant", tenant_slug, "update"],
-
-        mutationFn: (data: UpdateTenant) =>
-            updateTenantAction({
-                tenantSlug: tenant_slug,
-                locale,
-                data,
-            }),
-
-        onSuccess: async (result) => {
-            if (!result.success) {
-                toast.error(result.message);
-                return;
-            }
-
-            toast.success(result.message);
-
-            const newSlug = result.tenant?.slug;
-
-            if (newSlug && newSlug !== tenant_slug) {
-                queryClient.removeQueries({
-                    queryKey: ["membership", tenant_slug, user?.id],
-                });
-
-                router.replace(
-                    `/${locale}/${newSlug}/dashboard/settings`
-                );
-
-                router.refresh();
-
-                return;
-            }
-
-            await queryClient.invalidateQueries({
-                queryKey: ["membership", tenant_slug, user?.id],
-            });
-
-            router.refresh();
-        },
-
-        onError: (error) => {
-            console.error(error);
-            toast.error("Failed to update tenant.");
-        },
-    });
-
-    const role = useMemo(
-        () => membership?.role?.toUpperCase() ?? null,
-        [membership]
-    );
-
-    const permissions = useMemo(() => {
-        if (!membership) {
-            return {
-                canManageWorkspace: false,
-                canManageMembers: false,
-                canManageBilling: false,
-                canDeleteWorkspace: false,
-            };
-        }
-
-        return {
-            canManageWorkspace: hasPermission(
-                membership,
-                "tenant.manage"
-            ),
-            canManageMembers: hasPermission(
-                membership,
-                "members.manage"
-            ),
-            canManageBilling: hasPermission(
-                membership,
-                "billing.manage"
-            ),
-            canDeleteWorkspace: hasPermission(
-                membership,
-                "tenant.delete"
-            ),
-        };
-    }, [membership]);
-
-    return {
-        user,
-        tenant: membership?.tenant ?? null,
-        tenantId: membership?.tenant_id ?? null,
-        tenantSlug: membership?.tenant?.slug ?? null,
-        membership,
-        role,
-        permissions,
-        hasAccess: !!membership,
-        isLoading: authLoading || membershipLoading,
-        isUpdating,
-        error,
-        refetch,
-        updateTenant,
-        updateTenantAsync,
-    };
 }
 </file>
 
@@ -18178,92 +17664,6 @@ export type SystemInsert = z.infer<typeof systemInsertSchema>;
 export const systemUpdateSchema = systemInsertSchema.partial();
 
 export type SystemUpdate = z.infer<typeof systemUpdateSchema>;
-</file>
-
-<file path="src/shared/lib/schemas/tenants.schema.ts">
-import { z } from "zod";
-import { status } from "./public/shared";
-
-export const tenantSchema = z.object({
-    id: z.string().uuid("Invalid Tenant ID"),
-    system_id: z.string().uuid("Invalid System ID"),
-    subscription_id: z
-        .string()
-        .uuid("Invalid Subscription Id")
-        .nullable(),
-    owner_id: z.string().uuid("Invalid Owner ID"),
-    name: z
-        .string()
-        .min(3, "Tenant name must be at least 3 characters"),
-    slug: z
-        .string()
-        .min(3)
-        .regex(
-            /^[a-z0-9-]+$/,
-            "Slug can only contain lowercase letters, numbers and hyphens"
-        ),
-    subdomain: z
-        .string()
-        .min(3)
-        .regex(
-            /^[a-z0-9-]+$/,
-            "Subdomain can only contain lowercase letters, numbers and hyphens"
-        )
-        .nullable()
-        .optional(),
-    status: z.enum(status).default("PENDING"),
-    logo_url: z
-        .string()
-        .url("Invalid logo URL")
-        .nullable()
-        .optional(),
-    primary_color: z
-        .string()
-        .regex(
-            /^#([A-Fa-f0-9]{6})$/,
-            "Invalid hex color"
-        )
-        .nullable()
-        .optional(),
-    email: z.string().email("Invalid email address"),
-    phone: z
-        .string()
-        .min(10)
-        .nullable()
-        .optional(),
-    country: z
-        .string()
-        .nullable()
-        .optional(),
-    city: z
-        .string()
-        .nullable()
-        .optional(),
-    address: z
-        .string()
-        .nullable()
-        .optional(),
-    timezone: z.string(),
-    created_at: z.coerce.date(),
-    updated_at: z.coerce.date().optional(),
-});
-
-export type Tenant = z.infer<typeof tenantSchema>;
-
-export const updateTenantSchema = tenantSchema.pick({
-    name: true,
-    slug: true,
-    email: true,
-    phone: true,
-    country: true,
-    city: true,
-    address: true,
-    timezone: true,
-    logo_url: true,
-    primary_color: true,
-});
-
-export type UpdateTenant = z.infer<typeof updateTenantSchema>;
 </file>
 
 <file path="src/shared/lib/supabase/services/auth/membership/get-memberships-by-profile-id.service.ts">
@@ -19653,83 +19053,6 @@ export async function updateInvitationByToken(
 }
 </file>
 
-<file path="src/shared/lib/supabase/services/memberships/get-membership.service.ts">
-// src/shared/lib/supabase/services/memberships/get-membership.ts
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { z } from "zod";
-import { membershipSchema } from "@/shared/lib/schemas/memberships.schema";
-import { tenantSchema } from "@/shared/lib/schemas/tenants.schema";
-
-interface GetMembershipParams {
-    userId: string;
-    tenantSlug: string;
-    supabase: SupabaseClient;
-}
-
-const membershipWithTenantSchema = membershipSchema.extend({
-    tenant: tenantSchema.nullable().optional(),
-});
-
-export type MembershipWithTenant = z.infer<typeof membershipWithTenantSchema>;
-
-export async function getMembershipBySlug({
-    userId,
-    tenantSlug,
-    supabase,
-}: GetMembershipParams): Promise<MembershipWithTenant | null> {
-    const { data, error } = await supabase
-        .from("memberships")
-        .select(`
-            id,
-            profile_id,
-            tenant_id,
-            current_tenant_id,
-            role,
-            permissions,
-            status,
-            invited_by,
-            joined_at,
-            created_at,
-            updated_at,
-            tenant:tenants!inner(*)
-        `)
-        .eq("profile_id", userId)
-        .eq("tenants.slug", tenantSlug)
-        .maybeSingle();
-
-    if (error) {
-        console.error("Error fetching membership:", error);
-        throw error;
-    }
-
-    if (!data) {
-        return null;
-    }
-
-    const sanitizedData = {
-        ...data,
-        permissions: data.permissions ?? [],
-        tenant: Array.isArray(data.tenant)
-            ? data.tenant[0] ?? null
-            : data.tenant ?? null,
-    };
-
-    const parsed = membershipWithTenantSchema.safeParse(sanitizedData);
-
-    if (!parsed.success) {
-        console.log(JSON.stringify(sanitizedData.tenant, null, 2));
-        return null;
-    }
-    console.log({
-        tenantSlug,
-        userId,
-        membership: data,
-    });
-
-    return parsed.data;
-}
-</file>
-
 <file path="src/shared/lib/supabase/services/memberships/get-memberships-by-slug.service.ts">
 // src/shared/lib/supabase/services/memberships/get-membership-by-slug.service.ts
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -19912,6 +19235,102 @@ export async function transferOwnership({
     }
 
     return data;
+}
+</file>
+
+<file path="src/shared/lib/supabase/services/storage/delete-tenant-logo.service.ts">
+// src/shared/lib/supabase/services/storage/delete-tenant-logo.service.ts
+
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+type DeleteTenantLogoProps = {
+    supabase: SupabaseClient;
+    logoUrl: string;
+};
+
+export async function deleteTenantLogoService({
+    supabase,
+    logoUrl,
+}: DeleteTenantLogoProps) {
+    if (!logoUrl) return;
+
+    const marker = "/storage/v1/object/public/tenant-logos/";
+
+    const index = logoUrl.indexOf(marker);
+
+    if (index === -1) return;
+
+    const path = logoUrl.substring(index + marker.length);
+
+    const { error } = await supabase.storage
+        .from("tenant-logos")
+        .remove([path]);
+
+    if (error) {
+        throw error;
+    }
+}
+</file>
+
+<file path="src/shared/lib/supabase/services/storage/upload-tenant-logo.service.ts">
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+type UploadTenantLogoProps = {
+    supabase: SupabaseClient;
+    tenantId: string;
+    file: File;
+};
+
+export async function uploadTenantLogoService({
+    supabase,
+    tenantId,
+    file,
+}: UploadTenantLogoProps) {
+    const { data: files, error: listError } = await supabase.storage
+        .from("tenant-logos")
+        .list(tenantId);
+
+    if (listError) {
+        throw listError;
+    }
+
+    if (files && files.length > 0) {
+        const paths = files.map(
+            (file) => `${tenantId}/${file.name}`
+        );
+
+        const { error: deleteError } =
+            await supabase.storage
+                .from("tenant-logos")
+                .remove(paths);
+
+        if (deleteError) {
+            throw deleteError;
+        }
+    }
+
+    const extension = file.name.split(".").pop();
+
+    const path = `${tenantId}/logo.${extension}`;
+
+    const { error: uploadError } = await supabase.storage
+        .from("tenant-logos")
+        .upload(path, file, {
+            cacheControl: "3600",
+            upsert: true,
+        });
+
+    if (uploadError) {
+        throw uploadError;
+    }
+
+    const {
+        data: { publicUrl },
+    } = supabase.storage
+        .from("tenant-logos")
+        .getPublicUrl(path);
+
+    return publicUrl;
 }
 </file>
 
@@ -20219,81 +19638,30 @@ export async function updateSystem(
 }
 </file>
 
-<file path="src/shared/lib/supabase/services/tenants/create-tenant.service.ts">
-import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
+<file path="src/shared/lib/supabase/services/tenants/update-tenant.service.ts">
+import { UpdateTenant } from "@/shared/lib/schemas/tenants.schema";
+import { SupabaseClient } from "@supabase/supabase-js";
 
-interface CreateTenantParams {
-    userId: string;
-    systemId: string;
-    name: string;
-    slug: string;
-    email: string;
-}
+type UpdateTenantServiceProps = {
+    supabase: SupabaseClient;
+    tenantId: string;
+    data: UpdateTenant;
+};
 
-export async function createTenant({
-    userId,
-    systemId,
-    name,
-    slug,
-    email
-}: CreateTenantParams) {
-    const supabase = await createSupabaseServerClient();
-
-    const { data: existingTenant } = await supabase
+export async function updateTenantService({
+    supabase,
+    tenantId,
+    data,
+}: UpdateTenantServiceProps) {
+    const { data: tenant, error } = await supabase
         .from("tenants")
-        .select("id")
-        .eq("slug", slug)
-        .maybeSingle();
-
-    if (existingTenant) {
-        throw new Error("This URL is already taken, please choose another one.");
-    }
-
-    const { data: newTenant, error: tenantError } = await supabase
-        .from("tenants")
-        .insert([
-            {
-                name,
-                slug,
-                system_id: systemId,
-                owner_id: userId,
-                email: email,
-                status: "ACTIVE",
-                timezone: "Africa/Cairo"
-            }
-        ])
+        .update(data)
+        .eq("id", tenantId)
         .select()
         .single();
 
-    if (tenantError) {
-        console.error("Error creating tenant after payment:", tenantError);
-        throw tenantError;
-    }
-
-    return newTenant;
-}
-</file>
-
-<file path="src/shared/lib/supabase/services/tenants/get-tenant-by-slug.service.ts">
-import { createAdminClient } from "../../admin";
-
-export async function getTenantBySlug(
-    slug: string
-) {
-    const supabase = await createAdminClient();
-
-    const { data: tenant, error } = await supabase
-        .from("tenants")
-        .select("*")
-        .eq("slug", slug)
-        .single();
 
     if (error) {
-        if (error.code === "PGRST116") {
-            return null;
-        }
-
-        console.error("Error fetching tenant by slug:", error);
         throw error;
     }
 
@@ -20436,105 +19804,6 @@ export interface DeveloperContext {
         wordAssistant: boolean;
     };
 }
-</file>
-
-<file path="src/middleware.ts">
-import createMiddleware from "next-intl/middleware";
-import { routing } from "@/i18n/routing";
-
-import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
-
-const handleI18nRouting = createMiddleware(routing);
-
-export async function middleware(req: NextRequest) {
-    const pathname = req.nextUrl.pathname;
-
-    // 1. استخراج الـ locale من المسار
-    const locale = pathname.split("/")[1] || routing.defaultLocale;
-
-    // 2. حساب المسار النظيف (بدون الـ locale)
-    const cleanPath = pathname.replace(`/${locale}`, "");
-
-    // -------------------------------------------------------------
-    // 🔥 التعديل هنا: التوجيه التلقائي من المسار الرئيسي إلى /home
-    // -------------------------------------------------------------
-    if (cleanPath === "" || cleanPath === "/") {
-        return NextResponse.redirect(
-            new URL(`/${locale}/home`, req.url)
-        );
-    }
-
-    let response = handleI18nRouting(req);
-
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                getAll() {
-                    return req.cookies.getAll();
-                },
-
-                setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value }) =>
-                        req.cookies.set(name, value)
-                    );
-
-                    response = NextResponse.next({
-                        request: req,
-                    });
-
-                    cookiesToSet.forEach(
-                        ({ name, value, options }) =>
-                            response.cookies.set(
-                                name,
-                                value,
-                                options
-                            )
-                    );
-                },
-            },
-        }
-    );
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    const isAuth =
-        cleanPath.startsWith("/login") ||
-        cleanPath.startsWith("/register");
-
-    const isPublic =
-        cleanPath.startsWith("/home") ||
-        isAuth ||
-        cleanPath.startsWith("/workspaces") ||
-        cleanPath.startsWith("/invitations/accept") ||
-        cleanPath.startsWith("/select-workspace");
-
-    if (!isPublic && !user) {
-        return NextResponse.redirect(
-            new URL(`/${locale}/login`, req.url)
-        );
-    }
-
-    if (isAuth && user) {
-        return NextResponse.redirect(
-            new URL(`/${locale}/workspaces`, req.url)
-        );
-    }
-
-    return response;
-}
-
-export const config = {
-    matcher: [
-        "/",
-        "/(ar|en)/:path*",
-        "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
-    ],
-};
 </file>
 
 <file path="supabase/.gitignore">
@@ -21169,6 +20438,242 @@ Ordered roughly by leverage (biggest risk/payoff first):
 *This document reflects a point-in-time read of the codebase. Re-verify specifics (file paths, whether a given stub still exists) before relying on this for planning — code moves faster than docs.*
 </file>
 
+<file path="src/app/[locale]/(dashboard)/(system)/developer/layout.tsx">
+'use server';
+
+import { requireUser } from "@/shared/lib/auth/requires/require-user";
+import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
+import { getCurrentSystems } from "@/shared/lib/supabase/services/systems/get-current-systems.service";
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import { redirect } from "next/navigation";
+
+interface SystemLayoutProps {
+    children: React.ReactNode;
+    params: Promise<{
+        locale: string;
+    }>;
+}
+
+export default async function SystemLayout({
+    children,
+    params,
+}: SystemLayoutProps) {
+    const { locale } = await params;
+    const { user, supabase } = await requireUser(locale)
+
+    if (!user) { redirect(`/${locale}/login`); }
+    const queryClient = new QueryClient();
+
+    await queryClient.fetchQuery({
+        queryKey: ["develop", "current-systems"],
+        queryFn: () => getCurrentSystems(user.id, supabase),
+    });
+    return (
+        <HydrationBoundary state={dehydrate(queryClient)}>
+            {children}
+        </HydrationBoundary>
+    );
+}
+</file>
+
+<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/_components/app-sidebar.tsx">
+"use client"
+
+import * as React from "react"
+import {
+    IconCamera,
+    IconDatabase,
+    IconFileAi,
+    IconFileDescription,
+    IconFileWord,
+    IconHelp,
+    IconInnerShadowTop,
+    IconListDetails,
+    IconPill,
+    IconReport,
+    IconSettings,
+    IconUsers,
+} from "@tabler/icons-react"
+
+import { NavDocuments } from "./nav-documents"
+import { NavSecondary } from "./nav-secondary"
+import { NavUser } from "./nav-user"
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+} from "@/components/ui/sidebar"
+import { useAuth } from "@/shared/lib/auth/auth-context"
+import { NavMain } from "./nav-main"
+import { Link } from "@/i18n/navigation"
+import brandConfig from "../../../../../../../../public/data.json"
+
+// mock data
+const data = {
+    user: {
+        name: "shad",
+        email: "m@example.com",
+        avatar: "/avatars/shadcn.jpg",
+    },
+    navMain: [
+        {
+            title: "Quick view",
+            url: "quickview",
+            icon: IconListDetails,
+        },
+        {
+            title: "subscription",
+            url: "subscription",
+            icon: IconPill,
+        },
+        {
+            title: "Members",
+            url: "members",
+            icon: IconUsers,
+        },
+        {
+            title: "Settings",
+            url: "settings",
+            icon: IconSettings,
+        }
+    ],
+    navClouds: [
+        {
+            title: "Capture",
+            icon: IconCamera,
+            isActive: true,
+            url: "#",
+            items: [
+                {
+                    title: "Active Proposals",
+                    url: "#",
+                },
+                {
+                    title: "Archived",
+                    url: "/members",
+                },
+            ],
+        },
+        {
+            title: "Proposal",
+            icon: IconFileDescription,
+            url: "#",
+            items: [
+                {
+                    title: "Active Proposals",
+                    url: "#",
+                },
+                {
+                    title: "Archived",
+                    url: "#",
+                },
+            ],
+        },
+        {
+            title: "Prompts",
+            icon: IconFileAi,
+            url: "#",
+            items: [
+                {
+                    title: "Active Proposals",
+                    url: "#",
+                },
+                {
+                    title: "Archived",
+                    url: "#",
+                },
+            ],
+        },
+    ],
+    navSecondary: [
+        {
+            title: "Settings",
+            url: "/settings/profile",
+            icon: IconSettings,
+        },
+        {
+            title: "Get Help",
+            url: "#",
+            icon: IconHelp,
+        }
+    ],
+    documents: [
+        {
+            name: "Data Library",
+            url: "#",
+            icon: IconDatabase,
+        },
+        {
+            name: "Reports",
+            url: "#",
+            icon: IconReport,
+        },
+        {
+            name: "Word Assistant",
+            url: "#",
+            icon: IconFileWord,
+        },
+    ],
+}
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+    const { user } = useAuth()
+
+    return (
+        <Sidebar collapsible="offcanvas" {...props}>
+            <SidebarHeader>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            asChild
+                            className="data-[slot=sidebar-menu-button]:p-1.5!"
+                        >
+                            <Link href="#">
+                                <IconInnerShadowTop className="size-5!" />
+                                <span className="text-base font-semibold">{brandConfig.brand}</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarHeader>
+            <SidebarContent>
+                <NavMain items={data.navMain} />
+                <NavDocuments items={data.documents} />
+                <NavSecondary items={data.navSecondary} className="mt-auto" />
+            </SidebarContent>
+            <SidebarFooter>
+                <NavUser user={user} />
+            </SidebarFooter>
+        </Sidebar>
+    )
+}
+</file>
+
+<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/_components/site-header.tsx">
+import { Separator } from "@/components/ui/separator"
+import { SidebarTrigger } from "@/components/ui/sidebar"
+
+export function SiteHeader({ title }: { title: string }) {
+  return (
+    <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+        <SidebarTrigger className="-ml-1" />
+        <Separator
+          orientation="vertical"
+          className="mx-2 data-[orientation=vertical]:h-8"
+        />
+        <h1 className="text-base font-medium">{title}</h1>
+      </div>
+    </header>
+  )
+}
+</file>
+
 <file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/members/invite/_components/role-select.tsx">
 'use client'
 
@@ -21237,6 +20742,44 @@ export function RoleSelect<T extends FieldValues>({
             </SelectContent>
         </Select>
     )
+}
+</file>
+
+<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/members/invite/layout.tsx">
+import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
+import { hasAnyPermission, hasPermission } from "@/shared/lib/auth/requires/require-permission";
+import { requireUser } from "@/shared/lib/auth/requires/require-user";
+import { redirect } from "next/navigation";
+
+type AddTenantMemberType = {
+    children: React.ReactNode;
+    params: Promise<{
+        locale: string;
+        tenant_slug: string;
+    }>;
+};
+
+export default async function AddTenantMemberLayout({
+    params,
+    children,
+}: AddTenantMemberType) {
+    const { locale, tenant_slug } = await params;
+
+    const { user, supabase } = await requireUser(locale);
+
+    const membership = await requireMembership({
+        tenantSlug: tenant_slug,
+        userId: user.id,
+        supabase,
+        redirectTo: `/${locale}/workspaces?error=unauthorized`,
+    });
+    if (
+        !hasAnyPermission(membership, ["members.invite", "tenant.manage"])
+    ) {
+        redirect(`/${locale}/workspaces?error=unauthorized`);
+    }
+
+    return children;
 }
 </file>
 
@@ -21309,6 +20852,7 @@ import {
     Shield,
     Users,
 } from "lucide-react";
+
 import {
     Card,
     CardContent,
@@ -21316,11 +20860,9 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { useSubscription } from "@/shared/lib/hooks";
 
-type QuickViewCardProps = {
-    tenantId: string;
-};
+import { LICENSE_MODELS } from "@/shared/config/licensing";
+import { useTenantUsage } from "@/shared/lib/hooks";
 
 function FeatureItem({
     icon: Icon,
@@ -21337,13 +20879,14 @@ function FeatureItem({
     );
 }
 
-export function QuickViewCard({
-    tenantId,
-}: QuickViewCardProps) {
+export function QuickViewCard() {
     const {
-        capabilities,
+        plan,
+        licenseType,
+        admins,
+        features,
         isLoading,
-    } = useSubscription(tenantId);
+    } = useTenantUsage();
 
     if (isLoading) {
         return (
@@ -21360,9 +20903,7 @@ export function QuickViewCard({
         );
     }
 
-    if (!capabilities) {
-        return null;
-    }
+    const license = LICENSE_MODELS[licenseType];
 
     return (
         <Card>
@@ -21373,25 +20914,22 @@ export function QuickViewCard({
                             License & Subscription Details
                         </CardTitle>
 
-                        {capabilities.isActive && (
-                            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-                        )}
+                        <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
                     </div>
 
                     <CardDescription>
-                        Manage your workspace limits and
-                        active plan capabilities.
+                        Manage your workspace limits and active plan capabilities.
                     </CardDescription>
                 </div>
 
                 <div className="flex items-center gap-2">
                     <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-                        {capabilities.planName}
+                        {plan}
                     </span>
 
                     <span className="flex items-center gap-1 rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">
                         <Shield className="h-3.5 w-3.5" />
-                        {capabilities.license.label}
+                        {license.label}
                     </span>
                 </div>
             </CardHeader>
@@ -21407,55 +20945,46 @@ export function QuickViewCard({
                             </p>
 
                             <p className="text-sm font-semibold">
-                                {capabilities.limits.maxAdmins}{" "}
-                                Administrator
-                                {capabilities.limits.maxAdmins >
-                                    1
-                                    ? "s"
-                                    : ""}
+                                {admins.unlimited ? (
+                                    "Unlimited"
+                                ) : (
+                                    `${admins.limit!} Administrator${admins.limit! > 1 ? "s" : ""}`
+                                )}
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div className="space-y-3"> 
+                <div className="space-y-3">
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                         Active Workspace Features
                     </p>
 
                     <ul className="grid gap-2.5 text-sm">
-                        {capabilities.limits.hasReports && (
-                            <FeatureItem
-                                icon={CheckCircle2}
-                            >
-                                Advanced reporting and
-                                interactive performance
+                        {features.reports && (
+                            <FeatureItem icon={CheckCircle2}>
+                                Advanced reporting and interactive performance
                                 dashboards
                             </FeatureItem>
                         )}
 
-                        {capabilities.limits
-                            .hasWordAssistant && (
-                                <FeatureItem
-                                    icon={CheckCircle2}
-                                >
-                                    AI-powered Word Assistant
-                                    and smart editing toolkit
-                                </FeatureItem>
-                            )}
+                        {features.wordAssistant && (
+                            <FeatureItem icon={CheckCircle2}>
+                                AI-powered Word Assistant and smart editing
+                                toolkit
+                            </FeatureItem>
+                        )}
 
-                        {capabilities.license
-                            .isExclusive && (
-                                <li className="flex items-center gap-2 font-medium text-amber-600 dark:text-amber-400">
-                                    <Flame className="h-4 w-4 shrink-0" />
+                        {license.isExclusive && (
+                            <li className="flex items-center gap-2 font-medium text-amber-600 dark:text-amber-400">
+                                <Flame className="h-4 w-4 shrink-0" />
 
-                                    <span>
-                                        Lifetime exclusive
-                                        ownership (No recurring
-                                        fees)
-                                    </span>
-                                </li>
-                            )}
+                                <span>
+                                    Lifetime exclusive ownership (No recurring
+                                    fees)
+                                </span>
+                            </li>
+                        )}
                     </ul>
                 </div>
             </CardContent>
@@ -21464,52 +20993,59 @@ export function QuickViewCard({
 }
 </file>
 
-<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/quickview/page.tsx">
-// src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/quickview
-"use client";
+<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/quickview/layout.tsx">
+import { ReactNode, cache } from "react";
+import {
+  QueryClient,
+  dehydrate,
+  HydrationBoundary,
+} from "@tanstack/react-query";
 
-import { Suspense } from "react";
-import { SidebarInset } from "@/components/ui/sidebar";
-import { Dir } from "@/shared/_components/dirs";
-import { SiteHeader } from "../_components/site-header";
-import { SectionCards } from "../_components/section-cards";
-import GoLive from "./_components/go-live";
-import { QuickViewCard } from "./_components/quick-view-card";
-import { useTenant } from "@/shared/lib/hooks";
+import { getSubscriptionByTenantID } from "@/shared/lib/supabase/services/subscriptions";
+import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
+import { requireUser } from "@/shared/lib/auth/requires/require-user";
 
-export default function Page() {
-    const { tenantId, isLoading } = useTenant();
+type QuickViewLayoutProps = {
+  children: ReactNode;
+  params: Promise<{
+    locale: string;
+    tenant_slug: string;
+  }>;
+};
 
-    if (isLoading) {
-        return (
-            <SidebarInset>
-                <div className="flex h-full items-center justify-center">
-                    Loading...
-                </div>
-            </SidebarInset>
-        );
-    }
+const getCachedMembership = cache(requireMembership);
 
-    if (!tenantId) {
-        return null;
-    }
+export default async function QuickViewLayout({
+  children,
+  params,
+}: QuickViewLayoutProps) {
+  const { locale, tenant_slug } = await params;
 
-    return (
-        <SidebarInset>
-            <SiteHeader title="Quick view" />
+  const queryClient = new QueryClient();
 
-            <Dir />
+  const { user, supabase } = await requireUser(locale);
 
-            <Suspense fallback={null}>
-                <GoLive />
-            </Suspense>
+  const membership = await getCachedMembership({
+    tenantSlug: tenant_slug,
+    userId: user.id,
+    supabase,
+    redirectTo: `/${locale}/workspaces?error=unauthorized`,
+  });
 
-            <div className="@container/main flex flex-1 flex-col gap-6 p-4 md:p-6">
-                <SectionCards tenantId={tenantId} />
-                <QuickViewCard tenantId={tenantId} />
-            </div>
-        </SidebarInset>
-    );
+  await queryClient.prefetchQuery({
+    queryKey: ["subscriptions", membership.tenant_id],
+    queryFn: () =>
+      getSubscriptionByTenantID(
+        supabase,
+        membership.tenant_id
+      ),
+  });
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      {children}
+    </HydrationBoundary>
+  );
 }
 </file>
 
@@ -21522,14 +21058,18 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import { Dir } from "@/shared/_components/dirs";
 import DashboardContainer from "@/shared/_components/dashboard-container";
 
-
 import { SiteHeader } from "../_components/site-header";
+
 import SubscriptionOverview from "./_components/subscription-overview";
 import UsageCards from "./_components/usage-cards";
 import PlanLimits from "./_components/plan-limits";
 import BillingSummary from "./_components/billing-summary";
-import { useMemberships, useTenant } from "@/shared/lib/hooks";
-import { useSubscription } from "@/shared/lib/hooks";
+
+import {
+    useSubscription,
+    useTenant,
+    useTenantUsage,
+} from "@/shared/lib/hooks";
 
 function SubscriptionSkeleton() {
     return (
@@ -21592,16 +21132,15 @@ function SubscriptionSkeleton() {
 }
 
 export default function SubscriptionPage() {
-    const { memberships } = useMemberships();
-    const { membership } = useTenant();
-
-    const tenantId = membership?.tenant_id;
+    const { tenantId } = useTenant();
+    const { subscription, isLoading: subscriptionLoading } = useSubscription(tenantId ?? undefined);
 
     const {
-        subscription,
-        capabilities,
-        isLoading,
-    } = useSubscription(tenantId);
+        isLoading: usageLoading,
+    } = useTenantUsage();
+
+    const isLoading =
+        subscriptionLoading || usageLoading;
 
     if (isLoading) {
         return (
@@ -21616,7 +21155,7 @@ export default function SubscriptionPage() {
         );
     }
 
-    if (!subscription || !capabilities) {
+    if (!subscription) {
         return null;
     }
 
@@ -21628,22 +21167,94 @@ export default function SubscriptionPage() {
             <DashboardContainer className="space-y-5">
                 <SubscriptionOverview
                     subscription={subscription}
-                    capabilities={capabilities}
-                    isLoading={false}
                 />
 
-                <UsageCards
-                    capabilities={capabilities}
-                    memberships={memberships}
-                />
+                <UsageCards />
 
-                <PlanLimits
-                    capabilities={capabilities}
-                />
+                <PlanLimits />
 
                 <BillingSummary />
             </DashboardContainer>
         </SidebarInset>
+    );
+}
+</file>
+
+<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/layout.tsx">
+"use server";
+
+import { ReactNode } from "react";
+import { redirect } from "next/navigation";
+import {
+    QueryClient,
+    dehydrate,
+    HydrationBoundary,
+} from "@tanstack/react-query";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "./dashboard/_components/app-sidebar";
+import { requireUser } from "@/shared/lib/auth/requires/require-user";
+import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
+import { hasPermission } from "@/shared/lib/auth/requires/require-permission";
+import { getMembershipsByTenantSlug } from "@/shared/lib/supabase/services/memberships/get-memberships-by-slug.service";
+
+interface TenantLayoutProps {
+    children: ReactNode;
+    params: Promise<{
+        locale: string;
+        tenant_slug: string;
+    }>;
+}
+
+export default async function TenantLayout({
+    children,
+    params,
+}: TenantLayoutProps) {
+    const { locale, tenant_slug } = await params;
+
+    const queryClient = new QueryClient();
+
+    const { user, supabase } = await requireUser(locale);
+
+    const membership = await requireMembership({
+        supabase,
+        tenantSlug: tenant_slug,
+        userId: user.id,
+        redirectTo: `/${locale}/workspaces?error=unauthorized`,
+    });
+
+    if (!hasPermission(membership, "dashboard.read")) {
+        redirect(`/${locale}/workspaces?error=unauthorized`);
+    }
+
+    queryClient.setQueryData(
+        ["membership", tenant_slug, user.id],
+        membership
+    );
+
+    await queryClient.prefetchQuery({
+        queryKey: ["memberships", tenant_slug],
+        queryFn: () =>
+            getMembershipsByTenantSlug({
+                supabase,
+                tenantSlug: tenant_slug,
+            }),
+    });
+
+
+    return (
+        <HydrationBoundary state={dehydrate(queryClient)}>
+            <SidebarProvider
+                style={
+                    {
+                        "--sidebar-width": "calc(var(--spacing) * 72)",
+                        "--header-height": "calc(var(--spacing) * 12)",
+                    } as React.CSSProperties
+                }
+            >
+                <AppSidebar variant="inset" />
+                {children}
+            </SidebarProvider>
+        </HydrationBoundary>
     );
 }
 </file>
@@ -21727,6 +21338,113 @@ export default function Page() {
                 </div>
             )}
         </>
+    );
+}
+</file>
+
+<file path="src/app/[locale]/(main)/workspaces/_components/workspace-card.tsx">
+"use client";
+
+import { Badge } from "@/components/ui/badge";
+import {
+    Card,
+    CardAction,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import Image from "next/image";
+
+interface WorkspaceCardProps {
+    title: string;
+    description?: string;
+    image: string;
+    role?: string;
+    href: string;
+}
+
+export function WorkspaceCard({
+    title,
+    description,
+    image,
+    role,
+    href,
+}: WorkspaceCardProps) {
+    return (
+        <Link href={href} className="block">
+            <Card className="group overflow-hidden pt-0 transition-all duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-xl">
+                <div className="relative aspect-video overflow-hidden">
+                    <Image
+                        src={image || "/logo.svg"}
+                        alt={title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover brightness-60 grayscale transition-all duration-300 group-hover:scale-105 group-hover:brightness-75 dark:brightness-40"
+                    />
+                    <div className="absolute inset-0 bg-black/30 transition-colors duration-300 group-hover:bg-black/20" />
+                </div>
+
+                <CardHeader className="space-y-3">
+                    {role && (
+                        <CardAction>
+                            <Badge variant="secondary">
+                                {role}
+                            </Badge>
+                        </CardAction>
+                    )}
+
+                    <CardTitle className="line-clamp-1">
+                        {title}
+                    </CardTitle>
+
+                    {description && (
+                        <CardDescription className="line-clamp-2">
+                            {description}
+                        </CardDescription>
+                    )}
+                </CardHeader>
+            </Card>
+        </Link>
+    );
+}
+</file>
+
+<file path="src/app/[locale]/(main)/workspaces/layout.tsx">
+// src/app/[locale]/(main)/workspaces
+import { redirect } from "next/navigation";
+
+import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
+import { getMembershipsByProfileId } from "@/shared/lib/supabase/services/auth/membership/get-memberships-by-profile-id.service";
+import { OnboardingProvider } from "@/shared/lib/providers/onboarding-provider";
+import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
+import { requireUser } from "@/shared/lib/auth/requires/require-user";
+
+interface WorkSpacesLayoutProps {
+    children: React.ReactNode;
+    params: Promise<{
+        locale: string
+    }>
+}
+
+export default async function WorkSpacesLayout({
+    params,
+    children,
+}: WorkSpacesLayoutProps) {
+
+    const { locale } = await params
+    const { user, supabase } = await requireUser(locale)
+
+    if (!user) {
+        redirect(`/${locale}/login`);
+    }
+
+    const memberships = await getMembershipsByProfileId(supabase, user.id);
+
+    return (
+        <OnboardingProvider memberships={memberships}>
+            {children}
+        </OnboardingProvider>
     );
 }
 </file>
@@ -22072,6 +21790,26 @@ export default function RootLayout({
 }
 </file>
 
+<file path="src/shared/lib/auth/requires/require-user.ts">
+import { redirect } from "next/navigation";
+import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
+
+export async function requireUser(locale: string) {
+    const supabase = await createSupabaseServerClient();
+
+    const { data: { user }, } = await supabase.auth.getUser();
+
+    if (!user) {
+        redirect(`/${locale}/login`);
+    }
+
+    return {
+        supabase,
+        user,
+    };
+}
+</file>
+
 <file path="src/shared/lib/hooks/memberships/use-memberships.ts">
 "use client";
 
@@ -22178,6 +21916,267 @@ export function useMemberships() {
 }
 </file>
 
+<file path="src/shared/lib/hooks/systems/use-system.ts">
+"use client";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getPublicSystemsClient } from "../../supabase/services/systems";
+import { createSystemAction, deleteSystemAction, updateSystemAction } from "../../actions/developer/systems";
+import { SystemInsert, SystemUpdate } from "../../schemas/systems.schema";
+import { createClient } from "../../supabase/client";
+import { getCurrentSystems } from "../../supabase/services/systems/get-current-systems.service";
+import { getSystemAction } from "../../actions/developer/systems";
+import { requireUser } from "../../auth/requires/require-user";
+
+export const SYSTEM_QUERY_KEYS = {
+    public: ["public-systems"] as const,
+    user: ["develop", "current-systems"] as const,
+    single: (id?: string) => ["develop", "system", id] as const,
+};
+
+export function useSystem(systemId?: string) {
+    const queryClient = useQueryClient();
+    const supabase = createClient();
+
+    const publicQuery = useQuery({
+        queryKey: SYSTEM_QUERY_KEYS.public,
+        queryFn: () => getPublicSystemsClient(supabase),
+        staleTime: 1000 * 60 * 10,
+        refetchOnWindowFocus: false,
+    });
+
+    const currentSystemsQuery = useQuery({
+        queryKey: SYSTEM_QUERY_KEYS.user,
+        queryFn: async () => {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            if (error || !user) throw new Error("required user");
+
+            return getCurrentSystems(user.id, supabase);
+        },
+        staleTime: 1000 * 60 * 10,
+        refetchOnWindowFocus: false,
+    });
+
+    const singleSystemQuery = useQuery({
+        queryKey: SYSTEM_QUERY_KEYS.single(systemId),
+        queryFn: async () => {
+            if (!systemId) return null;
+            return getSystemAction(systemId, supabase);
+        },
+        enabled: !!systemId,
+        staleTime: 1000 * 60 * 10,
+        refetchOnWindowFocus: false,
+    });
+
+    // Mutations
+    const createMutation = useMutation({
+        mutationFn: async (data: SystemInsert) => createSystemAction(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.public });
+            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.user });
+        },
+    });
+
+    const updateMutation = useMutation({
+        mutationFn: ({ id, data }: { id: string; data: SystemUpdate }) => updateSystemAction(id, data),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.public });
+            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.user });
+            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.single(variables.id) });
+        },
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: (id: string) => deleteSystemAction(id),
+        onSuccess: (_, id) => {
+            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.public });
+            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.user });
+            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.single(id) });
+        },
+    });
+
+    return {
+        // Data
+        systems: publicQuery.data || [],
+        currentSystems: currentSystemsQuery.data || [],
+        system: singleSystemQuery.data || null,
+
+        // Loading & Error states
+        isLoading: publicQuery.isLoading || currentSystemsQuery.isLoading,
+        isSingleLoading: singleSystemQuery.isLoading,
+        error: publicQuery.error?.message || currentSystemsQuery.error?.message || singleSystemQuery.error?.message || null,
+
+        // Refresh functions
+        refreshPublic: publicQuery.refetch,
+        refreshCurrent: currentSystemsQuery.refetch,
+        refreshSingle: singleSystemQuery.refetch,
+
+        // Actions
+        createSystem: createMutation.mutateAsync,
+        isCreating: createMutation.isPending,
+
+        updateSystem: updateMutation.mutateAsync,
+        isUpdating: updateMutation.isPending,
+
+        deleteSystem: deleteMutation.mutateAsync,
+        isDeleting: deleteMutation.isPending,
+    };
+}
+</file>
+
+<file path="src/shared/lib/hooks/tenants/use-tenant.ts">
+"use client";
+
+import { useMemo } from "react";
+import { useParams, useRouter } from "next/navigation";
+import {
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from "@tanstack/react-query";
+import { toast } from "sonner";
+import { createClient } from "@/shared/lib/supabase/client";
+import { useAuth } from "@/shared/lib/auth/auth-context";
+import { hasPermission } from "@/shared/lib/auth/requires/require-permission";
+import { getMembershipBySlug } from "@/shared/lib/supabase/services/memberships/get-membership.service";
+import { updateTenantAction } from "@/shared/lib/actions/tenants/update-tenant.action";
+import type { UpdateTenant } from "@/shared/lib/schemas/tenants.schema";
+
+export function useTenant() {
+    const router = useRouter();
+
+    const { tenant_slug, locale } = useParams<{
+        tenant_slug: string;
+        locale: string;
+    }>();
+
+    const queryClient = useQueryClient();
+
+    const { user, isLoading: authLoading } = useAuth();
+
+    const {
+        data: membership,
+        isLoading: membershipLoading,
+        error,
+        refetch,
+    } = useQuery({
+        queryKey: ["membership", tenant_slug, user?.id],
+        enabled: !!user && !!tenant_slug,
+        staleTime: 1000 * 60 * 5,
+        queryFn: async () => {
+            const supabase = createClient();
+
+            return getMembershipBySlug({
+                supabase,
+                userId: user!.id,
+                tenantSlug: tenant_slug,
+            });
+        },
+    });
+
+    const {
+        mutate: updateTenant,
+        mutateAsync: updateTenantAsync,
+        isPending: isUpdating,
+    } = useMutation({
+        mutationKey: ["tenant", tenant_slug, "update"],
+
+        mutationFn: (data: UpdateTenant) =>
+            updateTenantAction({
+                tenantSlug: tenant_slug,
+                locale,
+                data,
+            }),
+
+        onSuccess: async (result) => {
+            if (!result.success) {
+                toast.error(result.message);
+                return;
+            }
+
+            toast.success(result.message);
+
+            const newSlug = result.tenant?.slug;
+
+            if (newSlug && newSlug !== tenant_slug) {
+                queryClient.removeQueries({
+                    queryKey: ["membership", tenant_slug, user?.id],
+                });
+
+                router.replace(
+                    `/${locale}/${newSlug}/dashboard/settings`
+                );
+
+                return;
+            }
+
+            await queryClient.invalidateQueries({
+                queryKey: ["membership", tenant_slug, user?.id],
+            });
+
+            router.refresh();
+        },
+
+        onError: (error) => {
+            console.error(error);
+            toast.error("Failed to update tenant.");
+        },
+    });
+
+    const role = useMemo(
+        () => membership?.role?.toUpperCase() ?? null,
+        [membership]
+    );
+
+    const permissions = useMemo(() => {
+        if (!membership) {
+            return {
+                canManageWorkspace: false,
+                canManageMembers: false,
+                canManageBilling: false,
+                canDeleteWorkspace: false,
+            };
+        }
+
+        return {
+            canManageWorkspace: hasPermission(
+                membership,
+                "tenant.manage"
+            ),
+            canManageMembers: hasPermission(
+                membership,
+                "members.manage"
+            ),
+            canManageBilling: hasPermission(
+                membership,
+                "billing.manage"
+            ),
+            canDeleteWorkspace: hasPermission(
+                membership,
+                "tenant.delete"
+            ),
+        };
+    }, [membership]);
+
+    return {
+        user,
+        tenant: membership?.tenant ?? null,
+        tenantId: membership?.tenant_id ?? null,
+        tenantSlug: membership?.tenant?.slug ?? null,
+        membership,
+        role,
+        permissions,
+        hasAccess: !!membership,
+        isLoading: authLoading || membershipLoading,
+        isUpdating,
+        error,
+        refetch,
+        updateTenant,
+        updateTenantAsync,
+    };
+}
+</file>
+
 <file path="src/shared/lib/schemas/public/permissions.ts">
 export const permissions = [
     "tenants.manage",
@@ -22266,6 +22265,358 @@ export const rolePermissions: Record<
 
     MEMBER: [
         "tenant.read",
+    ],
+};
+</file>
+
+<file path="src/shared/lib/schemas/tenants.schema.ts">
+import { z } from "zod";
+import { status } from "./public/shared";
+
+export const tenantSchema = z.object({
+    id: z.string().uuid("Invalid Tenant ID"),
+    system_id: z.string().uuid("Invalid System ID"),
+    subscription_id: z
+        .string()
+        .uuid("Invalid Subscription Id")
+        .nullable(),
+    owner_id: z.string().uuid("Invalid Owner ID"),
+    name: z
+        .string()
+        .min(3, "Tenant name must be at least 3 characters"),
+    slug: z
+        .string()
+        .min(3)
+        .regex(
+            /^[a-z0-9-]+$/,
+            "Slug can only contain lowercase letters, numbers and hyphens"
+        ),
+    subdomain: z
+        .string()
+        .min(3)
+        .regex(
+            /^[a-z0-9-]+$/,
+            "Subdomain can only contain lowercase letters, numbers and hyphens"
+        )
+        .nullable()
+        .optional(),
+    status: z.enum(status).default("PENDING"),
+    logo_url: z.preprocess(
+        (value) => (value === "" ? null : value),
+        z.string().url("Invalid logo URL").nullable().optional()
+    ),
+    primary_color: z
+        .string()
+        .regex(
+            /^#([A-Fa-f0-9]{6})$/,
+            "Invalid hex color"
+        )
+        .nullable()
+        .optional(),
+    email: z.string().email("Invalid email address"),
+    phone: z
+        .string()
+        .min(10)
+        .nullable()
+        .optional(),
+    country: z
+        .string()
+        .nullable()
+        .optional(),
+    city: z
+        .string()
+        .nullable()
+        .optional(),
+    address: z
+        .string()
+        .nullable()
+        .optional(),
+    timezone: z.string(),
+    created_at: z.coerce.date(),
+    updated_at: z.coerce.date().optional(),
+});
+
+export type Tenant = z.infer<typeof tenantSchema>;
+
+export const updateTenantSchema = tenantSchema.pick({
+    name: true,
+    slug: true,
+    email: true,
+    phone: true,
+    country: true,
+    city: true,
+    address: true,
+    timezone: true,
+    logo_url: true,
+    primary_color: true,
+});
+
+export type UpdateTenant = z.infer<typeof updateTenantSchema>;
+</file>
+
+<file path="src/shared/lib/supabase/services/memberships/get-membership.service.ts">
+// src/shared/lib/supabase/services/memberships/get-membership.service.ts
+
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { z } from "zod";
+import { membershipSchema } from "@/shared/lib/schemas/memberships.schema";
+import { tenantSchema } from "@/shared/lib/schemas/tenants.schema";
+
+interface GetMembershipParams {
+    userId: string;
+    tenantSlug: string;
+    supabase: SupabaseClient;
+}
+
+const membershipWithTenantSchema = membershipSchema.extend({
+    tenant: tenantSchema.nullable().optional(),
+});
+
+export type MembershipWithTenant = z.infer<
+    typeof membershipWithTenantSchema
+>;
+
+export async function getMembershipBySlug({
+    userId,
+    tenantSlug,
+    supabase,
+}: GetMembershipParams): Promise<MembershipWithTenant | null> {
+    const { data, error } = await supabase
+        .from("memberships")
+        .select(`
+            id,
+            profile_id,
+            tenant_id,
+            current_tenant_id,
+            role,
+            permissions,
+            status,
+            invited_by,
+            joined_at,
+            created_at,
+            updated_at,
+            tenant:tenants!inner(*)
+        `)
+        .eq("profile_id", userId)
+        .eq("tenants.slug", tenantSlug)
+        .maybeSingle();
+
+    if (error) {
+        console.error("[Membership] Supabase Error:", error);
+        throw error;
+    }
+
+    if (!data) {
+        console.warn("[Membership] Membership not found.", {
+            userId,
+            tenantSlug,
+        });
+
+        return null;
+    }
+
+    const sanitizedData = {
+        ...data,
+        permissions: data.permissions ?? [],
+        tenant: Array.isArray(data.tenant)
+            ? data.tenant[0] ?? null
+            : data.tenant ?? null,
+    };
+
+    const parsed =
+        membershipWithTenantSchema.safeParse(sanitizedData);
+
+    if (!parsed.success) {
+        console.error(
+            "[Membership] Zod validation failed."
+        );
+
+        console.error(
+            "Validation Errors:",
+            parsed.error.flatten()
+        );
+
+        throw new Error(
+            "Membership validation failed. Check server logs for details."
+        );
+    }
+
+    return parsed.data;
+}
+</file>
+
+<file path="src/shared/lib/supabase/services/tenants/create-tenant.service.ts">
+import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
+
+interface CreateTenantParams {
+    userId: string;
+    systemId: string;
+    name: string;
+    slug: string;
+    email: string;
+}
+
+export async function createTenant({
+    userId,
+    systemId,
+    name,
+    slug,
+    email
+}: CreateTenantParams) {
+    const supabase = await createSupabaseServerClient();
+
+    const { data: existingTenant } = await supabase
+        .from("tenants")
+        .select("id")
+        .eq("slug", slug)
+        .maybeSingle();
+
+    if (existingTenant) {
+        throw new Error("This URL is already taken, please choose another one.");
+    }
+
+    const { data: newTenant, error: tenantError } = await supabase
+        .from("tenants")
+        .insert([
+            {
+                name,
+                slug,
+                system_id: systemId,
+                owner_id: userId,
+                email: email,
+                status: "ACTIVE",
+                timezone: "Africa/Cairo"
+            }
+        ])
+        .select()
+        .single();
+
+    if (tenantError) {
+        console.error("Error creating tenant after payment:", tenantError);
+        throw tenantError;
+    }
+
+    return newTenant;
+}
+</file>
+
+<file path="src/shared/lib/supabase/services/tenants/get-tenant-by-slug.service.ts">
+import { createAdminClient } from "../../admin";
+
+export async function getTenantBySlug(
+    slug: string
+) {
+    const supabase = await createAdminClient();
+
+    const { data: tenant, error } = await supabase
+        .from("tenants")
+        .select("*")
+        .eq("slug", slug)
+        .single();
+
+    if (error) {
+        if (error.code === "PGRST116") {
+            return null;
+        }
+
+        console.error("Error fetching tenant by slug:", error);
+        throw error;
+    }
+
+    return tenant;
+}
+</file>
+
+<file path="src/middleware.ts">
+import createMiddleware from "next-intl/middleware";
+import { routing } from "@/i18n/routing";
+
+import { NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+
+const handleI18nRouting = createMiddleware(routing);
+
+export async function middleware(req: NextRequest) {
+    const pathname = req.nextUrl.pathname;
+
+    const locale = pathname.split("/")[1] || routing.defaultLocale;
+
+    const cleanPath = pathname.replace(`/${locale}`, "");
+
+    if (cleanPath === "" || cleanPath === "/") {
+        return NextResponse.redirect(
+            new URL(`/${locale}/home`, req.url)
+        );
+    }
+
+    let response = handleI18nRouting(req);
+
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                getAll() {
+                    return req.cookies.getAll();
+                },
+
+                setAll(cookiesToSet) {
+                    cookiesToSet.forEach(({ name, value }) =>
+                        req.cookies.set(name, value)
+                    );
+
+                    response = NextResponse.next({
+                        request: req,
+                    });
+
+                    cookiesToSet.forEach(
+                        ({ name, value, options }) =>
+                            response.cookies.set(
+                                name,
+                                value,
+                                options
+                            )
+                    );
+                },
+            },
+        }
+    );
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    const isAuth =
+        cleanPath.startsWith("/login") ||
+        cleanPath.startsWith("/register");
+
+    const isPublic =
+        cleanPath.startsWith("/home") ||
+        isAuth ||
+        cleanPath.startsWith("/workspaces") ||
+        cleanPath.startsWith("/invitations/accept") ||
+        cleanPath.startsWith("/select-workspace");
+
+    if (!isPublic && !user) {
+        return NextResponse.redirect(
+            new URL(`/${locale}/login`, req.url)
+        );
+    }
+
+    if (isAuth && user) {
+        return NextResponse.redirect(
+            new URL(`/${locale}/workspaces`, req.url)
+        );
+    }
+
+    return response;
+}
+
+export const config = {
+    matcher: [
+        "/",
+        "/(ar|en)/:path*",
+        "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
     ],
 };
 </file>
@@ -22546,6 +22897,55 @@ export default withNextIntl(nextConfig);
     "**/*.mts"
 , "src/i18n/request.ts"  ],
   "exclude": ["node_modules"]
+}
+</file>
+
+<file path="src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/quickview/page.tsx">
+// src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]/dashboard/quickview
+"use client";
+
+import { Suspense } from "react";
+import { SidebarInset } from "@/components/ui/sidebar";
+import { Dir } from "@/shared/_components/dirs";
+import { SiteHeader } from "../_components/site-header";
+import { SectionCards } from "../_components/section-cards";
+import GoLive from "./_components/go-live";
+import { QuickViewCard } from "./_components/quick-view-card";
+import { useTenant } from "@/shared/lib/hooks";
+
+export default function Page() {
+    const { tenantId, isLoading } = useTenant();
+
+    if (isLoading) {
+        return (
+            <SidebarInset>
+                <div className="flex h-full items-center justify-center">
+                    Loading...
+                </div>
+            </SidebarInset>
+        );
+    }
+
+    if (!tenantId) {
+        return null;
+    }
+
+    return (
+        <SidebarInset>
+            <SiteHeader title="Quick view" />
+
+            <Dir />
+
+            <Suspense fallback={null}>
+                <GoLive />
+            </Suspense>
+
+            <div className="@container/main flex flex-1 flex-col gap-6 p-4 md:p-6">
+                <SectionCards />
+                <QuickViewCard />
+            </div>
+        </SidebarInset>
+    );
 }
 </file>
 
