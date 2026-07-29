@@ -1,22 +1,43 @@
-'use server'
+"use server";
 
-import { SystemInsert } from "@/shared/lib/schemas/systems.schema";
+import {
+    CreateSystemInput,
+    SystemInsert,
+    systemInsertSchema,
+} from "@/shared/lib/schemas/systems.schema";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
 import { createSystem } from "@/shared/lib/supabase/services/systems";
+import { createApiKey } from "@/shared/lib/supabase/services/developer/api-keys";
 
-export async function createSystemAction(data: SystemInsert) {
+export async function createSystemAction(
+    data: CreateSystemInput
+) {
     const supabase = await createSupabaseServerClient();
+
     const user = await fetchUser(supabase);
 
     if (!user) {
-        throw new Error("system error: required user");
+        throw new Error("Authentication required.");
     }
 
-    const payload: SystemInsert = {
-        ...data,
-        owner_id: user.id,
-    };
+    const payload: SystemInsert =
+        systemInsertSchema.parse({
+            ...data,
+            owner_id: user.id,
+        });
 
-    return await createSystem(payload);
+    const system = await createSystem(payload);
+
+    const apiKey = await createApiKey({
+        system_id: system.id,
+        name: "Default API Key",
+        is_active: true,
+        expires_at: null,
+    });
+
+    return {
+        system,
+        apiKey,
+    };
 }

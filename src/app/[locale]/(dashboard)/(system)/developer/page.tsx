@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { useSystem } from "@/shared/lib/hooks";
 import { Loader2, Plus, Terminal } from "lucide-react";
@@ -52,6 +53,12 @@ export default function Page() {
                     ))}
                 </div>
             )}
+            <Link href="/developer/add">
+                <Button>
+                    <Plus className="mr-2 h-4 w-4" />
+                    New System
+                </Button>
+            </Link>
         </div>
     );
 }

@@ -1,13 +1,13 @@
 import React from "react";
-import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
-import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
-import { SupabaseClient } from "@supabase/supabase-js";
 import { redirect, notFound } from "next/navigation";
 import { fetchProfile } from "@/shared/lib/supabase/services/auth/profile/fetch-profile.service";
 import { getSystemAction } from "@/shared/lib/actions/developer/systems";
 import { System } from "@/shared/lib/schemas/systems.schema";
 import { QueryClient, HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { SYSTEM_QUERY_KEYS } from "@/shared/lib/hooks/systems/use-system";
+import { requireUser } from "@/shared/lib/auth/requires/require-user";
+import Navbar from "@/app/[locale]/(main)/_components/navbar";
+import { Dir } from "@/shared/_components/dirs";
 
 interface SystemDetailLayoutProps {
     children: React.ReactNode;
@@ -22,9 +22,7 @@ export default async function SystemDetailLayout({
     params,
 }: SystemDetailLayoutProps) {
     const { locale, system_id } = await params;
-    const supabase: SupabaseClient = await createSupabaseServerClient();
-
-    const user = await fetchUser(supabase);
+    const { user, supabase } = await requireUser(locale);
 
     if (!user) {
         redirect(`/${locale}/login`);
@@ -43,19 +41,20 @@ export default async function SystemDetailLayout({
     }
 
     if (system.owner_id !== user.id) {
-        redirect(`/${locale}/developer`);
+        redirect(`/${locale}/developer?error=unauthorized`);
     }
 
     const queryClient = new QueryClient();
 
     await queryClient.fetchQuery({
-        queryKey: ["develop", "system", system_id],
+        queryKey: SYSTEM_QUERY_KEYS.single(system_id),
         queryFn: async () => system,
     });
 
-    // 3. تمرير الكاش المجهز للكلاينت عبر HydrationBoundary
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
+            <Navbar />
+            <Dir />
             {children}
         </HydrationBoundary>
     );

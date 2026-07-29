@@ -1,4 +1,7 @@
+"use server";
+
 import { hashApiKey } from "@/lib/utils/developer/hash-api-key";
+
 import {
     getApiKeyByHash,
     updateApiKeyLastUsed,
@@ -10,21 +13,18 @@ export async function verifyApiKeyAction(
     if (!apiKey) {
         throw new Error("API Key is required");
     }
-
     const hash = hashApiKey(apiKey);
     const record = await getApiKeyByHash(hash);
-
     if (!record) {
         throw new Error("Invalid API Key");
     }
-
     if (!record.is_active) {
         throw new Error("API Key is disabled");
     }
 
     if (
         record.expires_at &&
-        record.expires_at < new Date()
+        new Date(record.expires_at) < new Date()
     ) {
         throw new Error("API Key has expired");
     }

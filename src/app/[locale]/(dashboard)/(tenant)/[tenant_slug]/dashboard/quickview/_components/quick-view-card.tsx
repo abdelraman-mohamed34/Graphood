@@ -35,6 +35,7 @@ function FeatureItem({
 }
 
 export function QuickViewCard() {
+
     const {
         plan,
         licenseType,

@@ -9,7 +9,7 @@ export async function getApiKeyByHash(
 
     const { data: record, error } = await supabase
         .from("developer_api_keys")
-        .select("*")
+        .select()
         .eq("key_hash", hash)
         .single();
 

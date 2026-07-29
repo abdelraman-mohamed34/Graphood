@@ -1,5 +1,5 @@
 import { DeveloperApiKey } from "@/shared/lib/schemas/developer/api-keys";
-import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
+import { createSupabaseServerClient } from "../../../server";
 
 export async function getApiKeyBySystemId(
     systemId: string
@@ -16,7 +16,6 @@ export async function getApiKeyBySystemId(
         });
 
     if (error) {
-        console.error("Error fetching system API keys:", error);
         throw error;
     }
 

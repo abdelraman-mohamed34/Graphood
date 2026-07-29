@@ -1,20 +1,34 @@
+"use server";
+
+import { getSystemAction } from "@/shared/lib/actions/developer/systems";
 import { getApiKeyBySystemId } from "@/shared/lib/supabase/services/developer/api-keys";
+import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
+import { decryptApiKey } from "@/lib/utils/developer/decrypt-api-key";
 
 export async function listApiKeysAction(
     systemId: string
 ) {
-    // TODO:
-    // التحقق من صلاحيات المستخدم (Owner/Admin)
+    const supabase = await createSupabaseServerClient();
 
-    const apiKeys =
-        await getApiKeyBySystemId(systemId);
+    await getSystemAction(systemId, supabase);
+    const apiKeys = await getApiKeyBySystemId(systemId);
 
     return apiKeys.map((apiKey) => ({
         id: apiKey.id,
         name: apiKey.name,
+        apiKey: decryptApiKey(apiKey.encrypted_key),
         isActive: apiKey.is_active,
-        lastUsedAt: apiKey.last_used_at,
-        expiresAt: apiKey.expires_at,
-        createdAt: apiKey.created_at,
+        lastUsedAt: apiKey.last_used_at
+            ? new Date(apiKey.last_used_at).toISOString()
+            : null,
+        expiresAt: apiKey.expires_at
+            ? new Date(apiKey.expires_at).toISOString()
+            : null,
+        createdAt: new Date(
+            apiKey.created_at
+        ).toISOString(),
+        updatedAt: new Date(
+            apiKey.updated_at
+        ).toISOString(),
     }));
 }

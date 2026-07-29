@@ -1,7 +1,6 @@
 'use server';
 
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
-import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { getCurrentSystems } from "@/shared/lib/supabase/services/systems/get-current-systems.service";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { redirect } from "next/navigation";

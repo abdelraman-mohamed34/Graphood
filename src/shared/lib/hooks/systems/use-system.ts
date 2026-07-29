@@ -1,13 +1,28 @@
-"use client";
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getPublicSystemsClient } from "../../supabase/services/systems";
-import { createSystemAction, deleteSystemAction, updateSystemAction } from "../../actions/developer/systems";
-import { SystemInsert, SystemUpdate } from "../../schemas/systems.schema";
+
+
+import {
+    deleteSystemAction,
+    updateSystemAction,
+    getSystemAction,
+    createSystemAction,
+} from "../../actions/developer/systems";
+
+import {
+    CreateSystemInput,
+    System,
+    SystemUpdate,
+} from "../../schemas/systems.schema";
+
 import { createClient } from "../../supabase/client";
-import { getCurrentSystems } from "../../supabase/services/systems/get-current-systems.service";
-import { getSystemAction } from "../../actions/developer/systems";
-import { requireUser } from "../../auth/requires/require-user";
+
+import {
+    getPublicSystemsClient,
+} from "../../supabase/services/systems";
+
+import {
+    getCurrentSystems,
+} from "../../supabase/services/systems/get-current-systems.service";
 
 export const SYSTEM_QUERY_KEYS = {
     public: ["public-systems"] as const,
@@ -23,76 +38,116 @@ export function useSystem(systemId?: string) {
         queryKey: SYSTEM_QUERY_KEYS.public,
         queryFn: () => getPublicSystemsClient(supabase),
         staleTime: 1000 * 60 * 10,
-        refetchOnWindowFocus: false,
     });
 
     const currentSystemsQuery = useQuery({
         queryKey: SYSTEM_QUERY_KEYS.user,
         queryFn: async () => {
-            const { data: { user }, error } = await supabase.auth.getUser();
-            if (error || !user) throw new Error("required user");
+            const {
+                data: { user },
+                error,
+            } = await supabase.auth.getUser();
+
+            if (error || !user) {
+                throw new Error("Authentication required.");
+            }
 
             return getCurrentSystems(user.id, supabase);
         },
         staleTime: 1000 * 60 * 10,
-        refetchOnWindowFocus: false,
     });
 
     const singleSystemQuery = useQuery({
         queryKey: SYSTEM_QUERY_KEYS.single(systemId),
         queryFn: async () => {
             if (!systemId) return null;
+
             return getSystemAction(systemId, supabase);
         },
         enabled: !!systemId,
-        staleTime: 1000 * 60 * 10,
-        refetchOnWindowFocus: false,
     });
 
-    // Mutations
-    const createMutation = useMutation({
-        mutationFn: async (data: SystemInsert) => createSystemAction(data),
+    const createMutation = useMutation<
+        System,
+        Error,
+        CreateSystemInput
+    >({
+        mutationFn: createSystemAction,
+
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.public });
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.user });
+            queryClient.invalidateQueries({
+                queryKey: SYSTEM_QUERY_KEYS.public,
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: SYSTEM_QUERY_KEYS.user,
+            });
         },
     });
 
     const updateMutation = useMutation({
-        mutationFn: ({ id, data }: { id: string; data: SystemUpdate }) => updateSystemAction(id, data),
+        mutationFn: ({
+            id,
+            data,
+        }: {
+            id: string;
+            data: SystemUpdate;
+        }) => updateSystemAction(id, data),
+
         onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.public });
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.user });
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.single(variables.id) });
+            queryClient.invalidateQueries({
+                queryKey: SYSTEM_QUERY_KEYS.public,
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: SYSTEM_QUERY_KEYS.user,
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: SYSTEM_QUERY_KEYS.single(
+                    variables.id
+                ),
+            });
         },
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id: string) => deleteSystemAction(id),
+        mutationFn: (id: string) =>
+            deleteSystemAction(id),
+
         onSuccess: (_, id) => {
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.public });
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.user });
-            queryClient.invalidateQueries({ queryKey: SYSTEM_QUERY_KEYS.single(id) });
+            queryClient.invalidateQueries({
+                queryKey: SYSTEM_QUERY_KEYS.public,
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: SYSTEM_QUERY_KEYS.user,
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: SYSTEM_QUERY_KEYS.single(id),
+            });
         },
     });
 
     return {
-        // Data
-        systems: publicQuery.data || [],
-        currentSystems: currentSystemsQuery.data || [],
-        system: singleSystemQuery.data || null,
+        systems: publicQuery.data ?? [],
+        currentSystems: currentSystemsQuery.data ?? [],
+        system: singleSystemQuery.data ?? null,
 
-        // Loading & Error states
-        isLoading: publicQuery.isLoading || currentSystemsQuery.isLoading,
-        isSingleLoading: singleSystemQuery.isLoading,
-        error: publicQuery.error?.message || currentSystemsQuery.error?.message || singleSystemQuery.error?.message || null,
+        isLoading:
+            publicQuery.isLoading ||
+            currentSystemsQuery.isLoading,
 
-        // Refresh functions
-        refreshPublic: publicQuery.refetch,
-        refreshCurrent: currentSystemsQuery.refetch,
-        refreshSingle: singleSystemQuery.refetch,
+        isSingleLoading:
+            singleSystemQuery.isLoading,
 
-        // Actions
+        error:
+            publicQuery.error?.message ??
+            currentSystemsQuery.error?.message ??
+            singleSystemQuery.error?.message ??
+            null,
+
         createSystem: createMutation.mutateAsync,
         isCreating: createMutation.isPending,
 

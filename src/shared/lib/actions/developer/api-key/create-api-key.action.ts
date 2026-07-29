@@ -1,8 +1,16 @@
+"use server";
+
+import { getSystemAction } from "@/shared/lib/actions/developer/systems";
+import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
+
 import {
     DeveloperApiKey,
     DeveloperApiKeyInsert,
 } from "@/shared/lib/schemas/developer/api-keys";
-import { createApiKey } from "@/shared/lib/supabase/services/developer/api-keys";
+
+import {
+    createApiKey,
+} from "@/shared/lib/supabase/services/developer/api-keys";
 
 export async function createApiKeyAction(
     data: DeveloperApiKeyInsert
@@ -10,9 +18,13 @@ export async function createApiKeyAction(
     apiKey: string;
     record: DeveloperApiKey;
 }> {
-    // TODO:
-    // التحقق من صلاحيات المستخدم (Owner/Admin)
-    // سيتم إضافته عند ربط Dashboard Authentication
+
+    const supabase = await createSupabaseServerClient();
+
+    await getSystemAction(
+        data.system_id,
+        supabase
+    );
 
     return createApiKey(data);
 }

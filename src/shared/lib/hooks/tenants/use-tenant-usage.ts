@@ -36,23 +36,12 @@ export function useTenantUsage() {
         error: invitationsError,
     } = useInvitations();
 
-    const {
-        subscription,
-        isLoading: subscriptionLoading,
-        error: subscriptionError,
-    } = useSubscription(
-        tenantId ?? undefined
-    );
+    const { subscription, isLoading: subscriptionLoading, error: subscriptionError, } = useSubscription(tenantId ?? undefined);
 
     const usage = useMemo(() => {
-        const plan = (
-            subscription?.plan ?? "STARTER"
-        ) as PlanType;
+        const plan = (subscription?.plan_name ?? "STARTER") as PlanType;
 
-        const licenseType = (
-            subscription?.license_type ??
-            "SUBSCRIPTION"
-        ) as LicenseType;
+        const licenseType = (subscription?.license_type ?? "SUBSCRIPTION") as LicenseType;
 
         const limits = getPlanLimits(plan);
 

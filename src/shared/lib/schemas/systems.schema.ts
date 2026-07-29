@@ -9,10 +9,13 @@ export const systemSchema = z.object({
     name: z.string().min(3, "System name too short"),
     slug: z
         .string()
-        .min(3)
+        .min(5, "Slug must be at least 5 characters")
         .regex(/^[a-z0-9-]+$/, "Invalid slug format"),
 
-    description: z.string().optional(),
+    description: z
+        .string()
+        .trim()
+        .min(10, "Description must be at least 10 characters"),
 
     // Owner (creator of the system itself)
     owner_id: z.string().uuid("Invalid Owner ID"),
@@ -27,7 +30,7 @@ export const systemSchema = z.object({
     status: z.enum(status).default("PENDING"),
 
     // Metadata
-    category: z.string().optional(),
+    category: z.string().trim().min(3),
     tags: z.array(z.string()).default([]),
     icon_url: z.string().url().optional(),
     is_public: z.boolean().default(true),
@@ -45,6 +48,15 @@ export const systemInsertSchema = systemSchema.omit({
 });
 
 export type SystemInsert = z.infer<typeof systemInsertSchema>;
+
+export const createSystemSchema = systemInsertSchema.omit({
+    owner_id: true,
+});
+
+/**
+ * React Hook Form should use the INPUT type.
+ */
+export type CreateSystemInput = z.input<typeof createSystemSchema>;
 
 export const systemUpdateSchema = systemInsertSchema.partial();
 

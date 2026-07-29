@@ -19,9 +19,7 @@ interface UseDeveloperApiKeysOptions {
     systemId: string;
 }
 
-export function useDeveloperApiKeys({
-    systemId,
-}: UseDeveloperApiKeysOptions) {
+export function useDeveloperApiKeys(systemId: string) {
     const queryClient = useQueryClient();
 
     const queryKey = [
@@ -37,8 +35,7 @@ export function useDeveloperApiKeys({
         refetch,
     } = useQuery({
         queryKey,
-        queryFn: () =>
-            listApiKeysAction(systemId),
+        queryFn: async () => await listApiKeysAction(systemId),
         enabled: !!systemId,
     });
 
@@ -69,17 +66,18 @@ export function useDeveloperApiKeys({
         },
     });
 
-    const regenerateMutation =
-        useMutation({
-            mutationFn: (id: string) => regenerateApiKeyAction(id),
-            onSuccess: () => {
-                queryClient.invalidateQueries(
-                    {
-                        queryKey,
-                    }
-                );
-            },
-        });
+    const regenerateMutation = useMutation({
+        mutationFn: (id: string) =>
+            regenerateApiKeyAction(id),
+
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({
+                queryKey,
+            });
+
+            return data;
+        },
+    });
 
     return {
         apiKeys,
