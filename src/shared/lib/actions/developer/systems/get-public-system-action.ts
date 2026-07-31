@@ -3,7 +3,7 @@ import { getSystemById } from "@/shared/lib/supabase/services/systems";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 
-export async function getSystemAction(
+export async function getPublicSystemAction(
     id: string,
     supabase: SupabaseClient
 ) {
@@ -17,9 +17,5 @@ export async function getSystemAction(
         throw new Error("system error: System not found")
     }
 
-    if (system.owner_id !== user.id) {
-        throw new Error("system error: You don't have permissions to do this action")
-    }
-
-    return system;
+    return system
 }

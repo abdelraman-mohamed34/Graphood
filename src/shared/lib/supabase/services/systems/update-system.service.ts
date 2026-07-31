@@ -14,6 +14,9 @@ export async function updateSystem(
         starter_price: data.starter_price,
         pro_price: data.pro_price,
         business_price: data.business_price,
+        
+        reseller_price: data.reseller_price,
+        exclusive_price: data.exclusive_price,
 
         currency: data.currency,
 

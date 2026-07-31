@@ -8,7 +8,7 @@ export async function getSystemById(
 
     const { data, error } = await supabase
         .from("systems")
-        .select("*")
+        .select()
         .eq("id", id)
         .single();
 

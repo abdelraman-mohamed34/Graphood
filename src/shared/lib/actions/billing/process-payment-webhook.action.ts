@@ -53,6 +53,7 @@ export async function processPaymentWebhookAction(
             data: result,
         };
     } catch (error) {
+        console.error("processPaymentWebhookAction:", error);
         return {
             success: false,
             error:

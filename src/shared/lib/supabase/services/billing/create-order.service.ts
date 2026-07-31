@@ -1,14 +1,21 @@
 // src/shared/lib/supabase/services/billing/create-order.ts
+import { LicenseType } from "@/shared/config/licensing";
+import { PlanType } from "@/shared/config/plans";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 
 interface CreateInitialOrderParams {
     profileId: string;
     systemId: string;
-    amount: number;
-    plan: string;
+
+    plan?: string;
+
     licenseType: string;
+
+    amount: number;
     currency?: string;
+
     provider: "STRIPE" | "PAYMOB" | "CASH" | "MANUAL";
+
     description?: string;
 }
 

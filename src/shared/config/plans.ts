@@ -1,5 +1,6 @@
 // @/shared/config/plans.ts
 
+
 export const PLAN_LIMITS = {
     STARTER: {
         maxAdmins: 1,

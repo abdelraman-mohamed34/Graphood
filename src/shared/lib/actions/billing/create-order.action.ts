@@ -9,12 +9,15 @@ import { createPendingOrder } from "@/shared/lib/supabase/services/billing/creat
 
 import { licenseTypes } from "@/shared/config/licensing";
 import { PLAN_LIMITS } from "@/shared/config/plans";
+import { getUserSystemOrder } from "../../supabase/services/billing";
 
 const createOrderSchema = z.object({
     systemId: z.string().uuid(),
-    plan: z.enum(
-        Object.keys(PLAN_LIMITS) as [keyof typeof PLAN_LIMITS]
-    ),
+    plan: z
+        .enum(
+            Object.keys(PLAN_LIMITS) as [keyof typeof PLAN_LIMITS]
+        )
+        .optional(),
     licenseType: z.enum(licenseTypes),
 });
 
@@ -33,6 +36,23 @@ export async function createOrderAction(
     }
 
     const { systemId, plan, licenseType } = parsed.data;
+
+    if (licenseType === "SUBSCRIPTION" && !plan) {
+        return {
+            success: false,
+            error: "Plan is required for subscription licenses.",
+        };
+    }
+
+    if (
+        licenseType !== "SUBSCRIPTION" &&
+        plan !== undefined
+    ) {
+        return {
+            success: false,
+            error: "Plan is only allowed for subscription licenses.",
+        };
+    }
 
     const supabase = await createSupabaseServerClient();
 
@@ -68,34 +88,114 @@ export async function createOrderAction(
         };
     }
 
+    if (system.owner_id === user.id) {
+        return {
+            success: false,
+            error: "You cannot purchase your own system.",
+        };
+    }
+
+    const existingOrder = await getUserSystemOrder(
+        user.id,
+        system.id,
+        supabase
+    );
+
+    if (existingOrder) {
+        if (existingOrder.status === "PENDING") {
+            return {
+                success: false,
+                error:
+                    "You already have a pending order for this system. Please complete or cancel it before creating another one.",
+            };
+        }
+
+        if (existingOrder.status === "PAID") {
+            switch (existingOrder.license_type) {
+                case "SUBSCRIPTION":
+                    if (licenseType === "SUBSCRIPTION") {
+                        return {
+                            success: false,
+                            error:
+                                "You already have an active subscription for this system.",
+                        };
+                    }
+                    break;
+
+                case "RESELLER":
+                    if (licenseType === "SUBSCRIPTION") {
+                        return {
+                            success: false,
+                            error:
+                                "You already own the reseller license for this system.",
+                        };
+                    }
+
+                    if (licenseType === "RESELLER") {
+                        return {
+                            success: false,
+                            error:
+                                "You already own the reseller license for this system.",
+                        };
+                    }
+
+                    break;
+
+                case "EXCLUSIVE":
+                    return {
+                        success: false,
+                        error:
+                            "You already own this system exclusively.",
+                    };
+            }
+        }
+    }
+
     const currency = system.currency;
 
     let amount: number;
 
-    switch (plan) {
-        case "STARTER":
-            amount = system.starter_price;
+    switch (licenseType) {
+        case "SUBSCRIPTION":
+            switch (plan) {
+                case "STARTER":
+                    amount = system.starter_price;
+                    break;
+
+                case "PRO":
+                    amount = system.pro_price;
+                    break;
+
+                case "BUSINESS":
+                    amount = system.business_price;
+                    break;
+
+                default:
+                    return {
+                        success: false,
+                        error: "Invalid subscription plan.",
+                    };
+            }
             break;
 
-        case "PRO":
-            amount = system.pro_price;
+        case "RESELLER":
+            amount = system.reseller_price;
             break;
 
-        case "BUSINESS":
-            amount = system.business_price;
+        case "EXCLUSIVE":
+            amount = system.exclusive_price;
             break;
 
         default:
             return {
                 success: false,
-                error: "Invalid plan.",
+                error: "Invalid license type.",
             };
     }
 
     if (
         amount === null ||
-        amount === undefined ||
-        amount <= 0
+        amount === undefined
     ) {
         return {
             success: false,
@@ -116,15 +216,23 @@ export async function createOrderAction(
                 profileId: user.id,
                 systemId: system.id,
 
-                plan,
                 licenseType,
+
+                ...(licenseType === "SUBSCRIPTION"
+                    ? { plan }
+                    : {}),
 
                 amount,
                 currency,
 
                 provider: "MANUAL",
 
-                description: `${system.name} (${plan}) - ${licenseType}`,
+                description:
+                    licenseType === "SUBSCRIPTION"
+                        ? `${system.name} (${plan}) - Subscription`
+                        : licenseType === "RESELLER"
+                            ? `${system.name} - Reseller License`
+                            : `${system.name} - Exclusive License`,
             });
 
         return {

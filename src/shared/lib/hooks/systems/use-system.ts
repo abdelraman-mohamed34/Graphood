@@ -4,8 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     deleteSystemAction,
     updateSystemAction,
-    getSystemAction,
     createSystemAction,
+    getPublicSystemAction,
 } from "../../actions/developer/systems";
 
 import {
@@ -62,7 +62,7 @@ export function useSystem(systemId?: string) {
         queryFn: async () => {
             if (!systemId) return null;
 
-            return getSystemAction(systemId, supabase);
+            return getPublicSystemAction(systemId, supabase);
         },
         enabled: !!systemId,
     });

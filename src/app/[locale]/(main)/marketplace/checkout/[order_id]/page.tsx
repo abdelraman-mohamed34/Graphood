@@ -33,7 +33,7 @@ export default function Page({ params }: PageProps) {
         );
     }
 
-    const system = order.systems?.[0];
+    const system = order.systems
 
     if (order.status === "PAID") {
         return (
@@ -74,7 +74,7 @@ export default function Page({ params }: PageProps) {
                 <div className="space-y-2">
                     <p>
                         <strong>System:</strong>{" "}
-                        {system?.name ?? "-"}
+                        {system?.name}
                     </p>
                     <p>
                         <strong>Plan:</strong>{" "}

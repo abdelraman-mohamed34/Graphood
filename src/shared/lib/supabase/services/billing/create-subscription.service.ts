@@ -63,6 +63,7 @@ export async function createSubscription({
     }
 
     const now = new Date();
+
     const { data: subscription, error } = await supabase
         .from("subscriptions")
         .insert({
@@ -71,31 +72,27 @@ export async function createSubscription({
             system_id: order.system_id,
 
             // Snapshot from Order
-            plan_name: order.plan,
+            plan_name:
+                order.license_type === "SUBSCRIPTION"
+                    ? order.plan
+                    : order.license_type,
 
             license_type: order.license_type,
-
 
             billing_interval:
                 order.license_type === "SUBSCRIPTION"
                     ? "MONTHLY"
                     : "ONE_TIME",
 
-
             price: order.amount,
-
             currency: order.currency,
-
 
             status: "ACTIVE",
 
-
             start_date: now,
-
 
             auto_renew:
                 order.license_type === "SUBSCRIPTION",
-
         })
         .select()
         .single();

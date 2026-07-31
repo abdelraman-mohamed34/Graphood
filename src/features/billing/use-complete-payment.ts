@@ -11,11 +11,12 @@ export function useCompletePayment() {
         mutationFn: async (orderId: string) => {
             const transactionRef = `MOCK-${crypto.randomUUID()}`;
 
-            const result =
-                await processPaymentWebhookAction({
-                    orderId,    
-                    transactionRef,
-                });
+            const result = await processPaymentWebhookAction({
+                orderId,
+                transactionRef,
+            });
+            
+            console.log("PROCESS PAYMENT RESULT:", result);
 
             if (!result.success) {
                 throw new Error(result.error);

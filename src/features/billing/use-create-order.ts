@@ -10,8 +10,8 @@ import { PlanType } from "@/shared/config/plans";
 
 type CreateOrderInput = {
     systemId: string;
-    plan: PlanType;
     licenseType: LicenseType;
+    plan?: PlanType;
 };
 
 export function useCreateOrder() {

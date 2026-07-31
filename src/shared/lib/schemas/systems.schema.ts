@@ -7,10 +7,14 @@ export const systemSchema = z.object({
 
     // Identity
     name: z.string().min(3, "System name too short"),
+
     slug: z
         .string()
         .min(5, "Slug must be at least 5 characters")
-        .regex(/^[a-z0-9-]+$/, "Invalid slug format"),
+        .regex(
+            /^[a-z0-9.-]+$/,
+            "Invalid slug format"
+        ),
 
     description: z
         .string()
@@ -24,8 +28,12 @@ export const systemSchema = z.object({
     starter_price: z.number().min(0).default(0),
     pro_price: z.number().min(0).default(0),
     business_price: z.number().min(0).default(0),
-    currency: z.string().default("EGP"),
 
+    // License Pricing
+    reseller_price: z.number().min(0).default(0),
+    exclusive_price: z.number().min(0).default(0),
+
+    currency: z.string().default("EGP"),
     // System status
     status: z.enum(status).default("PENDING"),
 

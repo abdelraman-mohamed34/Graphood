@@ -18,10 +18,9 @@ export async function provisionOrder({
         subscription.id
     );
 
-    const tenant =
-        await createTenantFromSubscription({
-            subscriptionId: subscription.id,
-        });
+    const tenant = await createTenantFromSubscription({
+        subscriptionId: subscription.id,
+    });
 
 
     console.log(

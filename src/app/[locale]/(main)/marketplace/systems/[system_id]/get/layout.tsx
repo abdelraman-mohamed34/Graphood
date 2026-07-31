@@ -1,6 +1,7 @@
 // src/app/[locale]/(main)/marketplace/[system_id]/get/layout.tsx
 'use server'
 
+import { requireUser } from '@/shared/lib/auth/requires/require-user';
 import { createSupabaseServerClient } from '@/shared/lib/supabase/server';
 import { fetchUser } from '@/shared/lib/supabase/services/auth/user/fetch-user.service';
 import { SupabaseClient } from '@supabase/supabase-js';
@@ -22,15 +23,10 @@ export default async function GetSystemLayout({
 }: GetSystemLayoutProps) {
     const { system_id, locale } = await params;
     const queryClient = new QueryClient();
-    const supabase: SupabaseClient = await createSupabaseServerClient()
-    const user = await fetchUser(supabase)
+    await requireUser(locale)
 
     if (!system_id) {
         throw new Error('invalid system id')
-    }
-
-    if (!user) {
-        redirect(`/${locale}/login`)
     }
 
     return (
