@@ -5,9 +5,15 @@ export const couponUsageSchema = z.object({
 
     coupon_id: z.string().uuid(),
 
+    order_id: z.string().uuid(),
+
+    system_id: z.string().uuid(),
+
     profile_id: z.string().uuid(),
 
     used_at: z.coerce.date(),
 });
 
-export type CouponUsage = z.infer<typeof couponUsageSchema>;
+export type CouponUsage = z.infer<
+    typeof couponUsageSchema
+>;

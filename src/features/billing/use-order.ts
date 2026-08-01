@@ -1,4 +1,3 @@
-// src/features/billing/hooks/use-order.ts
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
@@ -6,13 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { getOrderAction } from "@/shared/lib/actions/billing/get-order.action";
 
 export function useOrder(orderId: string) {
-    return useQuery({
+    const query = useQuery({
         queryKey: ["order", orderId],
 
         queryFn: async () => {
-            const result = await getOrderAction({
-                orderId,
-            });
+            const result = await getOrderAction({ orderId });
 
             if (!result.success) {
                 throw new Error(
@@ -26,6 +23,16 @@ export function useOrder(orderId: string) {
         },
 
         enabled: !!orderId,
-        staleTime: 1000 * 60 * 5, // 5 minutes
+        staleTime: 1000 * 60 * 5,
     });
+
+    return {
+        order: query.data,
+
+        isLoading: query.isPending,
+        isFetching: query.isFetching,
+        error: query.error,
+
+        refetch: query.refetch,
+    };
 }

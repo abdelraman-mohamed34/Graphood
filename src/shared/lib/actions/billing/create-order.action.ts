@@ -10,6 +10,7 @@ import { createPendingOrder } from "@/shared/lib/supabase/services/billing/creat
 import { licenseTypes } from "@/shared/config/licensing";
 import { PLAN_LIMITS } from "@/shared/config/plans";
 import { getUserSystemOrder } from "../../supabase/services/billing";
+import { validateCoupon } from "../../supabase/services/coupons";
 
 const createOrderSchema = z.object({
     systemId: z.string().uuid(),
@@ -19,6 +20,8 @@ const createOrderSchema = z.object({
         )
         .optional(),
     licenseType: z.enum(licenseTypes),
+
+    couponCode: z.string().trim().optional(),
 });
 
 type CreateOrderInput = z.infer<typeof createOrderSchema>;
@@ -35,7 +38,12 @@ export async function createOrderAction(
         };
     }
 
-    const { systemId, plan, licenseType } = parsed.data;
+    const {
+        systemId,
+        plan,
+        licenseType,
+        couponCode,
+    } = parsed.data;
 
     if (licenseType === "SUBSCRIPTION" && !plan) {
         return {
@@ -55,7 +63,6 @@ export async function createOrderAction(
     }
 
     const supabase = await createSupabaseServerClient();
-
     const user = await fetchUser(supabase);
 
     if (!user) {
@@ -193,14 +200,33 @@ export async function createOrderAction(
             };
     }
 
-    if (
-        amount === null ||
-        amount === undefined
-    ) {
+    if (amount == null || amount <= 0) {
         return {
             success: false,
             error: "Invalid system price.",
         };
+    }
+
+
+    let originalAmount = amount;
+    let discountAmount = 0;
+    let couponId: string | undefined;
+
+    if (couponCode) {
+        const couponResult = await validateCoupon({
+            supabase,
+            code: couponCode,
+            profileId: user.id,
+            systemId: system.id,
+            amount,
+            licenseType,
+            plan,
+        });
+
+        originalAmount = couponResult.originalAmount;
+        discountAmount = couponResult.discountAmount;
+        amount = couponResult.finalAmount;
+        couponId = couponResult.coupon.id;
     }
 
     // Reserved for future pricing logic:
@@ -210,30 +236,36 @@ export async function createOrderAction(
     // - License modifiers
     // - Platform commission
 
+
+    //-> do action
     try {
-        const { order, payment } =
-            await createPendingOrder({
-                profileId: user.id,
-                systemId: system.id,
+        const { order, payment } = await createPendingOrder({
+            supabase,
+            profileId: user.id,
+            systemId: system.id,
 
-                licenseType,
+            licenseType,
 
-                ...(licenseType === "SUBSCRIPTION"
-                    ? { plan }
-                    : {}),
+            ...(licenseType === "SUBSCRIPTION"
+                ? { plan }
+                : {}),
 
-                amount,
-                currency,
+            amount,
+            currency,
 
-                provider: "MANUAL",
+            provider: "MANUAL",
 
-                description:
-                    licenseType === "SUBSCRIPTION"
-                        ? `${system.name} (${plan}) - Subscription`
-                        : licenseType === "RESELLER"
-                            ? `${system.name} - Reseller License`
-                            : `${system.name} - Exclusive License`,
-            });
+            originalAmount,
+            discountAmount,
+            couponId,
+
+            description:
+                licenseType === "SUBSCRIPTION"
+                    ? `${system.name} (${plan}) - Subscription`
+                    : licenseType === "RESELLER"
+                        ? `${system.name} - Reseller License`
+                        : `${system.name} - Exclusive License`,
+        });
 
         return {
             success: true,
@@ -241,7 +273,12 @@ export async function createOrderAction(
             orderId: order.id,
             paymentId: payment.id,
 
+            originalAmount,
+            discountAmount,
             amount,
+
+            couponId,
+
             currency,
 
             plan,

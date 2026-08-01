@@ -1,41 +1,101 @@
 import { z } from "zod";
 
+export const discountTypes = [
+    "PERCENTAGE",
+    "FIXED",
+] as const;
+
 export const couponSchema = z.object({
     id: z.string().uuid(),
 
     code: z
         .string()
-        .min(6, "Coupon code must be at least 6 characters")
-        .max(50),
+        .trim()
+        .min(4)
+        .max(50)
+        .toUpperCase(),
+
+    is_generated: z.boolean(),
 
     system_id: z.string().uuid(),
 
     created_by: z.string().uuid(),
 
-    percentage: z
-        .number()
-        .min(1, "Minimum discount is 1%")
-        .max(100, "Maximum discount is 100%"),
+    discount_type: z.enum(discountTypes),
+
+    discount_value: z.number().positive(),
+
+    max_discount: z.number().positive().nullable(),
+
+    license_type: z
+        .enum([
+            "SUBSCRIPTION",
+            "RESELLER",
+            "EXCLUSIVE",
+        ])
+        .nullable(),
+
+    plan: z
+        .enum([
+            "STARTER",
+            "PRO",
+            "BUSINESS",
+        ])
+        .nullable(),
+
+    min_order_amount: z.number().min(0),
 
     max_uses: z
         .number()
         .int()
         .positive()
-        .default(1),
+        .nullable(),
+
+    max_uses_per_user: z
+        .number()
+        .int()
+        .positive(),
 
     used_count: z
         .number()
         .int()
-        .min(0)
-        .default(0),
+        .min(0),
 
-    is_active: z.boolean().default(true),
+    one_use_per_system: z.boolean(),
 
-    expires_at: z.coerce.date().optional(),
+    starts_at: z.coerce.date().nullable(),
+
+    expires_at: z.coerce.date().nullable(),
+
+    is_active: z.boolean(),
 
     created_at: z.coerce.date(),
 
-    updated_at: z.coerce.date().optional(),
+    updated_at: z.coerce.date(),
 });
 
 export type Coupon = z.infer<typeof couponSchema>;
+
+export type DiscountType =
+    (typeof discountTypes)[number];
+
+export const createCouponSchema = couponSchema.pick({
+    code: true,
+    system_id: true,
+    discount_type: true,
+    discount_value: true,
+    max_discount: true,
+    license_type: true,
+    plan: true,
+    min_order_amount: true,
+    max_uses: true,
+    max_uses_per_user: true,
+    one_use_per_system: true,
+    starts_at: true,
+    expires_at: true,
+    is_active: true,
+});
+
+export type CreateCouponInput = z.infer<
+    typeof createCouponSchema
+>;

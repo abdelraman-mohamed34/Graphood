@@ -27,8 +27,7 @@ export type ProcessPaymentWebhookResult =
 export async function processPaymentWebhookAction(
     input: ProcessPaymentWebhookInput
 ): Promise<ProcessPaymentWebhookResult> {
-    const parsed =
-        processPaymentWebhookSchema.safeParse(input);
+    const parsed = processPaymentWebhookSchema.safeParse(input);
 
     if (!parsed.success) {
         return {
@@ -37,10 +36,7 @@ export async function processPaymentWebhookAction(
         };
     }
 
-    const {
-        orderId,
-        transactionRef,
-    } = parsed.data;
+    const { orderId, transactionRef } = parsed.data;
 
     try {
         const result = await confirmOrderPayment(
@@ -53,7 +49,7 @@ export async function processPaymentWebhookAction(
             data: result,
         };
     } catch (error) {
-        console.error("processPaymentWebhookAction:", error);
+        console.error("Failed to confirm payment:", error);
         return {
             success: false,
             error:

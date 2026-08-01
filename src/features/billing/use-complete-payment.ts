@@ -15,8 +15,6 @@ export function useCompletePayment() {
                 orderId,
                 transactionRef,
             });
-            
-            console.log("PROCESS PAYMENT RESULT:", result);
 
             if (!result.success) {
                 throw new Error(result.error);

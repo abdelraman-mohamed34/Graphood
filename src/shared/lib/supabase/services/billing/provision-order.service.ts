@@ -7,37 +7,18 @@ export async function provisionOrder({
 }: {
     orderId: string;
 }) {
-
-    console.log("PROVISION START", orderId);
     const subscription = await createSubscription({
         orderId,
     });
-
-    console.log(
-        "SUBSCRIPTION CREATED",
-        subscription.id
-    );
 
     const tenant = await createTenantFromSubscription({
         subscriptionId: subscription.id,
     });
 
-
-    console.log(
-        "TENANT CREATED",
-        tenant.id
-    );
-
-
     const membership =
         await createMembershipFromTenant({
             tenantId: tenant.id,
         });
-
-    console.log(
-        "MEMBERSHIP CREATED",
-        membership.id
-    );
 
     return {
         subscription,

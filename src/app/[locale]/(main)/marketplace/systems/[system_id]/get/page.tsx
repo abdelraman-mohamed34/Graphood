@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Check, X, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -13,6 +13,7 @@ import {
 } from "@/shared/config/licensing";
 import { useCreateOrder } from "@/features/billing/use-create-order";
 import { useSystem } from "@/shared/lib/hooks";
+import { useValidateCoupon } from "@/shared/lib/hooks/billings/use-validate-coupon";
 
 export default function Page() {
     const params = useParams();
@@ -21,9 +22,25 @@ export default function Page() {
     const [selectedPlan, setSelectedPlan] = useState<PlanType>("PRO");
     const [selectedLicense, setSelectedLicense] = useState<LicenseType>("SUBSCRIPTION");
     const [usersCount] = useState<number>(1);
+    const [couponCode, setCouponCode] = useState("");
+    const [preview, setPreview] = useState<{
+        originalAmount: number;
+        discountAmount: number;
+        finalAmount: number;
+        coupon?: {
+            id: string;
+            code: string;
+        };
+    } | null>(null);
 
-    const { createOrder, isCreating } = useCreateOrder();
     const { system, isLoading, error } = useSystem(systemId);
+    const { createOrder, isCreating } = useCreateOrder();
+    const {
+        validateCoupon,
+        isValidating,
+        reset,
+    } = useValidateCoupon();
+
     const router = useRouter();
 
     const plans = useMemo(() => {
@@ -35,7 +52,7 @@ export default function Page() {
                 tagline: "Perfect for individuals",
                 description:
                     "Ideal for freelancers and personal projects. Includes essential features to get started quickly.",
-                monthlyPrice: Number(system.starter_price || 0),
+                monthlyPrice: Number(system.starter_price) || 0,
             },
             {
                 id: "PRO" as const,
@@ -43,7 +60,7 @@ export default function Page() {
                 tagline: "Best for growing businesses",
                 description:
                     "Designed for startups and growing teams with advanced features, reports, and API access.",
-                monthlyPrice: Number(system.pro_price || 0),
+                monthlyPrice: Number(system.pro_price) || 0,
             },
             {
                 id: "BUSINESS" as const,
@@ -51,7 +68,7 @@ export default function Page() {
                 tagline: "Built for organizations",
                 description:
                     "Complete solution for companies that need maximum scalability, collaboration, and enterprise capabilities.",
-                monthlyPrice: Number(system.business_price || 0),
+                monthlyPrice: Number(system.business_price) || 0,
             },
         ];
     }, [system]);
@@ -64,16 +81,32 @@ export default function Page() {
         if (!system) return "0.00";
 
         if (selectedLicense === "SUBSCRIPTION") {
-            const price = activePlan ? activePlan.monthlyPrice : 0;
+            const price = activePlan ? Number(activePlan.monthlyPrice) || 0 : 0;
             return (price * usersCount).toFixed(2);
         }
 
         if (selectedLicense === "RESELLER") {
-            return Number(system.reseller_price || 0).toFixed(2);
+            return (Number(system.reseller_price) || 0).toFixed(2);
         }
 
-        return Number(system.exclusive_price || 0).toFixed(2);
+        return (Number(system.exclusive_price) || 0).toFixed(2);
     }, [selectedLicense, activePlan, usersCount, system]);
+
+    const displayPrice = preview
+        ? (Number(preview.finalAmount) || 0).toFixed(2)
+        : totalPrice;
+
+    useEffect(() => {
+        reset();
+        setPreview(null);
+    }, [selectedPlan, selectedLicense, reset]);
+
+    // Clear preview only if the input code changes from the successfully applied coupon code
+    useEffect(() => {
+        if (preview?.coupon?.code && couponCode !== preview.coupon.code) {
+            setPreview(null);
+        }
+    }, [couponCode, preview]);
 
     const handleOrder = async () => {
         try {
@@ -83,10 +116,12 @@ export default function Page() {
                         systemId,
                         licenseType: "SUBSCRIPTION" as const,
                         plan: selectedPlan,
+                        couponCode: couponCode.trim() || undefined,
                     }
                     : {
                         systemId,
                         licenseType: selectedLicense,
+                        couponCode: couponCode.trim() || undefined,
                     };
 
             const result = await createOrder(payload);
@@ -207,7 +242,7 @@ export default function Page() {
 
                                             <div className="text-right">
                                                 <div className="text-base font-bold text-neutral-900 dark:text-white">
-                                                    ${plan.monthlyPrice}
+                                                    ${(Number(plan.monthlyPrice) || 0).toFixed(2)}
                                                 </div>
                                                 <div className="text-[11px] text-neutral-400">/mo</div>
                                             </div>
@@ -249,7 +284,7 @@ export default function Page() {
                                 {LICENSE_MODELS.RESELLER.shortDescription}
                             </p>
                             <div className="mt-6 text-3xl font-bold text-neutral-900 dark:text-white">
-                                ${Number(system.reseller_price || 0).toFixed(2)}
+                                ${(Number(system.reseller_price) || 0).toFixed(2)}
                             </div>
                         </div>
                     </div>
@@ -266,14 +301,65 @@ export default function Page() {
                                 {LICENSE_MODELS.EXCLUSIVE.shortDescription}
                             </p>
                             <div className="mt-6 text-3xl font-bold text-neutral-900 dark:text-white">
-                                ${Number(system.exclusive_price || 0).toFixed(2)}
+                                ${(Number(system.exclusive_price) || 0).toFixed(2)}
                             </div>
                         </div>
                     </div>
                 )}
 
+                <div className="mb-8">
+                    <label className="text-sm font-medium text-neutral-900 dark:text-white">
+                        Coupon Code
+                    </label>
+
+                    <div className="mt-2 flex gap-2">
+                        <input
+                            value={couponCode}
+                            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                            placeholder="SUMMER50"
+                            className="flex-1 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all"
+                        />
+
+                        <button
+                            type="button"
+                            disabled={!couponCode || isValidating}
+                            className="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                            onClick={async () => {
+                                const result = await validateCoupon({
+                                    systemId,
+                                    code: couponCode.trim(),
+                                    amount: Number(totalPrice),
+                                    licenseType: selectedLicense,
+                                    ...(selectedLicense === "SUBSCRIPTION"
+                                        ? { plan: selectedPlan }
+                                        : {}),
+                                });
+
+                                if (!result.success) {
+                                    toast.error(
+                                        typeof result.error === "string"
+                                            ? result.error
+                                            : "Invalid coupon."
+                                    );
+                                    setPreview(null);
+                                    return;
+                                }
+
+                                setPreview(result.data || null);
+                                toast.success("Coupon applied.");
+                            }}
+                        >
+                            {isValidating ? (
+                                <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+                            ) : (
+                                "Apply"
+                            )}
+                        </button>
+                    </div>
+                </div>
+
                 {/* Summary Box */}
-                <div className="mb-8 bg-white pb-6">
+                <div className="mb-8 bg-transparent pb-6">
                     <div className="space-y-5">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
@@ -301,6 +387,24 @@ export default function Page() {
                             </div>
                         )}
 
+                        {preview && preview.discountAmount > 0 && (
+                            <>
+                                <div className="flex justify-between text-sm text-neutral-900 dark:text-white">
+                                    <span>Subtotal</span>
+                                    <span>
+                                        {(Number(preview.originalAmount) || 0).toFixed(2)} {system.currency}
+                                    </span>
+                                </div>
+
+                                <div className="flex justify-between text-sm text-green-600 dark:text-green-500">
+                                    <span>Coupon ({preview.coupon?.code})</span>
+                                    <span>
+                                        -{(Number(preview.discountAmount) || 0).toFixed(2)} {system.currency}
+                                    </span>
+                                </div>
+                            </>
+                        )}
+
                         <div className="border-t border-neutral-100 dark:border-neutral-800 pt-5 flex items-center justify-between">
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
@@ -315,7 +419,7 @@ export default function Page() {
 
                             <div className="text-right">
                                 <div className="text-3xl font-bold text-neutral-900 dark:text-white">
-                                    ${totalPrice}
+                                    {displayPrice} {system.currency}
                                 </div>
                                 {selectedLicense === "SUBSCRIPTION" && (
                                     <div className="text-xs text-neutral-400">
@@ -341,7 +445,7 @@ export default function Page() {
                             </>
                         ) : (
                             <>
-                                Continue to Checkout (${totalPrice})
+                                Continue to Checkout ({displayPrice} {system.currency})
                                 <ArrowRight className="w-3.5 h-3.5" />
                             </>
                         )}
