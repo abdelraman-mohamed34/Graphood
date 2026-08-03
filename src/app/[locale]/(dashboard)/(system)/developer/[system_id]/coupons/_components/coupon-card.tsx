@@ -1,0 +1,133 @@
+"use client";
+
+import { format } from "date-fns";
+import {
+    Calendar,
+    TicketPercent,
+    Users,
+    Trash2,
+} from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+
+import type { Coupon } from "@/shared/lib/schemas/coupon/coupon.schema";
+
+interface CouponCardProps {
+    coupon: Coupon;
+    onDelete: (id: string) => void | Promise<void>;
+    isDeleting?: boolean;
+}
+
+export default function CouponCard({
+    coupon,
+    onDelete,
+    isDeleting = false,
+}: CouponCardProps) {
+    return (
+        <div className="rounded-2xl border bg-card p-5 transition-shadow hover:shadow-md">
+            <div className="flex items-start justify-between">
+                <div>
+                    <div className="flex items-center gap-2">
+                        <TicketPercent className="h-5 w-5 text-primary" />
+
+                        <h3 className="font-semibold tracking-wide">
+                            {coupon.code}
+                        </h3>
+                    </div>
+
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        {coupon.discount_type === "PERCENT"
+                            ? `${coupon.discount_value}% OFF`
+                            : `${coupon.discount_value} Fixed Discount`}
+                    </p>
+                </div>
+
+                <Badge
+                    variant={
+                        coupon.is_active
+                            ? "default"
+                            : "secondary"
+                    }
+                >
+                    {coupon.is_active
+                        ? "Active"
+                        : "Inactive"}
+                </Badge>
+            </div>
+
+            <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <p className="text-muted-foreground">
+                        License
+                    </p>
+
+                    <p className="font-medium">
+                        {coupon.license_type ??
+                            "All"}
+                    </p>
+                </div>
+
+                <div>
+                    <p className="text-muted-foreground">
+                        Plan
+                    </p>
+
+                    <p className="font-medium">
+                        {coupon.plan ?? "All"}
+                    </p>
+                </div>
+
+                <div>
+                    <p className="text-muted-foreground">
+                        Uses
+                    </p>
+
+                    <div className="flex items-center gap-1">
+                        <Users className="h-4 w-4 text-muted-foreground" />
+
+                        <span>
+                            {coupon.used_count}
+                            {coupon.max_uses &&
+                                ` / ${coupon.max_uses}`}
+                        </span>
+                    </div>
+                </div>
+
+                <div>
+                    <p className="text-muted-foreground">
+                        Expires
+                    </p>
+
+                    <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+
+                        <span>
+                            {coupon.expires_at
+                                ? format(
+                                    coupon.expires_at,
+                                    "dd MMM yyyy"
+                                )
+                                : "Never"}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div className="mt-6 flex justify-end border-t pt-4">
+                <Button
+                    variant="destructive"
+                    size="sm"
+                    disabled={isDeleting}
+                    onClick={() =>
+                        onDelete(coupon.id)
+                    }
+                >
+                    <Trash2 className="mr-2 h-4 w-4" />
+
+                    Delete
+                </Button>
+            </div>
+        </div>
+    );
+}

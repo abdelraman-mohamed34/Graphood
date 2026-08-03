@@ -1,14 +1,31 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
-import { createCouponAction, deleteCouponAction, getCouponsAction } from "../../actions/coupon";
+
+import {
+    createCouponAction,
+    deleteCouponAction,
+    getCouponsAction,
+} from "../../actions/coupon";
+import type { CreateCouponInput } from "@/shared/lib/schemas/coupon/coupon.schema";
 
 export function useCoupons(systemId: string) {
     const queryClient = useQueryClient();
 
+    const queryKey = ["coupons", systemId] as const;
+
+    const invalidate = () =>
+        queryClient.invalidateQueries({
+            queryKey,
+        });
+
     const query = useQuery({
-        queryKey: ["coupons", systemId],
+        queryKey,
 
         queryFn: async () => {
             const result = await getCouponsAction({
@@ -31,24 +48,23 @@ export function useCoupons(systemId: string) {
     });
 
     const createMutation = useMutation({
-        mutationFn: createCouponAction,
+        mutationFn: async (input: CreateCouponInput) => {
+            const result = await createCouponAction(input);
 
-        onSuccess(result) {
             if (!result.success) {
-                toast.error(
+                throw new Error(
                     typeof result.error === "string"
                         ? result.error
                         : "Failed to create coupon."
                 );
-
-                return;
             }
 
-            toast.success("Coupon created.");
+            return result;
+        },
 
-            queryClient.invalidateQueries({
-                queryKey: ["coupons", systemId],
-            });
+        onSuccess() {
+            toast.success("Coupon created.");
+            invalidate();
         },
 
         onError(error) {
@@ -61,24 +77,23 @@ export function useCoupons(systemId: string) {
     });
 
     const deleteMutation = useMutation({
-        mutationFn: deleteCouponAction,
+        mutationFn: async (couponId: string) => {
+            const result = await deleteCouponAction({ couponId });
 
-        onSuccess(result) {
             if (!result.success) {
-                toast.error(
+                throw new Error(
                     typeof result.error === "string"
                         ? result.error
                         : "Failed to delete coupon."
                 );
-
-                return;
             }
 
-            toast.success("Coupon deleted.");
+            return result;
+        },
 
-            queryClient.invalidateQueries({
-                queryKey: ["coupons", systemId],
-            });
+        onSuccess() {
+            toast.success("Coupon deleted.");
+            invalidate();
         },
 
         onError(error) {
@@ -98,12 +113,15 @@ export function useCoupons(systemId: string) {
 
         isLoading: query.isPending,
         isFetching: query.isFetching,
+        isError: query.isError,
 
         isCreating: createMutation.isPending,
         isDeleting: deleteMutation.isPending,
 
+        error: query.error,
+
         refetch: query.refetch,
 
-        error: query.error,
+        query,
     };
 }

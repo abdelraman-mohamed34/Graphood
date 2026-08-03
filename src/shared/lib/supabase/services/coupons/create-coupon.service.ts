@@ -14,7 +14,7 @@ interface CreateCouponParams {
     code?: string;
     generateCode?: boolean;
 
-    discountType: "PERCENTAGE" | "FIXED";
+    discountType: "PERCENT" | "FIXED";
     discountValue: number;
 
     maxDiscount?: number;
@@ -74,7 +74,7 @@ export async function createCoupon({
         );
     }
 
-    if (discountType === "PERCENTAGE") {
+    if (discountType === "PERCENT") {
         if (discountValue <= 0 || discountValue > 100) {
             throw new Error(
                 "Percentage discount must be between 1 and 100."
@@ -189,47 +189,47 @@ export async function createCoupon({
     // Insert Coupon
     // ---------------------------------
 
+    const insert = {
+        code: couponCode,
+
+        is_generated: generateCode,
+
+        system_id: systemId,
+        created_by: createdBy,
+
+        discount_type: discountType,
+        discount_value: discountValue,
+
+        max_discount: maxDiscount ?? null,
+
+        license_type: licenseType ?? null,
+
+        plan: plan ?? null,
+
+        min_order_amount: minOrderAmount,
+
+        max_uses: maxUses,
+
+        max_uses_per_user: maxUsesPerUser,
+
+        one_use_per_system: oneUsePerSystem,
+
+        starts_at: startsAt ?? null,
+
+        expires_at: expiresAt ?? null,
+
+        is_active: isActive,
+    };
+
+    // Log the payload to aid debugging of DB constraint violations
+    // (will appear in server logs / terminal running Next.js)
+    // eslint-disable-next-line no-console
+    console.error("Supabase Create Coupon Insert Payload:", insert);
+
     const { data: coupon, error } =
         await supabase
             .from("coupons")
-            .insert({
-                code: couponCode,
-
-                is_generated: generateCode,
-
-                system_id: systemId,
-                created_by: createdBy,
-
-                discount_type: discountType,
-                discount_value: discountValue,
-
-                max_discount:
-                    maxDiscount ?? null,
-
-                license_type:
-                    licenseType ?? null,
-
-                plan: plan ?? null,
-
-                min_order_amount:
-                    minOrderAmount,
-
-                max_uses: maxUses,
-
-                max_uses_per_user:
-                    maxUsesPerUser,
-
-                one_use_per_system:
-                    oneUsePerSystem,
-
-                starts_at:
-                    startsAt ?? null,
-
-                expires_at:
-                    expiresAt ?? null,
-
-                is_active: isActive,
-            })
+            .insert(insert)
             .select()
             .single();
 
@@ -239,8 +239,16 @@ export async function createCoupon({
                 "Coupon code already exists."
             );
         }
+        // Wrap Supabase/Postgres error into a JS Error so callers receive a
+        // consistent Error instance with a useful message.
+        // Safely extract a message from the Supabase/Postgrest error object.
+        const supabaseErr: any = error;
+        const message =
+            supabaseErr?.message ?? supabaseErr?.error ?? supabaseErr?.details ??
+            JSON.stringify(supabaseErr) ??
+            "Failed to insert coupon into database.";
 
-        throw error;
+        throw new Error(String(message));
     }
 
     return coupon;

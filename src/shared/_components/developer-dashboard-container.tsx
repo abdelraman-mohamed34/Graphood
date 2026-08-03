@@ -5,12 +5,12 @@ type DashboardContainerProps = {
     className?: string
 }
 
-export default function DashboardContainer({
+export default function DeveloperDashboardContainer({
     children,
     className = ""
 }: DashboardContainerProps) {
     return (
-        <div className={`p-5 ${className}`}>
+        <div className={`max-w-5xl mx-auto space-y-6 p-8 ${className}`}>
             {children}
         </div>
     )

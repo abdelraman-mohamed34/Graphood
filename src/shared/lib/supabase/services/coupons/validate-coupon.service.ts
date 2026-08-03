@@ -201,7 +201,7 @@ export async function validateCoupon({
 
     let discountAmount = 0;
 
-    if (coupon.discount_type === "PERCENTAGE") {
+    if (coupon.discount_type === "PERCENT") {
         discountAmount =
             (amount * coupon.discount_value) / 100;
 

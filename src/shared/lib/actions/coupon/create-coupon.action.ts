@@ -11,20 +11,22 @@ import { createCouponSchema } from "@/shared/lib/schemas/coupon/coupon.schema";
 
 type CreateCouponInput = z.infer<typeof createCouponSchema>;
 
-export async function createCouponAction(
-    input: CreateCouponInput
-) {
+export async function createCouponAction(input: CreateCouponInput) {
     const parsed = createCouponSchema.safeParse(input);
 
     if (!parsed.success) {
+        const issues = parsed.error.issues;
+        const errorMessage = issues
+            .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+            .join(" | ");
+
         return {
             success: false,
-            error: parsed.error.flatten(),
+            error: errorMessage || "Invalid coupon data.",
         };
     }
 
     const supabase = await createSupabaseServerClient();
-
     const user = await fetchUser(supabase);
 
     if (!user) {
@@ -51,10 +53,7 @@ export async function createCouponAction(
         is_active,
     } = parsed.data;
 
-    const system = await getSystemById(
-        system_id,
-        supabase
-    );
+    const system = await getSystemById(system_id, supabase);
 
     if (!system) {
         return {
@@ -66,7 +65,7 @@ export async function createCouponAction(
     if (system.owner_id !== user.id) {
         return {
             success: false,
-            error: "Unauthorized.",
+            error: "Unauthorized: You are not the owner of this system.",
         };
     }
 
@@ -98,19 +97,21 @@ export async function createCouponAction(
             expiresAt: expires_at ?? undefined,
 
             isActive: is_active,
-        });;
+        });
 
         return {
             success: true,
             data: coupon,
         };
     } catch (error) {
+        console.error("Supabase Create Coupon Critical Error:", error);
+
         return {
             success: false,
             error:
                 error instanceof Error
                     ? error.message
-                    : "Failed to create coupon.",
+                    : "Failed to create coupon in database.",
         };
     }
 }

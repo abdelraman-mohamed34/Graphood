@@ -24,6 +24,7 @@
     "@types/three": "^0.185.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
     "i18next": "^26.3.0",
     "lucide-react": "^1.23.0",
     "motion": "^12.40.0",
