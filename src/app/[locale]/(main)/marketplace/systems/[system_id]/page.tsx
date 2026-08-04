@@ -7,10 +7,14 @@ import { createClient } from '@/shared/lib/supabase/client'
 import { getSystemById } from '@/shared/lib/supabase/services/systems'
 import { Building2, Calendar, Tag, CheckCircle2 } from 'lucide-react'
 import CheckoutButton from './_components/check-out-btn'
+import { useLocale } from 'next-intl'
+import { useTags } from '@/shared/lib/hooks/tags/use-tag'
 
 export default function Page() {
     const params = useParams();
     const systemId = (params?.system_id || params?.id) as string;
+    const locale = useLocale();
+    const { data: availableTags = [] } = useTags();
 
     const supabase = createClient();
 
@@ -35,6 +39,8 @@ export default function Page() {
             </div>
         );
     }
+
+    const systemTags = availableTags.filter((tag) => system.tags?.includes(tag.id));
 
     return (
         <div className="min-h-screen p-6 max-w-7xl mx-auto space-y-8">
@@ -115,7 +121,7 @@ export default function Page() {
                                 <Tag className="w-4 h-4" /> Category
                             </span>
                             <span className="font-medium text-neutral-800 dark:text-neutral-200">
-                                {system.category || 'Uncategorized'}
+                                {systemTags.map((tag) => locale === 'ar' ? tag.name_ar : tag.name_en).join(', ') || '—'}
                             </span>
                         </div>
 

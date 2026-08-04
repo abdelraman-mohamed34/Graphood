@@ -1,13 +1,14 @@
 "use client";
 
 import { use } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ShieldCheck, Tag } from "lucide-react";
 
 import { Badge as StatusBadge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import DeveloperDashboardContainer from "@/shared/_components/developer-dashboard-container";
 import { useSystem } from "@/shared/lib/hooks";
+import { useTags } from "@/shared/lib/hooks/tags/use-tag";
 
 interface PageProps {
     params: Promise<{
@@ -17,8 +18,10 @@ interface PageProps {
 
 export default function Page({ params }: PageProps) {
     const t = useTranslations("developerOverview");
+    const locale = useLocale();
     const { system_id } = use(params);
     const { system, isSingleLoading, error } = useSystem(system_id);
+    const { data: availableTags = [] } = useTags();
 
     // 1. Loading State
     if (isSingleLoading) {
@@ -49,6 +52,7 @@ export default function Page({ params }: PageProps) {
 
     // 3. Main System Info Render
     const isActive = system.status === "ACTIVE";
+    const systemTags = availableTags.filter((tag) => system.tags?.includes(tag.id));
 
     return (
         <DeveloperDashboardContainer>
@@ -83,7 +87,7 @@ export default function Page({ params }: PageProps) {
                         <Tag className="h-4 w-4 text-primary shrink-0" />
                         <span className="text-muted-foreground">{t("categoryLabel")}:</span>
                         <span className="font-medium text-foreground">
-                            {system.category}
+                            {systemTags.map((tag) => locale === "ar" ? tag.name_ar : tag.name_en).join(", ")}
                         </span>
                     </div>
                 </div>

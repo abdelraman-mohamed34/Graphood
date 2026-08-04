@@ -34,7 +34,7 @@ export default async function SystemDetailsLayout({
 
     if (user?.id === system?.owner_id) {
         redirect({
-            href: `/developer/system/${system_id}`,
+            href: `/developer/systems/${system_id}`,
             locale,
         });
     }

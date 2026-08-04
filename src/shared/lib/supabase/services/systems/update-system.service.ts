@@ -19,7 +19,6 @@ export async function updateSystem(
 
         currency: data.currency,
 
-        category: data.category,
         tags: data.tags,
 
         icon_url: data.icon_url,

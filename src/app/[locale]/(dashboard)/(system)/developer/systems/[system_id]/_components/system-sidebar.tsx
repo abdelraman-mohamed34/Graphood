@@ -32,33 +32,33 @@ export default function SystemSidebar() {
     const navItems: SidebarItem[] = [
         {
             label: t("overview"),
-            href: `/developer/system/${systemId}`,
+            href: `/developer/systems/${systemId}`,
             icon: LayoutDashboard,
             exact: true,
         },
         {
             label: t("api_keys"),
-            href: `/developer/system/${systemId}/api-keys`,
+            href: `/developer/systems/${systemId}/api-keys`,
             icon: KeyRound,
         },
         {
             label: t("coupons"),
-            href: `/developer/system/${systemId}/coupons`,
+            href: `/developer/systems/${systemId}/coupons`,
             icon: TicketPercent,
         },
         {
             label: t("orders"),
-            href: `/developer/system/${systemId}/orders`,
+            href: `/developer/systems/${systemId}/orders`,
             icon: Receipt,
         },
         {
             label: t("pricing"),
-            href: `/developer/system/${systemId}/pricing`,
+            href: `/developer/systems/${systemId}/pricing`,
             icon: CreditCard,
         },
         {
             label: t("settings"),
-            href: `/developer/system/${systemId}/settings`,
+            href: `/developer/systems/${systemId}/settings`,
             icon: Settings,
         },
     ];

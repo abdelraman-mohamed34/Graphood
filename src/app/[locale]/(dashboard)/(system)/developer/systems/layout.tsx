@@ -29,11 +29,8 @@ export default async function SystemLayout({
     });
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
-            <div className="flex w-full h-full">
-                <SystemSidebar />
-                <div className="flex-1">
-                    {children}
-                </div>
+            <div className="w-full h-full">
+                {children}
             </div>
         </HydrationBoundary>
     );

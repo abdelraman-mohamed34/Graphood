@@ -24,7 +24,7 @@ export default function Page() {
                     </p>
                 </div>
 
-                <Link href="/developer/system/add">
+                <Link href="/developer/systems/add">
                     <Button className="w-full sm:w-auto shadow-sm">
                         <Plus className="me-2 h-4 w-4" />
                         {t("newSystemBtn")}
@@ -64,7 +64,7 @@ export default function Page() {
                             {t("emptyDescription")}
                         </p>
                     </div>
-                    <Link href="/developer/system/add" className="inline-block pt-2">
+                    <Link href="/developer/systems/add" className="inline-block pt-2">
                         <Button variant="outline">
                             <Plus className="me-2 h-4 w-4" />
                             {t("createFirstSystem")}
@@ -76,7 +76,7 @@ export default function Page() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {currentSystems?.map((system) => (
                         <Link
-                            href={`/developer/system/${system.id}`}
+                            href={`/developer/systems/${system.id}`}
                             key={system.id}
                             className="group relative p-5 border border-border/60 rounded-xl bg-card/30 hover:bg-card/60 hover:border-primary/40 backdrop-blur-sm transition-all duration-200 flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md"
                         >

@@ -2,8 +2,7 @@
 
 import {
     CreateSystemInput,
-    SystemInsert,
-    systemInsertSchema,
+    createSystemSchema,
 } from "@/shared/lib/schemas/systems.schema";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
@@ -21,13 +20,9 @@ export async function createSystemAction(
         throw new Error("Authentication required.");
     }
 
-    const payload: SystemInsert =
-        systemInsertSchema.parse({
-            ...data,
-            owner_id: user.id,
-        });
+    const payload = createSystemSchema.parse(data);
 
-    const system = await createSystem(payload);
+    const system = await createSystem(payload, user.id);
 
     const apiKey = await createApiKey({
         system_id: system.id,

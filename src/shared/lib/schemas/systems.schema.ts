@@ -10,11 +10,11 @@ export const systemSchema = z.object({
 
     slug: z
         .string()
-        .min(5, "Slug must be at least 5 characters")
-        .regex(
-            /^[a-z0-9.-]+$/,
-            "Invalid slug format"
-        ),
+        .min(5, "Slug must be at least 5 characters"),
+        // .regex(
+        //     /^[a-z0-9.-]+$/,
+        //     "Invalid slug format"
+        // ),
 
     description: z
         .string()
@@ -38,8 +38,9 @@ export const systemSchema = z.object({
     status: z.enum(status).default("PENDING"),
 
     // Metadata
-    category: z.string().trim().min(3),
-    tags: z.array(z.string()).default([]),
+    tags: z
+        .array(z.string().uuid("Invalid Tag ID"))
+        .min(1, "Select at least one tag/category"),
     icon_url: z.string().url().optional(),
     is_public: z.boolean().default(true),
 
@@ -57,14 +58,25 @@ export const systemInsertSchema = systemSchema.omit({
 
 export type SystemInsert = z.infer<typeof systemInsertSchema>;
 
-export const createSystemSchema = systemInsertSchema.omit({
-    owner_id: true,
-});
+export const getCreateSystemSchema = (t?: (key: string) => string) =>
+    systemInsertSchema.omit({ owner_id: true }).extend({
+        name: z.string().min(3, t ? t("validation.nameMin") : "System name too short"),
+        slug: z.string().min(5, t ? t("validation.slugMin") : "Slug must be at least 5 characters"),
+        description: z
+            .string()
+            .trim()
+            .min(10, t ? t("validation.descriptionMin") : "Description must be at least 10 characters"),
+        tags: z
+            .array(z.string().uuid(t ? t("validation.invalidTag") : "Invalid Tag ID"))
+            .min(1, t ? t("validation.tagsRequired") : "Select at least one tag/category"),
+    });
+
+export const createSystemSchema = getCreateSystemSchema();
 
 /**
  * React Hook Form should use the INPUT type.
  */
-export type CreateSystemInput = z.input<typeof createSystemSchema>;
+export type CreateSystemInput = z.input<ReturnType<typeof getCreateSystemSchema>>;
 
 export const systemUpdateSchema = systemInsertSchema.partial();
 

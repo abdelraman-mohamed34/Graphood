@@ -7,7 +7,7 @@ interface MapDeveloperContextOptions {
         name: string;
         slug: string;
         description: string;
-        category: string;
+        tags: string[];
         icon_url: string | null;
         is_public: boolean;
     };

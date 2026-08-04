@@ -32,7 +32,7 @@ export const GET = withDeveloperContext(
                     name: system.name,
                     slug: system.slug,
                     description: system.description,
-                    category: system.category,
+                    tags: system.tags ?? [],
                     icon_url: system.icon_url,
                     is_public: system.is_public,
                 }

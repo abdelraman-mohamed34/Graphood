@@ -3,8 +3,50 @@
         "name_error": "يجب أن يتكون الاسم من 3 أحرف على الأقل",
         "phone_error": "رقم الهاتف قصير جدًا"
     },
+    "developer": {
+        "systems": {
+            "create": {
+                "title": "إنشاء نظام جديد",
+                "subtitle": "أنشئ نظامك لبدء التكامل مع Graphood.",
+                "fields": {
+                    "name": { "label": "اسم النظام", "placeholder": "نظام إدارة العملاء" },
+                    "slug": { "label": "الرابط المختصر", "placeholder": "awesome-crm", "description": "يُستخدم في الروابط العامة." },
+                    "description": { "label": "الوصف", "placeholder": "صِف إمكانات نظامك وميزاته..." },
+                    "category": {
+                        "label": "الوسوم والتصنيفات",
+                        "searchPlaceholder": "ابحث في الوسوم والتصنيفات...",
+                        "loading": "جارٍ تحميل الوسوم...",
+                        "empty": "لم يتم العثور على وسوم.",
+                        "remove": "إزالة {category}"
+                    },
+                    "starterPrice": { "label": "سعر الباقة المبدئية (ج.م)" },
+                    "proPrice": { "label": "سعر الباقة الاحترافية (ج.م)" },
+                    "businessPrice": { "label": "سعر باقة الأعمال (ج.م)" },
+                    "resellerPrice": { "label": "سعر إعادة البيع (ج.م)" },
+                    "exclusivePrice": { "label": "السعر الحصري (ج.م)" }
+                },
+                "pricing": {
+                    "subscriptionTitle": "تسعير الاشتراكات",
+                    "subscriptionSubtitle": "حدد الأسعار المتكررة للباقات العامة.",
+                    "licenseTitle": "تسعير التراخيص",
+                    "licenseSubtitle": "حدد رسوم الشراء لمرة واحدة أو التراخيص الخاصة."
+                },
+                "notifications": { "success": "تم إنشاء النظام بنجاح.", "error": "فشل إنشاء النظام." },
+                "validation": {
+                    "nameMin": "يجب ألا يقل اسم النظام عن 3 أحرف.",
+                    "slugMin": "يجب ألا يقل الرابط المختصر عن 5 أحرف.",
+                    "descriptionMin": "يجب ألا يقل الوصف عن 10 أحرف.",
+                    "invalidTag": "اختر وسمًا صالحًا.",
+                    "tagsRequired": "اختر وسمًا أو تصنيفًا واحدًا على الأقل."
+                },
+                "submit": "إنشاء النظام",
+                "submitLoading": "جارٍ الإنشاء..."
+            }
+        }
+    },
     "marketplace": {
         "error": "تعذر تحميل الأنظمة.",
+        "loading": "جارٍ تحميل الأنظمة...",
         "hero": {
             "titleLineOne": "اكتشف أنظمة قوية",
             "titleLineTwo": "لمساحة عملك",
@@ -155,7 +197,40 @@
         "emptyTitle": "لا توجد أنظمة بعد",
         "emptyDescription": "أنشئ أول نظام لك لبدء بناء التكاملات ومشاركة واجهات API.",
         "createFirstSystem": "أنشئ أول نظام لك",
-        "noDescription": "لم يتم توفير وصف بعد."
+        "noDescription": "لم يتم توفير وصف بعد.",
+        "create": {
+            "title": "إنشاء نظام جديد",
+            "subtitle": "أنشئ نظامك لبدء التكامل مع Graphood.",
+            "fields": {
+                "name": { "label": "اسم النظام", "placeholder": "نظام إدارة العملاء" },
+                "slug": { "label": "الرابط المختصر", "placeholder": "awesome-crm", "description": "يُستخدم في الروابط العامة." },
+                "description": { "label": "الوصف", "placeholder": "صِف إمكانات نظامك وميزاته..." },
+                "category": {
+                    "label": "التصنيفات",
+                    "placeholder": "اختر التصنيفات",
+                    "searchPlaceholder": "ابحث في التصنيفات...",
+                    "loading": "جارٍ تحميل التصنيفات...",
+                    "empty": "لم يتم العثور على تصنيفات.",
+                    "selectedCount": "تم اختيار {count}",
+                    "remove": "إزالة {category}"
+                },
+                "tags": { "label": "الوسوم", "placeholder": "عملاء، مبيعات، أعمال", "description": "افصل بين الوسوم بفواصل." },
+                "starterPrice": { "label": "سعر الباقة المبدئية (ج.م)" },
+                "proPrice": { "label": "سعر الباقة الاحترافية (ج.م)" },
+                "businessPrice": { "label": "سعر باقة الأعمال (ج.م)" },
+                "resellerPrice": { "label": "سعر إعادة البيع (ج.م)" },
+                "exclusivePrice": { "label": "السعر الحصري (ج.م)" }
+            },
+            "pricing": {
+                "subscriptionTitle": "تسعير الاشتراكات",
+                "subscriptionSubtitle": "حدد الأسعار المتكررة للباقات العامة.",
+                "licenseTitle": "تسعير التراخيص",
+                "licenseSubtitle": "حدد رسوم الشراء لمرة واحدة أو التراخيص الخاصة."
+            },
+            "notifications": { "success": "تم إنشاء النظام بنجاح.", "error": "فشل إنشاء النظام." },
+            "submit": "إنشاء النظام",
+            "submitLoading": "جارٍ الإنشاء..."
+        }
     },
     "developerApiKeys": {
         "title": "مفاتيح واجهة API",

@@ -6,6 +6,7 @@ import { QueryClient, HydrationBoundary, dehydrate } from "@tanstack/react-query
 import { SYSTEM_QUERY_KEYS } from "@/shared/lib/hooks/systems/use-system";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
 import { fetchProfile } from "@/shared/lib/supabase/services/profile";
+import SystemSidebar from "./_components/system-sidebar";
 
 interface SystemDetailLayoutProps {
     children: React.ReactNode;
@@ -51,8 +52,8 @@ export default async function SystemDetailLayout({
 
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
-            <div className="flex">
-
+            <div className="flex w-full">
+                <SystemSidebar />
                 <div className="flex-1">
                     {children}
                 </div>

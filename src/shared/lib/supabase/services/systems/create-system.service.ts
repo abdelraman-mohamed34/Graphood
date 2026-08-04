@@ -1,8 +1,12 @@
-import { System, SystemInsert } from "@/shared/lib/schemas/systems.schema";
+import {
+    type CreateSystemInput,
+    type System,
+} from "@/shared/lib/schemas/systems.schema";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 
 export async function createSystem(
-    data: SystemInsert
+    data: CreateSystemInput,
+    ownerId: string,
 ): Promise<System> {
 
     const supabase =
@@ -13,7 +17,10 @@ export async function createSystem(
         error,
     } = await supabase
         .from("systems")
-        .insert(data)
+        .insert({
+            ...data,
+            owner_id: ownerId,
+        })
         .select()
         .single();
 

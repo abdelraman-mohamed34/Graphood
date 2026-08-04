@@ -118,7 +118,7 @@ export async function proxy(req: NextRequest) {
 
         if (system && user.id === system.owner_id) {
             return NextResponse.redirect(
-                new URL(`/${locale}/developer/system/${systemId}`, req.url)
+                new URL(`/${locale}/developer/systems/${systemId}`, req.url)
             );
         }
     }

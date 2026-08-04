@@ -3,8 +3,50 @@
         "name_error": "Name must be at least 3 characters",
         "phone_error": "Phone number is too short"
     },
+    "developer": {
+        "systems": {
+            "create": {
+                "title": "Create New System",
+                "subtitle": "Create your system to start integrating with Graphood.",
+                "fields": {
+                    "name": { "label": "System Name", "placeholder": "My Awesome CRM" },
+                    "slug": { "label": "Slug", "placeholder": "awesome-crm", "description": "Used in public URLs." },
+                    "description": { "label": "Description", "placeholder": "Describe your system capabilities and features..." },
+                    "category": {
+                        "label": "Tags and categories",
+                        "searchPlaceholder": "Search tags and categories...",
+                        "loading": "Loading tags...",
+                        "empty": "No tags found.",
+                        "remove": "Remove {category}"
+                    },
+                    "starterPrice": { "label": "Starter Price (EGP)" },
+                    "proPrice": { "label": "Pro Price (EGP)" },
+                    "businessPrice": { "label": "Business Price (EGP)" },
+                    "resellerPrice": { "label": "Reseller Price (EGP)" },
+                    "exclusivePrice": { "label": "Exclusive Price (EGP)" }
+                },
+                "pricing": {
+                    "subscriptionTitle": "Subscription Pricing",
+                    "subscriptionSubtitle": "Set recurring rates for public tiers.",
+                    "licenseTitle": "License Pricing",
+                    "licenseSubtitle": "Set one-time purchase or special license fees."
+                },
+                "notifications": { "success": "System created successfully.", "error": "Failed to create system." },
+                "validation": {
+                    "nameMin": "System name must be at least 3 characters.",
+                    "slugMin": "Slug must be at least 5 characters.",
+                    "descriptionMin": "Description must be at least 10 characters.",
+                    "invalidTag": "Select a valid tag.",
+                    "tagsRequired": "Select at least one tag or category."
+                },
+                "submit": "Create System",
+                "submitLoading": "Creating..."
+            }
+        }
+    },
     "marketplace": {
         "error": "Failed to load systems.",
+        "loading": "Loading systems...",
         "hero": {
             "titleLineOne": "Discover powerful systems",
             "titleLineTwo": "for your workspace",
@@ -155,7 +197,40 @@
         "emptyTitle": "No systems yet",
         "emptyDescription": "Create your first system to start building integrations and sharing APIs.",
         "createFirstSystem": "Create your first system",
-        "noDescription": "No description provided yet."
+        "noDescription": "No description provided yet.",
+        "create": {
+            "title": "Create New System",
+            "subtitle": "Create your system to start integrating with Graphood.",
+            "fields": {
+                "name": { "label": "System Name", "placeholder": "My Awesome CRM" },
+                "slug": { "label": "Slug", "placeholder": "awesome-crm", "description": "Used in public URLs." },
+                "description": { "label": "Description", "placeholder": "Describe your system capabilities and features..." },
+                "category": {
+                    "label": "Categories",
+                    "placeholder": "Select categories",
+                    "searchPlaceholder": "Search categories...",
+                    "loading": "Loading categories...",
+                    "empty": "No categories found.",
+                    "selectedCount": "{count, plural, one {# selected} other {# selected}}",
+                    "remove": "Remove {category}"
+                },
+                "tags": { "label": "Tags", "placeholder": "crm, sales, business", "description": "Separate tags with commas." },
+                "starterPrice": { "label": "Starter Price (EGP)" },
+                "proPrice": { "label": "Pro Price (EGP)" },
+                "businessPrice": { "label": "Business Price (EGP)" },
+                "resellerPrice": { "label": "Reseller Price (EGP)" },
+                "exclusivePrice": { "label": "Exclusive Price (EGP)" }
+            },
+            "pricing": {
+                "subscriptionTitle": "Subscription Pricing",
+                "subscriptionSubtitle": "Set recurring rates for public tiers.",
+                "licenseTitle": "License Pricing",
+                "licenseSubtitle": "Set one-time purchase or special license fees."
+            },
+            "notifications": { "success": "System created successfully.", "error": "Failed to create system." },
+            "submit": "Create System",
+            "submitLoading": "Creating..."
+        }
     },
     "developerApiKeys": {
         "title": "API Keys",

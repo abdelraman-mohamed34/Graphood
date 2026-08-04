@@ -7,16 +7,8 @@ import { useLocale } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import { useTags } from "@/shared/lib/hooks/tags/use-tag";
-
-export interface MarketplaceSystem {
-    id: string;
-    name: string;
-    description: string;
-    category: string;
-    tags: string[];
-    icon_url?: string | null;
-    localizedDescription: string;
-}
+import { useSystems } from "@/shared/lib/hooks/systems/use-systems";
+import type { MarketplaceSystem } from "@/shared/lib/supabase/services/systems/get-marketplace-systems.service";
 
 interface MarketplaceLabels {
     heroTitleLineOne: string;
@@ -31,15 +23,12 @@ interface MarketplaceLabels {
     emptyDescription: string;
     cardBadge: string;
     cardViewDetails: string;
+    error: string;
+    loading: string;
 }
 
 interface MarketplaceExplorerProps {
-    systems: MarketplaceSystem[];
     labels: MarketplaceLabels;
-}
-
-function normalize(value: string) {
-    return value.toLocaleLowerCase().replace(/[\s_-]+/g, "");
 }
 
 const SystemCard = memo(function SystemCard({
@@ -81,7 +70,7 @@ const SystemCard = memo(function SystemCard({
                         {system.name}
                     </h2>
                     <p className="line-clamp-2 break-words text-sm leading-relaxed text-muted-foreground">
-                        {system.localizedDescription}
+                        {system.description}
                     </p>
                 </div>
 
@@ -97,33 +86,28 @@ const SystemCard = memo(function SystemCard({
     );
 });
 
-export default function MarketplaceExplorer({ systems, labels }: MarketplaceExplorerProps) {
+export default function MarketplaceExplorer({ labels }: MarketplaceExplorerProps) {
     const locale = useLocale();
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const deferredQuery = useDeferredValue(searchQuery);
 
-    // استدعاء הـ React Query Hook
-    const { data: tagsData } = useTags();
-    const tagsList = tagsData ?? [];
+    const { data: systems = [], isLoading: isLoadingSystems, error: systemsError } = useSystems();
+    const { data: tagsList = [] } = useTags();
 
     const filteredSystems = useMemo(() => {
         const query = deferredQuery.trim().toLocaleLowerCase();
-        const normalizedCategory = normalize(selectedCategory);
-
         return systems.filter((system) => {
             const searchableText = [
                 system.name,
                 system.description,
-                system.category,
-                ...system.tags,
+                ...system.tags.flatMap((tag) => [tag.name_en, tag.name_ar, tag.slug]),
             ]
                 .join(" ")
                 .toLocaleLowerCase();
             const matchesQuery = !query || searchableText.includes(query);
-            const systemCategories = [system.category, ...system.tags].map(normalize);
-            const matchesCategory =
-                selectedCategory === "all" || systemCategories.includes(normalizedCategory);
+            const matchesCategory = selectedCategory === "all" ||
+                system.tags.some((tag) => tag.id === selectedCategory);
 
             return matchesQuery && matchesCategory;
         });
@@ -207,15 +191,15 @@ export default function MarketplaceExplorer({ systems, labels }: MarketplaceExpl
                                     aria-pressed={selectedCategory === "all"}
                                     onClick={() => setSelectedCategory("all")}
                                     className={`shrink-0 snap-start rounded-xl px-4 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm ${selectedCategory === "all"
-                                            ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                                            : "border border-border bg-card text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                        ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                                        : "border border-border bg-card text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                                         }`}
                                 >
                                     {labels.categories["all"] ?? "All"}
                                 </button>
 
                                 {tagsList.map((tag) => {
-                                    const categoryKey = tag.slug;
+                                    const categoryKey = tag.id;
                                     const categoryLabel = locale === "ar" ? tag.name_ar : tag.name_en;
 
                                     return (
@@ -225,11 +209,11 @@ export default function MarketplaceExplorer({ systems, labels }: MarketplaceExpl
                                             aria-pressed={selectedCategory === categoryKey}
                                             onClick={() => setSelectedCategory(categoryKey)}
                                             className={`shrink-0 snap-start rounded-xl px-4 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm ${selectedCategory === categoryKey
-                                                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                                                    : "border border-border bg-card text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                                ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                                                : "border border-border bg-card text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                                                 }`}
                                         >
-                                            {labels.categories[categoryKey] ?? categoryLabel}
+                                            {categoryLabel}
                                         </button>
                                     );
                                 })}
@@ -240,7 +224,15 @@ export default function MarketplaceExplorer({ systems, labels }: MarketplaceExpl
                             {filteredSystems.length} {labels.contentEyebrow}
                         </p>
 
-                        {filteredSystems.length === 0 ? (
+                        {isLoadingSystems ? (
+                            <p className="py-16 text-center text-sm text-muted-foreground" role="status">
+                                {labels.loading}
+                            </p>
+                        ) : systemsError ? (
+                            <p className="py-16 text-center text-sm text-destructive" role="alert">
+                                {labels.error}
+                            </p>
+                        ) : filteredSystems.length === 0 ? (
                             <div className="space-y-2 py-16 text-center text-muted-foreground sm:py-20">
                                 <p className="break-words text-lg font-medium">{labels.emptyTitle}</p>
                                 <p className="break-words text-sm">{labels.emptyDescription}</p>
