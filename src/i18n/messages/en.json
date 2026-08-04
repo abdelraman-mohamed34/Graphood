@@ -154,6 +154,525 @@
             "unauthorizedAccess": "Sorry, you do not have permission to access this workspace."
         }
     },
+    "ChangelogPage": {
+        "title": "Changelog",
+        "description": "Track new features, improvements, bug fixes, and API updates across Graphood Developer API releases.",
+        "latestRelease": "Latest Release",
+        "types": {
+            "feature": "Feature",
+            "improvement": "Improvement",
+            "fix": "Fix",
+            "breaking": "Breaking Change"
+        },
+        "releases": {
+            "v1_0_0": {
+                "date": "August 2026",
+                "changes": {
+                    "initial": "The first official release of the Graphood Developer API.",
+                    "meEndpoint": "Added the <code1>/me</code1> endpoint to retrieve the current system and tenant status.",
+                    "coreEndpoints": "Added the <code1>/tenant</code1>, <code2>/memberships</code2>, and <code3>/subscription</code3> endpoints.",
+                    "healthEndpoint": "Added the <code1>/health</code1> endpoint for service health monitoring.",
+                    "auth": "Introduced API key authentication using Bearer Token.",
+                    "schema": "Standardized the API JSON response schema and error structure."
+                }
+            }
+        }
+    },
+    "ErrorsPage": {
+        "title": "Errors",
+        "description": "Graphood Developer API returns standard HTTP status codes with a consistent JSON error format to help you troubleshoot issues quickly.",
+        "errorFormat": {
+            "title": "Error Response Format",
+            "description": "When an API request fails, the server responds with a success flag of <code1>false</code1> and a detailed error object:"
+        },
+        "httpStatuses": {
+            "title": "HTTP Status Codes",
+            "headers": {
+                "status": "Status",
+                "meaning": "Meaning"
+            },
+            "list": {
+                "ok": "The request completed successfully.",
+                "badRequest": "The request was invalid or contained incorrect parameters.",
+                "unauthorized": "Authentication failed or the API key was missing or invalid.",
+                "forbidden": "Access to the requested resource or tenant was denied.",
+                "notFound": "The requested resource, tenant, or endpoint could not be found.",
+                "internalError": "An unexpected server error occurred."
+            }
+        },
+        "errorCodes": {
+            "title": "Application Error Codes",
+            "headers": {
+                "code": "Code",
+                "description": "Description"
+            },
+            "list": {
+                "INVALID_API_KEY": "The provided API key is invalid or malformed.",
+                "MISSING_API_KEY": "The Authorization header was not provided in the request.",
+                "SYSTEM_NOT_FOUND": "The requested system could not be found or is inactive.",
+                "TENANT_NOT_FOUND": "The requested tenant slug could not be found.",
+                "UNKNOWN_ERROR": "An unhandled or unexpected error occurred in the internal server."
+            }
+        }
+    },
+    "ResponseFormatPage": {
+        "title": "Response Format",
+        "description": "All responses returned by the Graphood Developer API follow a consistent JSON structure. Successful and failed requests always share the same base schema.",
+        "successfulResponse": {
+            "title": "Successful Response",
+            "description": "When a request succeeds, the <code1>success</code1> field is set to <code2>true</code2> and the requested data is included inside <code3>data</code3>."
+        },
+        "errorResponse": {
+            "title": "Error Response",
+            "description": "When a request fails, <code1>success</code1> is set to <code2>false</code2> and an <code3>error</code3> object is returned with the error code and message."
+        },
+        "fieldsBreakdown": {
+            "title": "Key Field Breakdown",
+            "headers": {
+                "field": "Field",
+                "type": "Type",
+                "description": "Description"
+            },
+            "list": {
+                "success": "Indicates whether the request succeeded (true) or failed (false).",
+                "data": "Contains the requested data or resource. Only appears in successful responses.",
+                "error": "Contains error details including the code and message. Only appears when a request fails."
+            }
+        }
+    },
+    "AuthenticationPage": {
+        "title": "Authentication",
+        "description": "Graphood Developer API uses API keys for authenticating requests. Include your API key in the Authorization header for all protected endpoints.",
+        "method": {
+            "title": "Authentication Method",
+            "description": "Graphood uses Bearer Token authentication. Every protected request must include your API key in the <code1>Authorization</code1> header."
+        },
+        "generate": {
+            "title": "Generate an API Key",
+            "description": "Create an API key from your developer dashboard:",
+            "steps": {
+                "step1": "Open the developer dashboard.",
+                "step2": "Select your system.",
+                "step3": "Go to <strong1>API Keys</strong1>.",
+                "step4": "Click <strong1>Create API Key</strong1>.",
+                "step5": "Copy the generated key and store it somewhere safe."
+            }
+        },
+        "example": {
+            "title": "Example Request"
+        },
+        "errors": {
+            "title": "Authentication Errors",
+            "headers": {
+                "code": "Error Code",
+                "description": "Description"
+            },
+            "list": {
+                "MISSING_API_KEY": "The Authorization header was not provided in the request.",
+                "INVALID_API_KEY": "The provided API key is invalid or malformed.",
+                "REVOKED_API_KEY": "The API key has been revoked and can no longer be used.",
+                "SYSTEM_NOT_FOUND": "The API key does not belong to an active system."
+            }
+        },
+        "bestPractices": {
+            "title": "Security Best Practices",
+            "list": {
+                "item1": "<strong1>Never expose API keys</strong1> in the frontend or public client-side code.",
+                "item2": "Store API keys in secure environment variables.",
+                "item3": "Rotate API keys regularly to reduce risk.",
+                "item4": "Revoke API keys that are exposed or suspected to be compromised immediately.",
+                "item5": "Use HTTPS exclusively for all API requests in production."
+            }
+        }
+    },
+    "QuickStartPage": {
+        "title": "Quick Start",
+        "description": "Learn how to authenticate with the Graphood Developer API and make your first successful request in just a few minutes.",
+        "prerequisites": {
+            "title": "Prerequisites",
+            "item1": "A developer account in Graphood.",
+            "item2": "A published system.",
+            "item3": "An active API key.",
+            "item4": "At least one tenant."
+        },
+        "baseUrl": {
+            "title": "Base URL",
+            "description": "All Developer API endpoints are available under the following base URL:",
+            "localDev": "For local development:"
+        },
+        "auth": {
+            "title": "Authentication",
+            "description": "Every request must include your Developer API key in the Authorization header."
+        },
+        "firstRequest": {
+            "title": "Your First Request",
+            "description": "Retrieve information about the current tenant, subscription, and system."
+        },
+        "exampleResponse": {
+            "title": "Example Response"
+        },
+        "nextSteps": {
+            "title": "Next Steps",
+            "items": {
+                "auth": {
+                    "title": "Authentication",
+                    "description": "Learn how to create and authenticate with API keys."
+                },
+                "endpoints": {
+                    "title": "Endpoints",
+                    "description": "Explore all available endpoints in the Developer API."
+                },
+                "responseFormat": {
+                    "title": "Response Format",
+                    "description": "Understand Graphood's standard response schema."
+                },
+                "errors": {
+                    "title": "Errors",
+                    "description": "Learn how the API reports validation and runtime errors."
+                }
+            }
+        }
+    },
+    "DeveloperDocsPage": {
+        "title": "Developer Docs",
+        "description": "Everything you need to integrate your apps, manage tenants, and work with system memberships using the Graphood Developer API.",
+        "welcomeBanner": {
+            "badge": "Graphood v1 API",
+            "title": "Welcome to Graphood for Developers",
+            "description": "Our RESTful API returns JSON-encoded responses and uses standard HTTP response codes. Start by creating your API key in the developer dashboard and make your first request.",
+            "button": "Get Started"
+        },
+        "explore": {
+            "title": "Explore the Docs",
+            "readSection": "Read section",
+            "cards": {
+                "quickStart": {
+                    "title": "Quick Start",
+                    "description": "Get up and running with the Graphood API in minutes."
+                },
+                "authentication": {
+                    "title": "Authentication",
+                    "description": "Learn how to use API keys to authenticate your requests."
+                },
+                "endpoints": {
+                    "title": "Endpoints",
+                    "description": "Explore the available endpoints for tenants, users, and systems."
+                },
+                "responseFormat": {
+                    "title": "Response Format",
+                    "description": "The unified JSON response structure and status format used across the API."
+                },
+                "errors": {
+                    "title": "Errors",
+                    "description": "Understand error codes, validation formats, and HTTP status conditions."
+                },
+                "changelog": {
+                    "title": "Changelog",
+                    "description": "See the latest updates, improvements, and breaking changes."
+                }
+            }
+        }
+    },
+    "EndpointsPage": {
+        "title": "Endpoints",
+        "description": "Explore every available endpoint in the Graphood Developer API. Each endpoint includes request examples, parameters, responses, and possible error codes.",
+        "table": {
+            "headers": {
+                "method": "Method",
+                "endpoint": "Endpoint",
+                "description": "Description",
+                "action": "View"
+            },
+            "descriptions": {
+                "health": "Check the current health status of the Developer API.",
+                "me": "Retrieve the current API context, including the system, tenant, subscription, and capabilities.",
+                "tenant": "Retrieve information about the current tenant.",
+                "memberships": "Retrieve all memberships belonging to the current tenant.",
+                "subscription": "Retrieve the tenant subscription and enabled capabilities."
+            }
+        }
+    },
+    "HealthEndpointPage": {
+        "title": "Health Check",
+        "description": "Check whether the Graphood Developer API is available and responding. This endpoint is useful for health checks, monitoring services, and deployment verification.",
+        "auth": {
+            "title": "Authentication",
+            "description": "This endpoint is public and does not require an API key."
+        },
+        "httpRequest": {
+            "title": "HTTP Request"
+        },
+        "queryParams": {
+            "title": "Query Parameters",
+            "description": "This endpoint does not accept any query parameters."
+        },
+        "exampleRequest": {
+            "title": "Example Request"
+        },
+        "exampleResponse": {
+            "title": "Example Response"
+        },
+        "statusCodes": {
+            "title": "Status Codes",
+            "headers": {
+                "code": "Code",
+                "description": "Description"
+            },
+            "list": {
+                "ok": "The API is functioning normally and responding as expected."
+            }
+        }
+    },
+    "MeEndpointPage": {
+        "title": "Current Context",
+        "description": "Returns the current authenticated developer API context, including the current system, tenant, subscription, and available capabilities.",
+        "auth": {
+            "title": "Authentication",
+            "description": "This endpoint requires a valid Developer API key."
+        },
+        "httpRequest": {
+            "title": "HTTP Request"
+        },
+        "queryParams": {
+            "title": "Query Parameters",
+            "headers": {
+                "name": "Name",
+                "type": "Type",
+                "required": "Required",
+                "description": "Description"
+            },
+            "list": {
+                "tenantSlug": {
+                    "required": "Yes",
+                    "description": "The tenant slug you want to access."
+                }
+            }
+        },
+        "exampleRequest": {
+            "title": "Example Request"
+        },
+        "exampleResponse": {
+            "title": "Example Response"
+        },
+        "returnedObjects": {
+            "title": "Returned Objects",
+            "system": {
+                "title": "system",
+                "description": "Information about the system belonging to the authenticated developer."
+            },
+            "tenant": {
+                "title": "tenant",
+                "description": "Information about the current tenant selected by tenantSlug."
+            },
+            "subscription": {
+                "title": "subscription",
+                "description": "Details of the current subscription, including plan, billing cycle, and license type."
+            },
+            "capabilities": {
+                "title": "capabilities",
+                "description": "The possible features and capabilities available to the current tenant."
+            }
+        },
+        "possibleErrors": {
+            "title": "Possible Errors",
+            "headers": {
+                "status": "HTTP Status",
+                "code": "Error Code",
+                "description": "Description"
+            },
+            "list": {
+                "invalidApiKey": "The attached API key is invalid.",
+                "tenantNotFound": "The requested tenant could not be found.",
+                "unknownError": "An unexpected server error occurred."
+            }
+        }
+    },
+    "TenantEndpointPage": {
+        "title": "Current Tenant",
+        "description": "Returns information about the current tenant associated with the authenticated request.",
+        "auth": {
+            "title": "Authentication",
+            "description": "This endpoint requires a valid Developer API key."
+        },
+        "httpRequest": {
+            "title": "HTTP Request"
+        },
+        "queryParams": {
+            "title": "Query Parameters",
+            "headers": {
+                "name": "Name",
+                "type": "Type",
+                "required": "Required",
+                "description": "Description"
+            },
+            "list": {
+                "tenantSlug": {
+                    "required": "Yes",
+                    "description": "The tenant slug to fetch data for."
+                }
+            }
+        },
+        "exampleRequest": {
+            "title": "Example Request"
+        },
+        "exampleResponse": {
+            "title": "Example Response"
+        },
+        "returnedObject": {
+            "title": "Returned Object",
+            "tenant": {
+                "title": "tenant",
+                "description": "Represents the current tenant identified by the supplied tenantSlug. Includes the tenant ID, name, slug, status, and creation date."
+            }
+        },
+        "possibleErrors": {
+            "title": "Possible Errors",
+            "headers": {
+                "status": "HTTP Status",
+                "code": "Error Code",
+                "description": "Description"
+            },
+            "list": {
+                "invalidApiKey": "The attached API key is invalid.",
+                "tenantNotFound": "The specified tenant could not be found.",
+                "unknownError": "An unexpected server error occurred."
+            }
+        }
+    },
+    "MembershipsEndpointPage": {
+        "title": "Memberships",
+        "description": "Returns all memberships belonging to the current tenant, including each member's role, permissions, status, and basic profile information.",
+        "auth": {
+            "title": "Authentication",
+            "description": "This endpoint requires a valid Developer API key."
+        },
+        "httpRequest": {
+            "title": "HTTP Request"
+        },
+        "queryParams": {
+            "title": "Query Parameters",
+            "headers": {
+                "name": "Name",
+                "type": "Type",
+                "required": "Required",
+                "description": "Description"
+            },
+            "list": {
+                "tenantSlug": {
+                    "required": "Yes",
+                    "description": "The tenant slug to fetch memberships for."
+                }
+            }
+        },
+        "exampleRequest": {
+            "title": "Example Request"
+        },
+        "exampleResponse": {
+            "title": "Example Response"
+        },
+        "membershipObject": {
+            "title": "Membership Object",
+            "headers": {
+                "field": "Field",
+                "type": "Type",
+                "description": "Description"
+            },
+            "fields": {
+                "id": "The unique membership identifier.",
+                "role": "The member's role within the tenant.",
+                "permissions": "The explicit permissions granted to the member.",
+                "status": "The membership status.",
+                "user": "Basic profile information about the member.",
+                "joinedAt": "The date the member joined the tenant.",
+                "createdAt": "The date the membership was created."
+            }
+        },
+        "possibleErrors": {
+            "title": "Possible Errors",
+            "headers": {
+                "status": "HTTP Status",
+                "code": "Error Code",
+                "description": "Description"
+            },
+            "list": {
+                "invalidApiKey": "The attached API key is invalid.",
+                "tenantNotFound": "The specified tenant could not be found.",
+                "unknownError": "An unexpected server error occurred."
+            }
+        }
+    },
+    "SubscriptionEndpointPage": {
+        "title": "Subscription",
+        "description": "Returns the current tenant's subscription details along with the available features and capabilities for the authenticated tenant.",
+        "auth": {
+            "title": "Authentication",
+            "description": "This endpoint requires a valid Developer API key."
+        },
+        "httpRequest": {
+            "title": "HTTP Request"
+        },
+        "queryParams": {
+            "title": "Query Parameters",
+            "headers": {
+                "name": "Name",
+                "type": "Type",
+                "required": "Required",
+                "description": "Description"
+            },
+            "list": {
+                "tenantSlug": {
+                    "required": "Yes",
+                    "description": "The tenant slug to fetch subscription information for."
+                }
+            }
+        },
+        "exampleRequest": {
+            "title": "Example Request"
+        },
+        "exampleResponse": {
+            "title": "Example Response"
+        },
+        "subscriptionObject": {
+            "title": "Subscription Object",
+            "headers": {
+                "field": "Field",
+                "type": "Type",
+                "description": "Description"
+            },
+            "fields": {
+                "plan": "The current subscription plan.",
+                "status": "The current subscription status.",
+                "licenseType": "The subscription license model.",
+                "billingInterval": "The billing interval for the subscription."
+            }
+        },
+        "capabilitiesObject": {
+            "title": "Capabilities Object",
+            "headers": {
+                "field": "Field",
+                "type": "Type",
+                "description": "Description"
+            },
+            "fields": {
+                "api": "Whether API access is enabled.",
+                "reports": "Whether reporting features are enabled.",
+                "wordAssistant": "Whether the Word Assistant feature is enabled."
+            }
+        },
+        "possibleErrors": {
+            "title": "Possible Errors",
+            "headers": {
+                "status": "HTTP Status",
+                "code": "Error Code",
+                "description": "Description"
+            },
+            "list": {
+                "invalidApiKey": "The attached API key is invalid.",
+                "tenantNotFound": "The specified tenant could not be found.",
+                "unknownError": "An unexpected server error occurred."
+            }
+        }
+    },
     "NotFoundPage": {
         "title": "Page Not Found",
         "description": "The page you are looking for doesn't exist or has been moved.",

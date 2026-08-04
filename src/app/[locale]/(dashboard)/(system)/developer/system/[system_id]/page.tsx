@@ -1,8 +1,9 @@
 'use client'
 
+import { Badge as StatusBadge } from "@/components/ui/badge";
 import DeveloperDashboardContainer from "@/shared/_components/developer-dashboard-container";
 import { useSystem } from "@/shared/lib/hooks";
-import { Badge, ShieldCheck, Tag } from "lucide-react";
+import { ShieldCheck, Tag } from "lucide-react";
 import { use } from "react";
 
 interface PageProps {
@@ -13,11 +14,10 @@ interface PageProps {
 
 export default function Page({ params }: PageProps) {
     const { system_id } = use(params);
-
-    const { system, } = useSystem(system_id);
+    const { system } = useSystem(system_id);
 
     return (
-        <DeveloperDashboardContainer>
+        <DeveloperDashboardContainer className="bg-yellow-400">
             {/* System Info Card */}
             <div className="border-b-2 bg-card text-card-foreground py-6 space-y-4">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -38,9 +38,9 @@ export default function Page({ params }: PageProps) {
                     <div className="flex items-center gap-2">
                         <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
                         <span className="text-muted-foreground">Status:</span>
-                        <Badge variant={system.status === "ACTIVE" ? "default" : "secondary"}>
+                        <StatusBadge variant={system.status === "ACTIVE" ? "default" : "secondary"}>
                             {system.status}
-                        </Badge>
+                        </StatusBadge>
                     </div>
 
                     <div className="flex items-center gap-2">

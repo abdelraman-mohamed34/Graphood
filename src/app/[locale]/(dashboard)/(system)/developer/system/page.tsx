@@ -41,7 +41,7 @@ export default function Page() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {currentSystems?.map((system) => (
                         <Link
-                            href={`/developer/${system.id}`}
+                            href={`/developer/system/${system.id}`}
                             key={system.id}
                             className="p-5 border rounded-xl bg-card/50 hover:border-primary/50 transition-all space-y-2"
                         >
@@ -53,7 +53,7 @@ export default function Page() {
                     ))}
                 </div>
             )}
-            <Link href="/developer/add">
+            <Link href="/developer/system/add">
                 <Button>
                     <Plus className="mr-2 h-4 w-4" />
                     New System

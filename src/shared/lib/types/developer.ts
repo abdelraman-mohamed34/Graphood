@@ -4,7 +4,7 @@ export interface DeveloperContext {
     tenantSlug: string;
 
     subscription: {
-        planName: string;
+        plan: string;
         status: string;
         licenseType: string;
         billingInterval: string;

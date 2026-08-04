@@ -154,6 +154,525 @@
             "unauthorizedAccess": "عذراً، لا تملك الصلاحية لدخول هذه المساحة."
         }
     },
+    "ChangelogPage": {
+        "title": "سجل التغييرات",
+        "description": "تتبع الميزات الجديدة، التحسينات، إصلاح الأخطاء، وتحديثات API عبر إصدارات Graphood Developer API.",
+        "latestRelease": "أحدث إصدار",
+        "types": {
+            "feature": "ميزة",
+            "improvement": "تحسين",
+            "fix": "إصلاح",
+            "breaking": "تغيير جذري"
+        },
+        "releases": {
+            "v1_0_0": {
+                "date": "أغسطس 2026",
+                "changes": {
+                    "initial": "الإطلاق الرسمي الأول لـ Graphood Developer API.",
+                    "meEndpoint": "إضافة نقطة النهاية <code1>/me</code1> لاسترجاع حالة النظام والمستأجر الحالية.",
+                    "coreEndpoints": "إضافة نقاط النهاية <code1>/tenant</code1> و <code2>/memberships</code2> و <code3>/subscription</code3>.",
+                    "healthEndpoint": "إضافة نقطة النهاية <code1>/health</code1> لمراقبة حالة الخدمة.",
+                    "auth": "تقديم المصادقة باستخدام مفتاح API مع Bearer Token.",
+                    "schema": "توحيد مخطط استجابة JSON للـ API وهيكل الأخطاء."
+                }
+            }
+        }
+    },
+    "ErrorsPage": {
+        "title": "الأخطاء",
+        "description": "ترجع Graphood Developer API أكواد حالة HTTP القياسية مع تنسيق JSON موحد لردود الأخطاء لمساعدتك في استكشاف المشكلات وإصلاحها بسرعة.",
+        "errorFormat": {
+            "title": "صيغة استجابة الخطأ",
+            "description": "عند فشل طلب API، يستجيب الخادم بعلم نجاح <code1>false</code1> وكائن خطأ مفصل:"
+        },
+        "httpStatuses": {
+            "title": "أكواد حالة HTTP",
+            "headers": {
+                "status": "الحالة",
+                "meaning": "المعنى"
+            },
+            "list": {
+                "ok": "تم إكمال الطلب بنجاح.",
+                "badRequest": "الطلب غير صالح أو يحتوي على معاملات غير صحيحة.",
+                "unauthorized": "فشلت المصادقة أو أن مفتاح API مفقود/غير صالح.",
+                "forbidden": "تم رفض الوصول إلى المورد أو المستأجر المطلوبة.",
+                "notFound": "المورد أو المستأجر أو نقطة النهاية المطلوبة غير موجودة.",
+                "internalError": "حدث خطأ غير متوقع في الخادم."
+            }
+        },
+        "errorCodes": {
+            "title": "أكواد أخطاء التطبيق",
+            "headers": {
+                "code": "الكود",
+                "description": "الوصف"
+            },
+            "list": {
+                "INVALID_API_KEY": "مفتاح API المقدم غير صالح أو مشوه.",
+                "MISSING_API_KEY": "لم يتم توفير ترويسة التخويل (Authorization) في الطلب.",
+                "SYSTEM_NOT_FOUND": "تعذر العثور على النظام المطلوب أو أنه غير نشط.",
+                "TENANT_NOT_FOUND": "تعذر العثور على اسم المستأجر (tenant slug) المطلوب.",
+                "UNKNOWN_ERROR": "حدث خطأ غير معالج أو غير متوقع في الخادم الداخلي."
+            }
+        }
+    },
+    "ResponseFormatPage": {
+        "title": "صيغة الاستجابة",
+        "description": "تتبع جميع الاستجابات المرجعة من Graphood Developer API هيكل JSON موحد. تشترك الطلبات الناجحة والفاشلة دائماً في نفس المخطط الأساسي.",
+        "successfulResponse": {
+            "title": "الاستجابة الناجحة",
+            "description": "عند نجاح الطلب، يتم تعيين حقل <code1>success</code1> إلى <code2>true</code2> وتكون البيانات المطلوبة مدرجة داخل <code3>data</code3>."
+        },
+        "errorResponse": {
+            "title": "استجابة الخطأ",
+            "description": "عند فشل الطلب، يتم تعيين <code1>success</code1> إلى <code2>false</code2> ويتم إرجاع كائن <code3>error</code3> يحتوي على تفاصيل كود الخطأ والرسالة."
+        },
+        "fieldsBreakdown": {
+            "title": "تفاصيل الحقول الرئيسية",
+            "headers": {
+                "field": "الحقل",
+                "type": "النوع",
+                "description": "الوصف"
+            },
+            "list": {
+                "success": "يحدد ما إذا كان الطلب قد نجح (true) أم فشل (false).",
+                "data": "يحتوي على البيانات أو المورد المطلوب. يتواجد فقط في الاستجابات الناجحة.",
+                "error": "يحتوي على تفاصيل الخطأ (الكود والرسالة). يتواجد فقط عند فشل الطلب."
+            }
+        }
+    },
+    "AuthenticationPage": {
+        "title": "المصادقة",
+        "description": "تستخدم Graphood Developer API مفاتيح API للمصادقة على الطلبات. قم بتضمين مفتاح API الخاص بك في ترويسة Authorization لجميع نقاط النهاية المحمية.",
+        "method": {
+            "title": "طريقة المصادقة",
+            "description": "تستخدم Graphood مصادقة Bearer Token. يجب أن يتضمن كل طلب محمي مفتاح API في ترويسة <code1>Authorization</code1>."
+        },
+        "generate": {
+            "title": "إنشاء مفتاح API",
+            "description": "قم بإنشاء مفتاح API من لوحة تحكم المطورين الخاصة بك:",
+            "steps": {
+                "step1": "افتح لوحة تحكم المطورين.",
+                "step2": "اختر النظام الخاص بك.",
+                "step3": "انتقل إلى <strong1>مفاتيح API</strong1>.",
+                "step4": "انقر على <strong1>إنشاء مفتاح API</strong1>.",
+                "step5": "انسخ المفتاح المنشأ واحفظه في مكان آمن."
+            }
+        },
+        "example": {
+            "title": "مثال على الطلب"
+        },
+        "errors": {
+            "title": "أخطاء المصادقة",
+            "headers": {
+                "code": "كود الخطأ",
+                "description": "الوصف"
+            },
+            "list": {
+                "MISSING_API_KEY": "لم يتم توفير ترويسة Authorization في الطلب.",
+                "INVALID_API_KEY": "مفتاح API المقدم غير صالح أو مشوه.",
+                "REVOKED_API_KEY": "تم إبطال مفتاح API ولم يعد بإمكانك استخدامه.",
+                "SYSTEM_NOT_FOUND": "مفتاح API لا ينتمي إلى نظام نشط."
+            }
+        },
+        "bestPractices": {
+            "title": "أفضل الممارسات الأمنية",
+            "list": {
+                "item1": "<strong1>لا تقم أبدًا بالكشف عن مفاتيح API</strong1> في الواجهة الأمامية أو في أكواد العميل العامة.",
+                "item2": "قم بتخزين مفاتيح API في متغيرات بيئة (Environment Variables) آمنة.",
+                "item3": "قم بتدوير (Rotate) مفاتيح API بانتظام لتقليل المخاطر.",
+                "item4": "قم بإبطال مفاتيح API المعرضة للخطر فوراً.",
+                "item5": "استخدم بروتوكول HTTPS حصريًا لجميع طلبات API في بيئة الإنتاج."
+            }
+        }
+    },
+    "QuickStartPage": {
+        "title": "البداية السريعة",
+        "description": "تعلم كيفية المصادقة مع Graphood Developer API وإجراء أول طلب بنجاح في بضع دقائق فقط.",
+        "prerequisites": {
+            "title": "المتطلبات الأساسية",
+            "item1": "حساب مطور في Graphood.",
+            "item2": "نظام منشور (Published system).",
+            "item3": "مفتاح API نشط.",
+            "item4": "مستأجر واحد (Tenant) على الأقل."
+        },
+        "baseUrl": {
+            "title": "الرابط الأساسي (Base URL)",
+            "description": "جميع نقاط النهاية الخاصة بـ Developer API متاحة تحت الرابط الأساسي التالي:",
+            "localDev": "أثناء التطوير المحلي:"
+        },
+        "auth": {
+            "title": "المصادقة",
+            "description": "يجب أن يتضمن كل طلب مفتاح Developer API الخاص بك في ترويسة Authorization."
+        },
+        "firstRequest": {
+            "title": "طلبك الأول",
+            "description": "استرجاع معلومات حول المستأجر الحالي، الاشتراك، والنظام."
+        },
+        "exampleResponse": {
+            "title": "مثال الاستجابة"
+        },
+        "nextSteps": {
+            "title": "الخطوات التالية",
+            "items": {
+                "auth": {
+                    "title": "المصادقة",
+                    "description": "تعرف على كيفية إنشاء مفاتيح API والمصادقة بها."
+                },
+                "endpoints": {
+                    "title": "نقاط النهاية",
+                    "description": "استكشف جميع نقاط النهاية المتاحة في Developer API."
+                },
+                "responseFormat": {
+                    "title": "صيغة الاستجابة",
+                    "description": "افهم مخطط استجابة Graphood القياسي."
+                },
+                "errors": {
+                    "title": "الأخطاء",
+                    "description": "تعرف على كيفية إبلاغ API عن أخطاء التحقق وأخطاء وقت التشغيل."
+                }
+            }
+        }
+    },
+    "DeveloperDocsPage": {
+        "title": "توثيق المطورين",
+        "description": "كل ما تحتاجه لدمج تطبيقاتك، إدارة المستأجرين، والتعامل مع عضويات النظام باستخدام Graphood Developer API.",
+        "welcomeBanner": {
+            "badge": "Graphood v1 API",
+            "title": "مرحباً بك في Graphood للمطورين",
+            "description": "تعيد واجهة برمجة التطبيقات (RESTful API) الخاصة بنا استجابات بترميز JSON وتستخدم أكواد استجابة HTTP القياسية. ابدأ بإنشاء مفتاح API الخاص بك في لوحة تحكم المطورين وأجرِ أول طلب لك.",
+            "button": "ابدأ الآن"
+        },
+        "explore": {
+            "title": "استكشف التوثيق",
+            "readSection": "قراءة القسم",
+            "cards": {
+                "quickStart": {
+                    "title": "البداية السريعة",
+                    "description": "ابدأ العمل مع Graphood API في بضع دقائق."
+                },
+                "authentication": {
+                    "title": "المصادقة",
+                    "description": "تعلم كيفية استخدام مفاتيح API للمصادقة على طلباتك."
+                },
+                "endpoints": {
+                    "title": "نقاط النهاية",
+                    "description": "استكشف نقاط النهاية المتاحة للمستأجرين، المستخدمين، والأنظمة."
+                },
+                "responseFormat": {
+                    "title": "صيغة الاستجابة",
+                    "description": "هيكل JSON الموحد وهيكل الحالة المستخدم عبر الـ API."
+                },
+                "errors": {
+                    "title": "الأخطاء",
+                    "description": "افهم أكواد الأخطاء، صيغ التحقق، وحالات HTTP."
+                },
+                "changelog": {
+                    "title": "سجل التغييرات",
+                    "description": "اطّلع على التحديثات الأخيرة، التحسينات، والتغييرات الجذرية."
+                }
+            }
+        }
+    },
+    "EndpointsPage": {
+        "title": "نقاط النهاية (Endpoints)",
+        "description": "استكشف كل نقطة نهاية متاحة في Graphood Developer API. تتضمن كل نقطة نهاية أمثلة الطلبات، المعلمات، الاستجابات، وأكواد الأخطاء المحتملة.",
+        "table": {
+            "headers": {
+                "method": "الأسلوب",
+                "endpoint": "نقطة النهاية",
+                "description": "الوصف",
+                "action": "عرض"
+            },
+            "descriptions": {
+                "health": "التحقق من الحالة الحالية لـ Developer API.",
+                "me": "استرجاع سياق الـ API الحالي، بما في ذلك النظام، المستأجر، الاشتراك، والإمكانيات.",
+                "tenant": "استرجاع معلومات حول المستأجر الحالي.",
+                "memberships": "استرجاع جميع العضويات التابعة للمستأجر الحالي.",
+                "subscription": "استرجاع اشتراك المستأجر والإمكانيات المفعّلة."
+            }
+        }
+    },
+    "HealthEndpointPage": {
+        "title": "فحص الحالة (Health)",
+        "description": "تحقق مما إذا كانت Graphood Developer API متاحة وتستجيب. نقطة النهاية هذه مفيدة لفحوصات الصحة، خدمات المراقبة، والتحقق من النشر.",
+        "auth": {
+            "title": "المصادقة",
+            "description": "نقطة النهاية هذه عامة ولا تتطلب مفتاح API."
+        },
+        "httpRequest": {
+            "title": "طلب HTTP"
+        },
+        "queryParams": {
+            "title": "معلمات الاستعلام (Query Parameters)",
+            "description": "لا تقبل نقطة النهاية هذه أي معلمات استعلام."
+        },
+        "exampleRequest": {
+            "title": "مثال على الطلب"
+        },
+        "exampleResponse": {
+            "title": "مثال الاستجابة"
+        },
+        "statusCodes": {
+            "title": "أكواد الحالة (Status Codes)",
+            "headers": {
+                "code": "الكود",
+                "description": "الوصف"
+            },
+            "list": {
+                "ok": "واجهة برمجة التطبيقات تعمل بشكل سليم وتستجيب بشكل طبيعي."
+            }
+        }
+    },
+    "MeEndpointPage": {
+        "title": "السياق الحالي (Current Context)",
+        "description": "يعيد سياق API الحالي للمطور المصادق عليه، بما في ذلك النظام الحالي، المستأجر (Tenant)، الاشتراك، والقدرات الممكنة.",
+        "auth": {
+            "title": "المصادقة",
+            "description": "تتطلب نقطة النهاية هذه مفتاح Developer API صالحاً."
+        },
+        "httpRequest": {
+            "title": "طلب HTTP"
+        },
+        "queryParams": {
+            "title": "معلمات الاستعلام (Query Parameters)",
+            "headers": {
+                "name": "الاسم",
+                "type": "النوع",
+                "required": "مطلوب",
+                "description": "الوصف"
+            },
+            "list": {
+                "tenantSlug": {
+                    "required": "نعم",
+                    "description": "معرف (Slug) المستأجر الذي ترغب في الوصول إليه."
+                }
+            }
+        },
+        "exampleRequest": {
+            "title": "مثال على الطلب"
+        },
+        "exampleResponse": {
+            "title": "مثال الاستجابة"
+        },
+        "returnedObjects": {
+            "title": "الكائنات المعادة (Returned Objects)",
+            "system": {
+                "title": "system",
+                "description": "معلومات حول النظام الخاص بالمطور المصادق عليه."
+            },
+            "tenant": {
+                "title": "tenant",
+                "description": "معلومات حول المستأجر الحالي المحدد بواسطة tenantSlug."
+            },
+            "subscription": {
+                "title": "subscription",
+                "description": "تفاصيل الاشتراك الحالي بما في ذلك الخطة، دورة الفوترة، ونوع الترخيص."
+            },
+            "capabilities": {
+                "title": "capabilities",
+                "description": "الميزات الممكنة والمتاحة للمستأجر الحالي."
+            }
+        },
+        "possibleErrors": {
+            "title": "الأخطاء المحتملة",
+            "headers": {
+                "status": "حالة HTTP",
+                "code": "رمز الخطأ",
+                "description": "الوصف"
+            },
+            "list": {
+                "invalidApiKey": "مفتاح الـ API المرفق غير صالح.",
+                "tenantNotFound": "لم يتم العثور على المستأجر المطلوب.",
+                "unknownError": "حدث خطأ غير متوقع في الخادم."
+            }
+        }
+    },
+    "TenantEndpointPage": {
+        "title": "المستأجر الحالي (Current Tenant)",
+        "description": "يعيد معلومات حول المستأجر الحالي المرتبط بالطلب المصادق عليه.",
+        "auth": {
+            "title": "المصادقة",
+            "description": "تتطلب نقطة النهاية هذه مفتاح Developer API صالحاً."
+        },
+        "httpRequest": {
+            "title": "طلب HTTP"
+        },
+        "queryParams": {
+            "title": "معلمات الاستعلام (Query Parameters)",
+            "headers": {
+                "name": "الاسم",
+                "type": "النوع",
+                "required": "مطلوب",
+                "description": "الوصف"
+            },
+            "list": {
+                "tenantSlug": {
+                    "required": "نعم",
+                    "description": "معرف (Slug) المستأجر المراد جلب بياناته."
+                }
+            }
+        },
+        "exampleRequest": {
+            "title": "مثال على الطلب"
+        },
+        "exampleResponse": {
+            "title": "مثال الاستجابة"
+        },
+        "returnedObject": {
+            "title": "الكائن المعاد (Returned Object)",
+            "tenant": {
+                "title": "tenant",
+                "description": "يمثل المستأجر الحالي المحدد بواسطة tenantSlug المرفق. يتضمن معرف المستأجر، اسمه، الـ slug، حالته، وتاريخ الإنشاء."
+            }
+        },
+        "possibleErrors": {
+            "title": "الأخطاء المحتملة",
+            "headers": {
+                "status": "حالة HTTP",
+                "code": "رمز الخطأ",
+                "description": "الوصف"
+            },
+            "list": {
+                "invalidApiKey": "مفتاح الـ API المرفق غير صالح.",
+                "tenantNotFound": "تعذر العثور على المستأجر المحدد.",
+                "unknownError": "حدث خطأ غير متوقع في الخادم."
+            }
+        }
+    },
+    "MembershipsEndpointPage": {
+        "title": "العضويات (Memberships)",
+        "description": "يعيد جميع العضويات التابعة للمستأجر الحالي، بما في ذلك دور كل عضو، صلاحياته، حالته، ومعلومات ملفه الشخصي الأساسية.",
+        "auth": {
+            "title": "المصادقة",
+            "description": "تتطلب نقطة النهاية هذه مفتاح Developer API صالحاً."
+        },
+        "httpRequest": {
+            "title": "طلب HTTP"
+        },
+        "queryParams": {
+            "title": "معلمات الاستعلام (Query Parameters)",
+            "headers": {
+                "name": "الاسم",
+                "type": "النوع",
+                "required": "مطلوب",
+                "description": "الوصف"
+            },
+            "list": {
+                "tenantSlug": {
+                    "required": "نعم",
+                    "description": "معرف (Slug) المستأجر المراد جلب عضوياته."
+                }
+            }
+        },
+        "exampleRequest": {
+            "title": "مثال على الطلب"
+        },
+        "exampleResponse": {
+            "title": "مثال الاستجابة"
+        },
+        "membershipObject": {
+            "title": "كائن العضوية (Membership Object)",
+            "headers": {
+                "field": "الحقل",
+                "type": "النوع",
+                "description": "الوصف"
+            },
+            "fields": {
+                "id": "المعرف الفريد للعضوية.",
+                "role": "دور العضو داخل المستأجر.",
+                "permissions": "الصلاحيات الصريحة الممنوحة للعضو.",
+                "status": "حالة العضوية.",
+                "user": "معلومات الملف الشخصي الأساسية.",
+                "joinedAt": "تاريخ انضمام العضو إلى المستأجر.",
+                "createdAt": "تاريخ إنشاء العضوية."
+            }
+        },
+        "possibleErrors": {
+            "title": "الأخطاء المحتملة",
+            "headers": {
+                "status": "حالة HTTP",
+                "code": "رمز الخطأ",
+                "description": "الوصف"
+            },
+            "list": {
+                "invalidApiKey": "مفتاح الـ API المرفق غير صالح.",
+                "tenantNotFound": "تعذر العثور على المستأجر المحدد.",
+                "unknownError": "حدث خطأ غير متوقع في الخادم."
+            }
+        }
+    },
+    "SubscriptionEndpointPage": {
+        "title": "الاشتراك (Subscription)",
+        "description": "يعيد تفاصيل الاشتراك الحالي للمستأجر إلى جانب الميزات والقدرات الممكنة للمستأجر المصادق عليه.",
+        "auth": {
+            "title": "المصادقة",
+            "description": "تتطلب نقطة النهاية هذه مفتاح Developer API صالحاً."
+        },
+        "httpRequest": {
+            "title": "طلب HTTP"
+        },
+        "queryParams": {
+            "title": "معلمات الاستعلام (Query Parameters)",
+            "headers": {
+                "name": "الاسم",
+                "type": "النوع",
+                "required": "مطلوب",
+                "description": "الوصف"
+            },
+            "list": {
+                "tenantSlug": {
+                    "required": "نعم",
+                    "description": "معرف (Slug) المستأجر المراد جلب معلومات اشتراكه."
+                }
+            }
+        },
+        "exampleRequest": {
+            "title": "مثال على الطلب"
+        },
+        "exampleResponse": {
+            "title": "مثال الاستجابة"
+        },
+        "subscriptionObject": {
+            "title": "كائن الاشتراك (Subscription Object)",
+            "headers": {
+                "field": "الحقل",
+                "type": "النوع",
+                "description": "الوصف"
+            },
+            "fields": {
+                "plan": "خطة الاشتراك الحالية.",
+                "status": "حالة الاشتراك الحالية.",
+                "licenseType": "نموذج ترخيص الاشتراك.",
+                "billingInterval": "فترة الفوترة للاشتراك."
+            }
+        },
+        "capabilitiesObject": {
+            "title": "كائن القدرات والميزات (Capabilities Object)",
+            "headers": {
+                "field": "الحقل",
+                "type": "النوع",
+                "description": "الوصف"
+            },
+            "fields": {
+                "api": "يوضح ما إذا كان الوصول إلى الـ API مفعّلاً.",
+                "reports": "يوضح ما إذا كانت ميزات التقارير مفعّلة.",
+                "wordAssistant": "يوضح ما إذا كانت ميزة Word Assistant مفعّلة."
+            }
+        },
+        "possibleErrors": {
+            "title": "الأخطاء المحتملة",
+            "headers": {
+                "status": "حالة HTTP",
+                "code": "رمز الخطأ",
+                "description": "الوصف"
+            },
+            "list": {
+                "invalidApiKey": "مفتاح الـ API المرفق غير صالح.",
+                "tenantNotFound": "تعذر العثور على المستأجر المحدد.",
+                "unknownError": "حدث خطأ غير متوقع في الخادم."
+            }
+        }
+    },
     "NotFoundPage": {
         "title": "الصفحة غير موجودة",
         "description": "عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها لمكان آخر.",

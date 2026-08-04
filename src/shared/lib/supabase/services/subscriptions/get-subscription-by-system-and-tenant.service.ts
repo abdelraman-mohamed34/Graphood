@@ -1,26 +1,24 @@
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { createAdminClient } from "../../admin";
 
-export async function getSubscriptionBySystemAndTenant(
-    systemId: string,
-    tenantId: string
+export async function getSubscriptionById(
+    subscriptionId: string
 ) {
     const supabase = await createAdminClient();
 
-    const { data: subscription, error } = await supabase
+    const { data, error } = await supabase
         .from("subscriptions")
         .select("*")
-        .eq("system_id", systemId)
-        .eq("tenant_id", tenantId)
+        .eq("id", subscriptionId)
         .maybeSingle();
 
     if (error) {
         console.error(
-            "Error fetching subscription context:",
+            "Error fetching subscription:",
             error
         );
         throw error;
     }
 
-    return subscription;
+    return data;
 }

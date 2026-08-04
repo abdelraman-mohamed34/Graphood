@@ -7,8 +7,8 @@ import { SYSTEM_QUERY_KEYS } from "@/shared/lib/hooks/systems/use-system";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
 import Navbar from "@/app/[locale]/(main)/_components/navbar";
 import { Dir } from "@/shared/_components/dirs";
-import SystemSidebar from "./_components/system-sidebar";
 import { fetchProfile } from "@/shared/lib/supabase/services/profile";
+import SystemSidebar from "./_components/system-sidebar";
 
 interface SystemDetailLayoutProps {
     children: React.ReactNode;
@@ -55,10 +55,8 @@ export default async function SystemDetailLayout({
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
             <div className="flex">
-                <SystemSidebar />
+
                 <div className="flex-1">
-                    <Navbar />
-                    <Dir />
                     {children}
                 </div>
             </div>

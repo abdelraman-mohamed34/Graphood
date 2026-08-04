@@ -1,4 +1,4 @@
-'use server'
+"use server";
 
 import { revalidatePath } from "next/cache";
 
@@ -7,8 +7,9 @@ import { requireMembership } from "@/shared/lib/auth/requires/require-membership
 import { hasAnyPermission } from "@/shared/lib/auth/requires/require-permission";
 
 import { createAdminClient } from "@/shared/lib/supabase/admin";
-import { getInvitationById } from "../../supabase/services/invitations/get-invitation-by-id.service";
-import { sendInvitationEmail } from "../../supabase/services/invitations/send-invitation-email.service";
+
+import { getInvitationById } from "@/shared/lib/supabase/services/invitations/get-invitation-by-id.service";
+import { sendInvitationEmail } from "@/shared/lib/supabase/services/invitations/send-invitation-email.service";
 
 type ResendInvitationResult =
     | { success: true }
@@ -26,7 +27,6 @@ export async function resendInvitationAction(
     id: string
 ): Promise<ResendInvitationResult> {
     try {
-
         const { user } = await requireUser(locale);
 
         const supabase = await createAdminClient();
@@ -38,7 +38,12 @@ export async function resendInvitationAction(
             redirectTo: `/${locale}/workspaces`,
         });
 
-        if (!hasAnyPermission(membership, ["members.invite", "tenant.manage"])) {
+        if (
+            !hasAnyPermission(membership, [
+                "members.invite",
+                "tenant.manage",
+            ])
+        ) {
             return {
                 success: false,
                 code: "UNAUTHORIZED",
@@ -57,6 +62,13 @@ export async function resendInvitationAction(
             };
         }
 
+        if (invitation.tenant_id !== membership.tenant_id) {
+            return {
+                success: false,
+                code: "UNAUTHORIZED",
+            };
+        }
+
         await sendInvitationEmail({
             email: invitation.email,
             token: invitation.token,
@@ -66,13 +78,15 @@ export async function resendInvitationAction(
             message: invitation.message,
         });
 
-        revalidatePath(`/${locale}/${tenantSlug}/dashboard/members`);
+        revalidatePath(
+            `/${locale}/${tenantSlug}/dashboard/members`
+        );
+
         return {
             success: true,
         };
-
     } catch (error) {
-        console.error(error);
+        console.error("RESEND INVITATION ERROR:", error);
 
         return {
             success: false,

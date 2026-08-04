@@ -10,7 +10,7 @@ export default function DeveloperDashboardContainer({
     className = ""
 }: DashboardContainerProps) {
     return (
-        <div className={`max-w-5xl mx-auto space-y-6 p-8 ${className}`}>
+        <div className={`max-w-5xl w-full f-full mx-auto space-y-6 p-8 ${className}`}>
             {children}
         </div>
     )

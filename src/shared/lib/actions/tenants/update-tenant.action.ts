@@ -2,10 +2,15 @@
 
 import { getTenantBySlug } from "@/shared/lib/supabase/services/tenants/get-tenant-by-slug.service";
 import { updateTenantService } from "@/shared/lib/supabase/services/tenants/update-tenant.service";
+
 import { requireMembership } from "../../auth/requires/require-membership";
-import { hasAnyPermission } from "../../auth/requires/require-permission";
+import { hasPermission } from "../../auth/requires/require-permission";
 import { requireUser } from "../../auth/requires/require-user";
-import { UpdateTenant } from "../../schemas/tenants.schema";
+
+import {
+    UpdateTenant,
+    updateTenantSchema,
+} from "../../schemas/tenants.schema";
 
 type UpdateTenantActionProps = {
     tenantSlug: string;
@@ -19,6 +24,16 @@ export async function updateTenantAction({
     data,
 }: UpdateTenantActionProps) {
     try {
+        const parsed = updateTenantSchema.safeParse(data);
+
+        if (!parsed.success) {
+            return {
+                success: false,
+                message: "Invalid input.",
+                errors: parsed.error.flatten(),
+            };
+        }
+
         const { user, supabase } = await requireUser(locale);
 
         const tenant = await getTenantBySlug(tenantSlug);
@@ -37,10 +52,10 @@ export async function updateTenantAction({
             redirectTo: `/${locale}/workspaces`,
         });
 
-        const allowed = hasAnyPermission(membership, [
-            "tenant.manage",
-            "tenant.read",
-        ]);
+        const allowed = hasPermission(
+            membership,
+            "tenant.manage"
+        );
 
         if (!allowed) {
             return {
@@ -52,7 +67,7 @@ export async function updateTenantAction({
         const updatedTenant = await updateTenantService({
             supabase,
             tenantId: tenant.id,
-            data,
+            data: parsed.data,
         });
 
         return {

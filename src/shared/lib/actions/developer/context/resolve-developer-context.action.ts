@@ -1,6 +1,6 @@
 import { verifyApiKeyAction } from "@/shared/lib/actions/developer/api-key/verify-api-key.action";
 import { getTenantBySlug } from "@/shared/lib/supabase/services/tenants/get-tenant-by-slug.service";
-import { getSubscriptionBySystemAndTenant } from "@/shared/lib/supabase/services/subscriptions";
+import { getSubscriptionById } from "@/shared/lib/supabase/services/subscriptions";
 import { requireSubscription } from "@/shared/lib/auth/requires/require-subscription";
 import { DeveloperApiErrorCodes } from "@/shared/lib/api/developer/errors";
 
@@ -26,8 +26,10 @@ export async function resolveDeveloperContextAction(
         );
     }
 
-    const apiKeyContext = await verifyApiKeyAction(apiKey);
-    const tenant = await getTenantBySlug(tenantSlug);
+    const [apiKeyContext, tenant] = await Promise.all([
+        verifyApiKeyAction(apiKey),
+        getTenantBySlug(tenantSlug),
+    ]);
 
     if (!tenant) {
         throw new Error(
@@ -41,9 +43,8 @@ export async function resolveDeveloperContextAction(
         );
     }
 
-    const subscription = await getSubscriptionBySystemAndTenant(
-        apiKeyContext.systemId,
-        tenant.id
+    const subscription = await getSubscriptionById(
+        tenant.subscription_id
     );
 
     if (!subscription) {
@@ -51,8 +52,7 @@ export async function resolveDeveloperContextAction(
             DeveloperApiErrorCodes.SUBSCRIPTION_INACTIVE
         );
     }
-    const subscriptionCapabilities =
-        requireSubscription(subscription);
+    const subscriptionCapabilities = requireSubscription(subscription);
 
     return {
         systemId: apiKeyContext.systemId,
@@ -60,7 +60,7 @@ export async function resolveDeveloperContextAction(
         tenantSlug: tenant.slug,
 
         subscription: {
-            planName: subscriptionCapabilities.planName,
+            plan: subscriptionCapabilities.planName,
             status: subscription.status,
             licenseType: subscriptionCapabilities.licenseType,
             billingInterval: subscription.billing_interval,

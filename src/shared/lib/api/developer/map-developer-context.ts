@@ -1,24 +1,24 @@
-import { DeveloperContext } from "./types";
-import { DeveloperSystemInfo } from "./context-response.contract";
+import type { DeveloperContext } from "@/shared/lib/types/developer";
+import type { DeveloperContextResponse } from "./context-response.contract";
 
 interface MapDeveloperContextOptions {
     system: {
         id: string;
         name: string;
         slug: string;
+        description: string;
+        category: string;
+        icon_url: string | null;
+        is_public: boolean;
     };
 }
 
 export function mapDeveloperContext(
     context: DeveloperContext,
     options: MapDeveloperContextOptions
-): DeveloperSystemInfo {
+): DeveloperContextResponse {
     return {
-        system: {
-            id: options.system.id,
-            name: options.system.name,
-            slug: options.system.slug,
-        },
+        system: options.system,
 
         tenant: {
             id: context.tenantId,
@@ -26,18 +26,12 @@ export function mapDeveloperContext(
         },
 
         subscription: {
-            planName: context.subscription.planName,
+            plan: context.subscription.plan,
             status: context.subscription.status,
             licenseType: context.subscription.licenseType,
-            billingInterval:
-                context.subscription.billingInterval,
+            billingInterval: context.subscription.billingInterval,
         },
 
-        capabilities: {
-            api: context.capabilities.api,
-            reports: context.capabilities.reports,
-            wordAssistant:
-                context.capabilities.wordAssistant,
-        },
+        capabilities: context.capabilities,
     };
 }

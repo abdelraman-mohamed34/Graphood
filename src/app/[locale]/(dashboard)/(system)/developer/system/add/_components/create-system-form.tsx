@@ -65,7 +65,7 @@ export default function CreateSystemForm() {
             toast.success("System created successfully.");
 
             if (system?.id) {
-                router.push(`/developer/${system.id}/api-keys`);
+                router.push(`/developer/system/${system.id}/api-keys`);
             }
         } catch (error) {
             console.error(error);

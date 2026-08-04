@@ -30,7 +30,7 @@ export default async function SystemDetailsLayout({
     });
 
     if (user.id === system.owner_id) {
-        redirect(`/${locale}/developer/${system_id}`);
+        redirect(`/${locale}/developer/system/${system_id}`);
     }
 
     return (

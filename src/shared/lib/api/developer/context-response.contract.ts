@@ -1,4 +1,4 @@
-export interface DeveloperSystemInfo  {
+export interface DeveloperContextResponse {
     system: {
         id: string;
         name: string;
@@ -11,7 +11,7 @@ export interface DeveloperSystemInfo  {
     };
 
     subscription: {
-        planName: string;
+        plan: string;
         status: string;
         licenseType: string;
         billingInterval: string;

@@ -5,7 +5,7 @@ import { requireSubscription } from "@/shared/lib/auth/requires/require-subscrip
 export function requireApiAccess(
     context: {
         subscription: {
-            planName: string;
+            plan: string;
             status: string;
             licenseType: string;
         } | null;
@@ -13,7 +13,7 @@ export function requireApiAccess(
 ) {
 
     const capabilities = requireSubscription({
-        plan_name: context.subscription?.planName,
+        plan_name: context.subscription?.plan,
         status: context.subscription?.status,
         license_type: context.subscription?.licenseType,
     } as any);

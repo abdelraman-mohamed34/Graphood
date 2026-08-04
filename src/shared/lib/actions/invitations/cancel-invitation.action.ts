@@ -8,6 +8,7 @@ import { requireUser } from '@/shared/lib/auth/requires/require-user'
 
 import { createAdminClient } from '@/shared/lib/supabase/admin'
 import { updateInvitationById } from '@/shared/lib/supabase/services/invitations/update-invitation-by-id.service'
+import { getInvitationById } from '../../supabase/services/invitations/get-invitation-by-id.service'
 
 type CancelInvitationResult =
     | { success: true }
@@ -34,6 +35,25 @@ export async function cancelInvitationAction(
             userId: user.id,
             redirectTo: `/${locale}/workspaces`,
         })
+
+        const invitation = await getInvitationById(
+            supabase,
+            id
+        );
+
+        if (!invitation) {
+            return {
+                success: false,
+                code: "INVALID_INVITATION",
+            };
+        }
+
+        if (invitation.tenant_id !== membership.tenant_id) {
+            return {
+                success: false,
+                code: "UNAUTHORIZED",
+            };
+        }
 
         if (!hasAnyPermission(membership, ['members.invite', 'tenant.manage'])) {
             return {
