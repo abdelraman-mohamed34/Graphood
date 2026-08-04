@@ -65,8 +65,9 @@ export async function cancelInvitationAction(
         await updateInvitationById(
             supabase,
             id,
-            'CANCELLED'
-        )
+            membership.tenant_id,
+            "CANCELLED"
+        );
 
         revalidatePath(`/${locale}/${tenantSlug}/dashboard/members`)
 
