@@ -1,5 +1,6 @@
 // src/shared/lib/supabase/admin.ts
 import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/shared/types/database.types";
 
 export function createAdminClient() {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -9,7 +10,7 @@ export function createAdminClient() {
         throw new Error("Missing Supabase Admin Environment Variables");
     }
 
-    return createClient(
+    return createClient<Database>(
         supabaseUrl,
         supabaseServiceKey,
         {
