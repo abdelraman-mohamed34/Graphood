@@ -61,7 +61,18 @@ export function LocalizationForm({ tenant }: Props) {
     }, [tenant, reset]);
 
     function onSubmit(values: FormValues) {
-        updateTenant(values);
+        updateTenant({
+            name: tenant.name,
+            slug: tenant.slug,
+            email: tenant.email,
+            phone: tenant.phone,
+            logo_url: tenant.logo_url,
+            primary_color: tenant.primary_color,
+            timezone: values.timezone,
+            country: values.country,
+            city: values.city,
+            address: values.address,
+        });
     }
 
     return (

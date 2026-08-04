@@ -67,7 +67,6 @@ export default function TransferOwnership({
             title="Transfer Ownership"
             description={`Transfer workspace ownership to ${member.profile?.first_name} ${member.profile?.last_name}? You will become an Admin.`}
             confirmText="Transfer"
-            loading={loading}
             onConfirm={onTransfer}
         />
     );

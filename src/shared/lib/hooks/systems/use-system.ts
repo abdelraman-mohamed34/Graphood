@@ -68,7 +68,7 @@ export function useSystem(systemId?: string) {
     });
 
     const createMutation = useMutation<
-        System,
+        Awaited<ReturnType<typeof createSystemAction>>,
         Error,
         CreateSystemInput
     >({

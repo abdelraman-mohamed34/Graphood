@@ -42,8 +42,8 @@ export function FormField<
     control: Control<TFieldValues>
     name: TName
     render: (props: {
-        field: ControllerRenderProps<TFieldValues, TName>["field"]
-        fieldState: ControllerRenderProps<TFieldValues, TName>["fieldState"]
+        field: ControllerRenderProps<TFieldValues, TName>
+        fieldState: ControllerFieldState
     }) => React.ReactNode
 }) {
     return (

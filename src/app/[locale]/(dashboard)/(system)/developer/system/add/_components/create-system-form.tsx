@@ -60,12 +60,13 @@ export default function CreateSystemForm() {
 
     const onSubmit: SubmitHandler<CreateSystemInput> = async (values) => {
         try {
-            const system = await createSystem(values);
+            const createdSystem = await createSystem(values);
+            const systemId = createdSystem?.system?.id;
 
             toast.success("System created successfully.");
 
-            if (system?.id) {
-                router.push(`/developer/system/${system.id}/api-keys`);
+            if (systemId) {
+                router.push(`/developer/system/${systemId}/api-keys`);
             }
         } catch (error) {
             console.error(error);

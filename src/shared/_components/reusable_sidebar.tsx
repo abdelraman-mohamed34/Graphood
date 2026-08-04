@@ -22,7 +22,7 @@ export interface SidebarGroup {
 
 export interface ReusableSidebarProps
     extends React.HTMLAttributes<HTMLElement> {
-    items: SidebarGroup[];
+    items: SidebarItem[] | SidebarGroup[];
     header?: React.ReactNode;
     footer?: React.ReactNode;
 }
@@ -36,7 +36,8 @@ export function ReusableSidebar({
 }: ReusableSidebarProps) {
     const rawPathname = usePathname();
 
-    const normalizedPathname = rawPathname.replace(/^\/(ar|en)/, "") || "/";
+    const normalizedPathname =
+        rawPathname.replace(/^\/(ar|en)/, "") || "/";
 
     const isItemActive = (href: string, exact?: boolean) => {
         const targetHref = href.startsWith("/") ? href : `/${href}`;
@@ -52,6 +53,15 @@ export function ReusableSidebar({
     };
 
     if (!items.length) return null;
+
+    const groups: SidebarGroup[] =
+        "items" in items[0]
+            ? (items as SidebarGroup[])
+            : [
+                {
+                    items: items as SidebarItem[],
+                },
+            ];
 
     return (
         <aside
@@ -72,7 +82,7 @@ export function ReusableSidebar({
                 className="flex-1 overflow-y-auto"
             >
                 <div className="space-y-6">
-                    {items.map((group, index) => (
+                    {groups.map((group, index) => (
                         <div key={group.title ?? index}>
                             {group.title && (
                                 <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -93,7 +103,9 @@ export function ReusableSidebar({
                                             <Link
                                                 href={item.href}
                                                 aria-current={
-                                                    active ? "page" : undefined
+                                                    active
+                                                        ? "page"
+                                                        : undefined
                                                 }
                                                 className={cn(
                                                     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",

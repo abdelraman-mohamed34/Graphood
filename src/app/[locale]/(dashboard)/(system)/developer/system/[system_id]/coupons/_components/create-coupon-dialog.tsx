@@ -150,7 +150,7 @@ export function CreateCouponDialog({
                             <FormField
                                 control={form.control}
                                 name="code"
-                                render={(field) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Coupon Code</FormLabel>
                                         <FormControl>
@@ -170,7 +170,7 @@ export function CreateCouponDialog({
                             <FormField
                                 control={form.control}
                                 name="discount_type"
-                                render={(field) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Discount Type</FormLabel>
                                         <Select
@@ -198,7 +198,7 @@ export function CreateCouponDialog({
                             <FormField
                                 control={form.control}
                                 name="discount_value"
-                                render={(field) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Discount Value</FormLabel>
                                         <FormControl>
@@ -222,7 +222,7 @@ export function CreateCouponDialog({
                                 <FormField
                                     control={form.control}
                                     name="max_discount"
-                                    render={(field) => (
+                                    render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Max Discount</FormLabel>
                                             <FormControl>
@@ -248,7 +248,7 @@ export function CreateCouponDialog({
                             <FormField
                                 control={form.control}
                                 name="license_type"
-                                render={(field) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>License</FormLabel>
                                         <Select
@@ -279,7 +279,7 @@ export function CreateCouponDialog({
                             <FormField
                                 control={form.control}
                                 name="plan"
-                                render={(field) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Plan</FormLabel>
                                         <Select
@@ -312,7 +312,7 @@ export function CreateCouponDialog({
                             <FormField
                                 control={form.control}
                                 name="min_order_amount"
-                                render={(field) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Minimum Order Amount</FormLabel>
                                         <FormControl>
@@ -335,7 +335,7 @@ export function CreateCouponDialog({
                             <FormField
                                 control={form.control}
                                 name="max_uses"
-                                render={(field) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Max Uses</FormLabel>
                                         <FormControl>
@@ -358,7 +358,7 @@ export function CreateCouponDialog({
                             <FormField
                                 control={form.control}
                                 name="max_uses_per_user"
-                                render={(field) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Max Uses Per User</FormLabel>
                                         <FormControl>
@@ -383,7 +383,7 @@ export function CreateCouponDialog({
                             <FormField
                                 control={form.control}
                                 name="one_use_per_system"
-                                render={(field) => (
+                                render={({ field }) => (
                                     <FormItem className="flex items-center justify-between space-y-0">
                                         <div>
                                             <FormLabel>One Use Per System</FormLabel>
@@ -404,7 +404,7 @@ export function CreateCouponDialog({
                             <FormField
                                 control={form.control}
                                 name="is_active"
-                                render={(field) => (
+                                render={({ field }) => (
                                     <FormItem className="flex items-center justify-between space-y-0">
                                         <div>
                                             <FormLabel>Active</FormLabel>

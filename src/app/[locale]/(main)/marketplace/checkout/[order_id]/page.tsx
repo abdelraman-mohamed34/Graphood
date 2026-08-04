@@ -12,7 +12,7 @@ interface PageProps {
 
 export default function Page({ params }: PageProps) {
     const { order_id } = use(params);
-    const { data: order, isLoading, error } = useOrder(order_id);
+    const { order, isLoading, error } = useOrder(order_id);
     const { completePayment, isProcessing } = useCompletePayment();
 
     if (isLoading) {
@@ -33,7 +33,9 @@ export default function Page({ params }: PageProps) {
         );
     }
 
-    const system = order.systems
+    const system = Array.isArray(order.systems)
+        ? order.systems[0]
+        : order.systems;
 
     if (order.status === "PAID") {
         return (
