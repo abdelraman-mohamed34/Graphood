@@ -51,6 +51,8 @@ export default async function LocaleLayout({
         notFound();
     }
 
+    const dir = locale === "ar" ? "rtl" : "ltr";
+
     const supabasePromise = createSupabaseServerClient();
     const messagesPromise = getMessages();
 
@@ -78,7 +80,7 @@ export default async function LocaleLayout({
     return (
         <div
             lang={locale}
-            dir={locale === "ar" ? "rtl" : "ltr"}
+            dir={dir}
             className={`${robotoSans.variable} ${robotoMono.variable} font-sans`}
         >
             <NextIntlClientProvider messages={messages}>
@@ -90,8 +92,9 @@ export default async function LocaleLayout({
                 </AppProvider>
 
                 <Toaster
+                    dir={dir}
                     richColors
-                    position="bottom-right"
+                    position={dir === "rtl" ? "bottom-left" : "bottom-right"}
                     toastOptions={{
                         classNames: {
                             toast: "group toast border-muted bg-background text-foreground shadow-xl rounded-xl border p-4 flex gap-3 w-full max-w-sm",
