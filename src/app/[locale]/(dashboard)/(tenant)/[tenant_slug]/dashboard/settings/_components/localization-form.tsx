@@ -21,6 +21,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { useTranslations } from "next-intl";
 
 type Props = {
     tenant: Tenant;
@@ -34,6 +35,7 @@ type FormValues = {
 };
 
 export function LocalizationForm({ tenant }: Props) {
+    const t = useTranslations("dashboard.settings");
     const { updateTenant, isUpdating } = useTenant();
 
     const {
@@ -78,7 +80,7 @@ export function LocalizationForm({ tenant }: Props) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Localization Settings</CardTitle>
+                <CardTitle>{t("localization.title")}</CardTitle>
             </CardHeader>
 
             <CardContent>
@@ -88,7 +90,7 @@ export function LocalizationForm({ tenant }: Props) {
                 >
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <div className="space-y-2">
-                            <Label>Timezone</Label>
+                            <Label>{t("fields.timezone")}</Label>
 
                             <Controller
                                 control={control}
@@ -99,7 +101,7 @@ export function LocalizationForm({ tenant }: Props) {
                                         onValueChange={field.onChange}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select timezone" />
+                                            <SelectValue placeholder={t("localization.selectTimezone")} />
                                         </SelectTrigger>
 
                                         <SelectContent>
@@ -140,7 +142,7 @@ export function LocalizationForm({ tenant }: Props) {
 
                         <div className="space-y-2">
                             <Label htmlFor="country">
-                                Country
+                                {t("fields.country")}
                             </Label>
 
                             <Input
@@ -157,7 +159,7 @@ export function LocalizationForm({ tenant }: Props) {
 
                         <div className="space-y-2">
                             <Label htmlFor="city">
-                                City
+                                {t("fields.city")}
                             </Label>
 
                             <Input
@@ -174,7 +176,7 @@ export function LocalizationForm({ tenant }: Props) {
 
                         <div className="space-y-2 md:col-span-2">
                             <Label htmlFor="address">
-                                Address
+                                {t("fields.address")}
                             </Label>
 
                             <Textarea
@@ -191,14 +193,14 @@ export function LocalizationForm({ tenant }: Props) {
                         </div>
                     </div>
 
-                    <div className="flex justify-end">
+                    <div className="flex justify-end rtl:justify-start">
                         <Button
                             type="submit"
                             disabled={isUpdating}
                         >
                             {isUpdating
-                                ? "Saving..."
-                                : "Save Location"}
+                                ? t("saving")
+                                : t("localization.save")}
                         </Button>
                     </div>
                 </form>

@@ -15,6 +15,7 @@ import { createClient } from "@/shared/lib/supabase/client";
 import Image from "next/image";
 import { toast } from "sonner";
 import { uploadTenantLogoService } from "@/shared/lib/supabase/services/storage";
+import { useTranslations } from "next-intl";
 
 type FormValues = {
     name: string;
@@ -43,6 +44,7 @@ export async function uploadTenantLogo(
 }
 
 export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
+    const t = useTranslations("dashboard.settings");
     const { updateTenant, isUpdating } = useTenant();
     const [preview, setPreview] = useState<string | null>(
         tenant.logo_url || null
@@ -109,14 +111,14 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
 
             if (!allowedTypes.includes(file.type)) {
                 toast.error(
-                    "Only PNG, JPG, JPEG and WEBP images are allowed."
+                    t("feedback.invalidImageType")
                 );
                 return;
             }
 
             if (file.size > maxSize) {
                 toast.error(
-                    "Image size must not exceed 2 MB."
+                    t("feedback.imageTooLarge")
                 );
                 return;
             }
@@ -150,7 +152,7 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
                 >
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <div className="space-y-2">
-                            <Label htmlFor="name">Workspace Name</Label>
+                            <Label htmlFor="name">{t("fields.name")}</Label>
                             <Input
                                 id="name"
                                 {...register("name")}
@@ -163,7 +165,7 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="slug">Slug</Label>
+                            <Label htmlFor="slug">{t("fields.slug")}</Label>
                             <Input
                                 id="slug"
                                 {...register("slug")}
@@ -176,7 +178,7 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">{t("fields.email")}</Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -190,7 +192,7 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="phone">Phone</Label>
+                            <Label htmlFor="phone">{t("fields.phone")}</Label>
                             <Input
                                 id="phone"
                                 {...register("phone")}
@@ -198,7 +200,7 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="country">Country</Label>
+                            <Label htmlFor="country">{t("fields.country")}</Label>
                             <Input
                                 id="country"
                                 {...register("country")}
@@ -206,7 +208,7 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="city">City</Label>
+                            <Label htmlFor="city">{t("fields.city")}</Label>
                             <Input
                                 id="city"
                                 {...register("city")}
@@ -214,7 +216,7 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
                         </div>
 
                         <div className="space-y-2 md:col-span-2">
-                            <Label htmlFor="address">Address</Label>
+                            <Label htmlFor="address">{t("fields.address")}</Label>
                             <Input
                                 id="address"
                                 {...register("address")}
@@ -222,7 +224,7 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="timezone">Timezone</Label>
+                            <Label htmlFor="timezone">{t("fields.timezone")}</Label>
                             <Input
                                 id="timezone"
                                 {...register("timezone")}
@@ -231,7 +233,7 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
 
                         <div className="space-y-2">
                             <Label htmlFor="primary_color">
-                                Primary Color
+                                {t("fields.primaryColor")}
                             </Label>
                             <Input
                                 id="primary_color"
@@ -241,7 +243,7 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
                         </div>
 
                         <div className="space-y-3 md:col-span-2">
-                            <Label>Workspace Logo</Label>
+                            <Label>{t("logo.title")}</Label>
 
                             <label
                                 htmlFor="logo"
@@ -251,29 +253,29 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
                                     {preview ? (
                                         <Image
                                             src={preview}
-                                            alt="Workspace Logo"
+                                            alt={t("logo.alt")}
                                             fill
                                             className="object-cover"
                                         />
                                     ) : (
                                         <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-                                            No Logo
+                                            {t("logo.none")}
                                         </div>
                                     )}
                                 </div>
 
                                 <div className="flex-1">
                                     <p className="font-medium">
-                                        Click to choose a logo
+                                        {t("logo.choose")}
                                     </p>
 
                                     <p className="mt-1 text-sm text-muted-foreground">
-                                        PNG, JPG, WEBP • Max 5 MB
+                                        {t("logo.requirements")}
                                     </p>
 
                                     {preview?.startsWith("blob:") && (
                                         <p className="mt-2 text-sm text-primary">
-                                            ✓ New image selected
+                                            {t("logo.selected")}
                                         </p>
                                     )}
                                 </div>
@@ -297,12 +299,12 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
 
                     </div>
 
-                    <div className="flex justify-end">
+                    <div className="flex justify-end rtl:justify-start">
                         <Button
                             type="submit"
                             disabled={isUpdating}
                         >
-                            {isUpdating ? "Saving..." : "Save Changes"}
+                            {isUpdating ? t("saving") : t("save")}
                         </Button>
                     </div>
                 </form>

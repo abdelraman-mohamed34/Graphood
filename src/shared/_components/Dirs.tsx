@@ -58,7 +58,7 @@ export function Dir({
     const unroutable = new Set(unroutableSegments);
 
     return (
-        <Breadcrumb className="w-full rounded-lg bg-primary/5 p-4 px-6 md:px-10">
+        <Breadcrumb className="w-full bg-primary/5 p-4 px-6 md:px-10">
             <BreadcrumbList className="flex items-center text-start">
                 <BreadcrumbItem>
                     <BreadcrumbLink asChild>

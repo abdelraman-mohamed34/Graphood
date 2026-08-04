@@ -5,6 +5,7 @@ import { Membership } from "@/shared/lib/schemas/memberships.schema";
 import RoleBadge from "./role-badge";
 import StatusBadge from "./status-badge";
 import MemberActions from "../actions/member-actions";
+import { useTranslations } from "next-intl";
 
 type Props = {
     member: Membership;
@@ -21,6 +22,7 @@ export default function MemberRow({
     removeMember,
     canShowMemberActions,
 }: Props) {
+    const t = useTranslations("dashboard.members");
     return (
         <tr className="transition-colors hover:bg-muted/30">
             <td className="px-6 py-4">
@@ -49,12 +51,12 @@ export default function MemberRow({
                     </>
                 ) : (
                     <span className="text-muted-foreground">
-                        System
+                        {t("system")}
                     </span>
                 )}
             </td>
 
-            <td className="px-4 py-4 text-right">
+            <td className="px-4 py-4 text-end">
                 {canShowMemberActions(member) && (
                     <MemberActions
                         member={member}

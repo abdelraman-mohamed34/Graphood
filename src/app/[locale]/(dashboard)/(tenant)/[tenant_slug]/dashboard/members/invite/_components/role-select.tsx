@@ -10,6 +10,7 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { Control, FieldPath, FieldValues, useController } from 'react-hook-form'
+import { useTranslations } from 'next-intl'
 
 type RoleSelectProps<T extends FieldValues> = {
     control?: Control<T>
@@ -49,6 +50,7 @@ function RoleSelectView({ value, onValueChange, disabled }: {
     onValueChange?: (value: string) => void
     disabled?: boolean
 }) {
+    const t = useTranslations('dashboard.members')
 
     const membershipRoles = ["ADMIN"]
 
@@ -59,16 +61,16 @@ function RoleSelectView({ value, onValueChange, disabled }: {
             disabled={disabled}
         >
             <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a role" />
+                <SelectValue placeholder={t('invite.selectRole')} />
             </SelectTrigger>
 
             <SelectContent>
                 <SelectGroup>
-                    <SelectLabel>Roles</SelectLabel>
+                    <SelectLabel>{t('table.role')}</SelectLabel>
 
                     {membershipRoles.map((role) => (
                         <SelectItem key={role} value={role}>
-                            {role.toUpperCase()}
+                            {t.has(`roles.${role.toLowerCase()}`) ? t(`roles.${role.toLowerCase()}`) : role}
                         </SelectItem>
                     ))}
                 </SelectGroup>

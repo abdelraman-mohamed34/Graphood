@@ -5,8 +5,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
 import { GeneralSettingsForm } from "./general-settings-form";
+import { useTranslations } from "next-intl";
 
 export function GeneralSettings() {
+    const t = useTranslations("dashboard.settings");
     const {
         tenant,
         permissions,
@@ -15,15 +17,15 @@ export function GeneralSettings() {
 
     useEffect(() => {
         if (!isLoading && !permissions.canManageWorkspace) {
-            toast.error("You don't have permission to manage this workspace.");
+            toast.error(t("feedback.forbidden"));
         }
-    }, [isLoading, permissions.canManageWorkspace]);
+    }, [isLoading, permissions.canManageWorkspace, t]);
 
     useEffect(() => {
         if (!isLoading && !tenant) {
-            toast.error("Workspace not found.");
+            toast.error(t("feedback.notFound"));
         }
-    }, [isLoading, tenant]);
+    }, [isLoading, tenant, t]);
 
     if (isLoading) {
         return (

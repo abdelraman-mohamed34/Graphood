@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card"
 import { CheckCircle2, XCircle } from "lucide-react"
 import type { SubscriptionCapabilities } from "@/shared/lib/auth/requires/require-subscription"
+import { useTranslations } from "next-intl"
 
 type FeatureAvailabilityProps = {
     capabilities: SubscriptionCapabilities | null
@@ -18,25 +19,26 @@ type FeatureAvailabilityProps = {
 export default function FeatureAvailability({
     capabilities,
 }: FeatureAvailabilityProps) {
+    const t = useTranslations("dashboard.subscription")
     const features = [
         {
-            name: "Reports",
+            name: t("features.reports"),
             enabled: capabilities?.limits?.hasReports ?? false,
         },
         {
-            name: "AI Assistant",
+            name: t("features.aiAssistant"),
             enabled: capabilities?.limits?.hasWordAssistant ?? false,
         },
         {
-            name: "API Access",
+            name: t("features.apiAccess"),
             enabled: false, // Placeholder
         },
         {
-            name: "Multi Members",
+            name: t("features.multiMembers"),
             enabled: true, // Placeholder
         },
         {
-            name: "White Label",
+            name: t("features.whiteLabel"),
             enabled: false, // Placeholder
         },
     ]
@@ -44,9 +46,9 @@ export default function FeatureAvailability({
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Feature Availability</CardTitle>
+                <CardTitle>{t("features.title")}</CardTitle>
                 <CardDescription>
-                    Features currently available for your workspace.
+                    {t("features.description")}
                 </CardDescription>
             </CardHeader>
 
@@ -70,7 +72,7 @@ export default function FeatureAvailability({
                             <Badge
                                 variant={feature.enabled ? "default" : "secondary"}
                             >
-                                {feature.enabled ? "Enabled" : "Unavailable"}
+                                {feature.enabled ? t("features.enabled") : t("features.unavailable")}
                             </Badge>
                         </div>
                     ))}

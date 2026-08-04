@@ -6,11 +6,13 @@ import DashboardContainer from '@/shared/_components/dashboard-container'
 
 import { InvitationsTable } from './_components/invitations'
 import MembersTable from './_components/table/members-table'
+import { useTranslations } from 'next-intl'
 
 export default function Page() {
+    const t = useTranslations('dashboard.members')
     return (
         <SidebarInset>
-            <SiteHeader title="Members" />
+            <SiteHeader title={t('title')} />
 
             <DashboardContainer className="space-y-5">
                 <MembersTable />

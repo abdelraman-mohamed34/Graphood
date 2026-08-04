@@ -23,6 +23,7 @@ import { Link } from "@/i18n/navigation"
 import { Profile } from "@/shared/lib/schemas/profiles.schema"
 import { useLogin } from "@/shared/lib/supabase"
 import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 type NavUserData = Profile | null | {
   name: string
@@ -36,18 +37,19 @@ export function NavUser({
   user: NavUserData
 }) {
   const { isMobile } = useSidebar()
+  const t = useTranslations("dashboard.sidebar")
   const isProfileUser = user !== null && typeof user === "object" && "first_name" in user && "last_name" in user
   const displayName = isProfileUser
     ? `${user.first_name} ${user.last_name}`.trim()
-    : user?.name ?? "Guest User"
+    : user?.name ?? t("guestUser")
   const displayEmail = isProfileUser
     ? user.email
-    : user?.email ?? "No email"
+    : user?.email ?? t("noEmail")
   const avatarUrl = isProfileUser ? user.avatar_url ?? undefined : user?.avatar
   const avatarAlt = displayName
   const initials = isProfileUser
     ? `${user.first_name.charAt(0)}${user.last_name.charAt(0)}`.toUpperCase()
-    : "GU"
+    : t("guestInitials")
 
   const { signOut } = useLogin()
 
@@ -64,13 +66,13 @@ export function NavUser({
                 <AvatarImage src={avatarUrl} alt={avatarAlt} />
                 <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className="grid flex-1 text-start text-sm leading-tight">
                 <span className="truncate font-medium">{displayName}</span>
                 <span className="truncate text-xs text-muted-foreground">
                   {displayEmail}
                 </span>
               </div>
-              <EllipsisVerticalIcon className="ml-auto size-4" />
+              <EllipsisVerticalIcon className="ms-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
 
@@ -85,18 +87,18 @@ export function NavUser({
                 <CircleUserRoundIcon
                 />
                 <Link href={'/settings/profile'}>
-                  Account
+                  {t("account")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCardIcon
                 />
-                Billing
+                {t("billing")}
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <BellIcon
                 />
-                Notifications
+                {t("notifications")}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -104,7 +106,7 @@ export function NavUser({
             <DropdownMenuItem className="text-red-500">
               <LogOutIcon />
               <button onClick={() => signOut()}>
-                Log out
+                {t("logout")}
               </button>
             </DropdownMenuItem>
 

@@ -5,11 +5,11 @@ import { z } from "zod";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
 import { getSystemById } from "@/shared/lib/supabase/services/systems";
-import { createPendingOrder } from "@/shared/lib/supabase/services/billing/create-order.service";
+import { createPendingOrder } from "@/shared/lib/supabase/services/order/create-order.service";
 
 import { licenseTypes } from "@/shared/config/licensing";
 import { PLAN_LIMITS } from "@/shared/config/plans";
-import { getUserSystemOrder } from "../../supabase/services/billing";
+import { getPendingUserSystemOrder, getUserSystemOrder } from "../../supabase/services/billing";
 import { validateCoupon } from "../../supabase/services/coupons";
 
 const createOrderSchema = z.object({
@@ -102,6 +102,15 @@ export async function createOrderAction(
         };
     }
 
+    const pendingOrder = await getPendingUserSystemOrder(user.id, system.id, supabase);
+    if (pendingOrder) {
+        return {
+            success: true,
+            orderId: pendingOrder.id,
+            isExisting: true,
+        };
+    }
+
     const existingOrder = await getUserSystemOrder(
         user.id,
         system.id,
@@ -109,14 +118,6 @@ export async function createOrderAction(
     );
 
     if (existingOrder) {
-        if (existingOrder.status === "PENDING") {
-            return {
-                success: false,
-                error:
-                    "You already have a pending order for this system. Please complete or cancel it before creating another one.",
-            };
-        }
-
         if (existingOrder.status === "PAID") {
             switch (existingOrder.license_type) {
                 case "SUBSCRIPTION":
@@ -269,6 +270,7 @@ export async function createOrderAction(
 
         return {
             success: true,
+            isExisting: false,
 
             orderId: order.id,
             paymentId: payment.id,
@@ -286,6 +288,17 @@ export async function createOrderAction(
         };
     } catch (error) {
         console.error("Create order failed:", error);
+
+        // A concurrent request may have created the pending order after the
+        // preflight lookup. Resume it instead of surfacing a uniqueness error.
+        const concurrentPendingOrder = await getPendingUserSystemOrder(user.id, system.id, supabase);
+        if (concurrentPendingOrder) {
+            return {
+                success: true,
+                orderId: concurrentPendingOrder.id,
+                isExisting: true,
+            };
+        }
 
         return {
             success: false,

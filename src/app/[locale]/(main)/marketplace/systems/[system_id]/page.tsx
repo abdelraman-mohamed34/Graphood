@@ -1,151 +1,190 @@
-// src/app/[locale]/(main)/marketplace/[system_id]/page.tsx
 'use client'
 
+import { useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
+import { Building2, CalendarDays, Globe2, Tag } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
+
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useTags } from '@/shared/lib/hooks/tags/use-tag'
 import { createClient } from '@/shared/lib/supabase/client'
 import { getSystemById } from '@/shared/lib/supabase/services/systems'
-import { Building2, Calendar, Tag, CheckCircle2 } from 'lucide-react'
+
 import CheckoutButton from './_components/check-out-btn'
-import { useLocale } from 'next-intl'
-import { useTags } from '@/shared/lib/hooks/tags/use-tag'
 
 export default function Page() {
-    const params = useParams();
-    const systemId = (params?.system_id || params?.id) as string;
-    const locale = useLocale();
-    const { data: availableTags = [] } = useTags();
-
-    const supabase = createClient();
+    const params = useParams<{ system_id: string }>()
+    const systemId = params.system_id
+    const locale = useLocale()
+    const t = useTranslations('marketplace.details')
+    const label = (key: string, english: string, arabic: string) =>
+        t.has(key) ? t(key) : locale === 'ar' ? arabic : english
+    const { data: availableTags = [] } = useTags()
+    const supabase = useMemo(() => createClient(), [])
 
     const { data: system, isLoading, error } = useQuery({
         queryKey: ['systems', 'details', systemId],
         queryFn: () => getSystemById(systemId, supabase),
-        enabled: !!systemId,
-    });
+        enabled: Boolean(systemId),
+    })
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center min-h-[60vh]">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div
+                className="flex min-h-[60vh] items-center justify-center"
+                role="status"
+                aria-label={label('loading', 'Loading system details', 'جارٍ تحميل تفاصيل النظام')}
+            >
+                <div className="size-9 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
             </div>
-        );
+        )
     }
 
     if (error || !system) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] text-red-500">
-                <p>Failed to load system details.</p>
+            <div className="flex min-h-[60vh] items-center justify-center px-4 text-center text-destructive">
+                <p>{label('error', 'The system could not be loaded.', 'تعذر تحميل النظام.')}</p>
             </div>
-        );
+        )
     }
 
-    const systemTags = availableTags.filter((tag) => system.tags?.includes(tag.id));
+    const systemTags = availableTags.filter((tag) => system.tags?.includes(tag.id))
+    const currency = system.currency || 'EGP'
+    const price = system.starter_price ?? 0
+    let formattedPrice: string
+
+    try {
+        formattedPrice = new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency,
+            maximumFractionDigits: 2,
+        }).format(price)
+    } catch {
+        formattedPrice = `${new Intl.NumberFormat(locale).format(price)} ${currency}`
+    }
 
     return (
-        <div className="min-h-screen p-6 max-w-7xl mx-auto space-y-8">
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row gap-6 items-start justify-between border-b border-neutral-200 dark:border-neutral-800 pb-8">
-                <div className="flex items-start gap-5">
-                    {/* Icon Container */}
-                    <div className="w-20 h-20 rounded-2xl bg-neutral-900 flex items-center justify-center shrink-0 border border-neutral-800 shadow-sm overflow-hidden">
+        <main className="mx-auto min-h-screen w-full max-w-7xl px-4 py-8 text-start sm:px-6 lg:px-8 lg:py-12">
+            <section className="relative overflow-hidden rounded-3xl border border-border/70 bg-gradient-to-br from-card via-card to-primary/5 p-6 shadow-sm sm:p-8">
+                <div className="pointer-events-none absolute -end-20 -top-24 size-64 rounded-full bg-primary/10 blur-3xl" />
+                <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
+                    <div className="group flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border bg-background/80 shadow-sm backdrop-blur transition-shadow hover:shadow-md sm:size-24">
                         {system.icon_url ? (
-                            <>
-                                {/* eslint-disable-next-line @next/next/no-img-element -- user-configured icon hosts are not known at build time */}
-                                <img
-                                    src={system.icon_url}
-                                    alt={system.name}
-                                    className="w-full h-full object-cover"
-                                />
-                            </>
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={system.icon_url} alt="" className="size-full object-cover transition-transform duration-300 group-hover:scale-105" />
                         ) : (
-                            <Building2 className="w-10 h-10 text-neutral-400" />
+                            <Building2 className="size-10 text-muted-foreground sm:size-11" aria-hidden="true" />
                         )}
                     </div>
 
-                    <div className="space-y-2">
-                        <div className="flex items-center gap-3 flex-wrap">
-                            <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white">
+                    <div className="min-w-0 flex-1 space-y-2 text-start">
+                        <div className="flex flex-wrap items-center gap-3">
+                            <h1 className="min-w-0 break-words text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
                                 {system.name}
                             </h1>
-                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${system.status === 'ACTIVE'
-                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                                : 'bg-neutral-500/10 text-neutral-400'
-                                }`}>
-                                {system.status}
-                            </span>
+                            <Badge
+                                variant="outline"
+                                className={system.status === 'ACTIVE'
+                                    ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                                    : 'bg-muted text-muted-foreground'}
+                            >
+                                <span className={`me-1.5 size-1.5 shrink-0 rounded-full ${system.status === 'ACTIVE' ? 'bg-emerald-500' : 'bg-muted-foreground'}`} />
+                                {system.status === 'ACTIVE'
+                                    ? label('active', 'Active', 'نشط')
+                                    : label('inactive', 'Inactive', 'غير نشط')}
+                            </Badge>
                         </div>
-                        <p className="text-sm text-neutral-500 font-mono">
-                            Slug: {system.slug}
+                        <p className="break-all font-mono text-xs text-muted-foreground sm:text-sm">
+                            <span className="font-sans font-medium">{label('slug', 'Slug', 'الرابط المختصر')}:</span>{' '}
+                            <bdi>{system.slug}</bdi>
                         </p>
                     </div>
                 </div>
+            </section>
 
-                {/* Price Box */}
-                <div className="bg-neutral-50 dark:bg-neutral-900/50 p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 w-full md:w-auto min-w-[200px]">
-                    <span className="text-xs text-neutral-500 font-medium">Price</span>
-                    <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-3xl font-bold text-neutral-900 dark:text-white">
-                            {system.base_price}
-                        </span>
-                        <span className="text-sm font-semibold text-neutral-500">
-                            {system.currency || 'USD'}
-                        </span>
-                    </div>
+            <div className="mt-8 grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-8">
+                <div className="min-w-0">
+                    <Card className="overflow-hidden border-border/70 bg-card shadow-sm">
+                        <CardHeader className="border-b bg-muted/30 px-6 py-5 sm:px-8">
+                            <CardTitle className="text-lg font-semibold">
+                                {label('description', 'Description', 'الوصف')}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-6 sm:p-8">
+                            <p className="whitespace-pre-line break-words text-base leading-8 text-muted-foreground">
+                                {system.description || label('noDescription', 'No description has been provided yet.', 'لم تتم إضافة وصف بعد.')}
+                            </p>
+                        </CardContent>
+                    </Card>
                 </div>
+
+                <aside className="min-w-0 space-y-5 lg:sticky lg:top-8">
+                    <Card className="overflow-hidden border-primary/15 shadow-md shadow-primary/5">
+                        <CardContent className="space-y-5 p-6 text-start">
+                            <div className="space-y-1">
+                                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                                    {label('price', 'Price', 'السعر')}
+                                </p>
+                                <p className="text-3xl font-bold tracking-tight text-foreground" dir="ltr">
+                                    {formattedPrice}
+                                </p>
+                            </div>
+                            <CheckoutButton systemId={systemId} />
+                        </CardContent>
+                    </Card>
+
+                    <Card className="overflow-hidden border-border/70 shadow-sm">
+                        <CardHeader className="border-b bg-muted/20 px-5 py-4">
+                            <CardTitle className="text-base font-semibold">
+                                {label('systemOverview', 'System overview', 'نظرة عامة على النظام')}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="divide-y p-0 text-start text-sm">
+                            <div className="space-y-3 p-5">
+                                <div className="flex min-w-0 items-center gap-2 text-xs font-medium text-muted-foreground">
+                                    <Tag className="size-4 shrink-0" aria-hidden="true" />
+                                    <span className="break-words">{label('categories', 'Categories', 'التصنيفات')}</span>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {systemTags.length > 0 ? systemTags.map((tag) => (
+                                        <Badge key={tag.id} variant="secondary" className="max-w-full whitespace-normal break-words rounded-lg px-2.5 py-1 text-start text-xs font-medium">
+                                            {locale === 'ar' ? tag.name_ar : tag.name_en}
+                                        </Badge>
+                                    )) : (
+                                        <span className="text-xs text-muted-foreground">
+                                            {label('noCategories', 'No categories', 'لا توجد تصنيفات')}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 p-5">
+                                <span className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
+                                    <Globe2 className="size-4 shrink-0" aria-hidden="true" />
+                                    <span className="break-words">{label('accessStatus', 'Access status', 'حالة الوصول')}</span>
+                                </span>
+                                <Badge variant="outline" className="max-w-36 shrink-0 whitespace-normal text-center text-xs font-medium leading-5">
+                                    {system.is_public
+                                        ? label('publicAccess', 'Public access', 'وصول عام')
+                                        : label('privateAccess', 'Private access', 'وصول خاص')}
+                                </Badge>
+                            </div>
+
+                            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 p-5">
+                                <span className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
+                                    <CalendarDays className="size-4 shrink-0" aria-hidden="true" />
+                                    <span className="break-words">{label('createdAt', 'Created at', 'تاريخ الإنشاء')}</span>
+                                </span>
+                                <time dateTime={system.created_at} className="shrink-0 text-xs font-medium text-foreground">
+                                    {new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(system.created_at))}
+                                </time>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </aside>
             </div>
-
-            {/* Details Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Main Content */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="space-y-3">
-                        <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
-                            Description
-                        </h2>
-                        <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed text-base">
-                            {system.description || 'No description provided.'}
-                        </p>
-                    </div>
-                </div>
-
-                {/* Meta Sidebar */}
-                <div className="bg-neutral-50 dark:bg-neutral-900/40 rounded-xl p-5 border border-neutral-200 dark:border-neutral-800 space-y-4 h-fit">
-                    <h3 className="font-semibold text-neutral-900 dark:text-white text-sm border-b border-neutral-200 dark:border-neutral-800 pb-3">
-                        System Overview
-                    </h3>
-
-                    <div className="space-y-3.5 text-sm">
-                        <div className="flex items-center justify-between">
-                            <span className="text-neutral-500 flex items-center gap-2">
-                                <Tag className="w-4 h-4" /> Category
-                            </span>
-                            <span className="font-medium text-neutral-800 dark:text-neutral-200">
-                                {systemTags.map((tag) => locale === 'ar' ? tag.name_ar : tag.name_en).join(', ') || '—'}
-                            </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <span className="text-neutral-500 flex items-center gap-2">
-                                <CheckCircle2 className="w-4 h-4" /> Public Access
-                            </span>
-                            <span className="font-medium text-neutral-800 dark:text-neutral-200">
-                                {system.is_public ? 'Yes' : 'No'}
-                            </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <span className="text-neutral-500 flex items-center gap-2">
-                                <Calendar className="w-4 h-4" /> Created At
-                            </span>
-                            <span className="font-medium text-neutral-800 dark:text-neutral-200">
-                                {new Date(system.created_at).toLocaleDateString()}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <CheckoutButton systemId={systemId} />
-        </div>
-    );
+        </main>
+    )
 }

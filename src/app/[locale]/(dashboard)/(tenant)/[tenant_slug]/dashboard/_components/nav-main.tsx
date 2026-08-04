@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Link } from "@/i18n/navigation"
 import { useParams, usePathname } from "next/navigation"
+import { useTranslations } from "next-intl"
 
 export function NavMain({
   items,
@@ -24,6 +25,7 @@ export function NavMain({
 }) {
 
   const params = useParams()
+  const t = useTranslations("dashboard.sidebar")
   const path = usePathname()
   const tenantSlug = params?.tenant_slug as string
   const lastDir = path.split('/').pop()
@@ -38,11 +40,11 @@ export function NavMain({
           <SidebarMenuItem className="flex items-center gap-2">
 
             <SidebarMenuButton
-              tooltip="Quick Create"
+              tooltip={t("quickCreate")}
               className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
             >
               <IconCirclePlusFilled />
-              <span>Quick Create</span>
+              <span>{t("quickCreate")}</span>
             </SidebarMenuButton>
 
             <Button
@@ -51,7 +53,7 @@ export function NavMain({
               variant="outline"
             >
               <IconMail />
-              <span className="sr-only">Inbox</span>
+              <span className="sr-only">{t("inbox")}</span>
             </Button>
           </SidebarMenuItem>
         </SidebarMenu>

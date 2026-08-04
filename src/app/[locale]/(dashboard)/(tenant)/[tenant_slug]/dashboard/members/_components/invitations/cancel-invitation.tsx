@@ -6,6 +6,7 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { ConfirmationDialog } from "@/shared/_components/confirmation-dialog";
 
 import { Invitation } from "@/shared/lib/schemas/invitations.schema";
+import { useTranslations } from "next-intl";
 
 type Props = {
     invitation: Invitation;
@@ -19,6 +20,7 @@ export default function CancelInvitation({
     invitation,
     cancelInvitation,
 }: Props) {
+    const t = useTranslations("dashboard.members");
     return (
         <ConfirmationDialog
             trigger={
@@ -26,20 +28,20 @@ export default function CancelInvitation({
                     onSelect={(e) => e.preventDefault()}
                     className="text-destructive focus:text-destructive"
                 >
-                    <BanIcon className="mr-2 h-4 w-4" />
-                    Cancel Invitation
+                    <BanIcon className="me-2 h-4 w-4" />
+                    {t("invitations.cancel")}
                 </DropdownMenuItem>
             }
-            title="Cancel Invitation"
+            title={t("invitations.cancel")}
             description={
                 <>
-                    Are you sure you want to cancel the invitation sent to{" "}
-                    <strong>{invitation.email}</strong>?
-                    <br />
-                    This user will no longer be able to accept it.
+                    {t.rich("invitations.cancelDescription", {
+                        email: invitation.email,
+                        strong: (chunks) => <strong>{chunks}</strong>,
+                    })}
                 </>
             }
-            confirmText="Cancel Invitation"
+            confirmText={t("invitations.cancel")}
             onConfirm={() => cancelInvitation(invitation.id)}
         />
     );

@@ -9,9 +9,19 @@
                 "title": "إنشاء نظام جديد",
                 "subtitle": "أنشئ نظامك لبدء التكامل مع Graphood.",
                 "fields": {
-                    "name": { "label": "اسم النظام", "placeholder": "نظام إدارة العملاء" },
-                    "slug": { "label": "الرابط المختصر", "placeholder": "awesome-crm", "description": "يُستخدم في الروابط العامة." },
-                    "description": { "label": "الوصف", "placeholder": "صِف إمكانات نظامك وميزاته..." },
+                    "name": {
+                        "label": "اسم النظام",
+                        "placeholder": "نظام إدارة العملاء"
+                    },
+                    "slug": {
+                        "label": "الرابط المختصر",
+                        "placeholder": "awesome-crm",
+                        "description": "يُستخدم في الروابط العامة."
+                    },
+                    "description": {
+                        "label": "الوصف",
+                        "placeholder": "صِف إمكانات نظامك وميزاته..."
+                    },
                     "category": {
                         "label": "الوسوم والتصنيفات",
                         "searchPlaceholder": "ابحث في الوسوم والتصنيفات...",
@@ -19,11 +29,21 @@
                         "empty": "لم يتم العثور على وسوم.",
                         "remove": "إزالة {category}"
                     },
-                    "starterPrice": { "label": "سعر الباقة المبدئية (ج.م)" },
-                    "proPrice": { "label": "سعر الباقة الاحترافية (ج.م)" },
-                    "businessPrice": { "label": "سعر باقة الأعمال (ج.م)" },
-                    "resellerPrice": { "label": "سعر إعادة البيع (ج.م)" },
-                    "exclusivePrice": { "label": "السعر الحصري (ج.م)" }
+                    "starterPrice": {
+                        "label": "سعر الباقة المبدئية (ج.م)"
+                    },
+                    "proPrice": {
+                        "label": "سعر الباقة برو (ج.م)"
+                    },
+                    "businessPrice": {
+                        "label": "سعر باقة الأعمال (ج.م)"
+                    },
+                    "resellerPrice": {
+                        "label": "سعر إعادة البيع (ج.م)"
+                    },
+                    "exclusivePrice": {
+                        "label": "السعر الحصري (ج.م)"
+                    }
                 },
                 "pricing": {
                     "subscriptionTitle": "تسعير الاشتراكات",
@@ -31,7 +51,10 @@
                     "licenseTitle": "تسعير التراخيص",
                     "licenseSubtitle": "حدد رسوم الشراء لمرة واحدة أو التراخيص الخاصة."
                 },
-                "notifications": { "success": "تم إنشاء النظام بنجاح.", "error": "فشل إنشاء النظام." },
+                "notifications": {
+                    "success": "تم إنشاء النظام بنجاح.",
+                    "error": "فشل إنشاء النظام."
+                },
                 "validation": {
                     "nameMin": "يجب ألا يقل اسم النظام عن 3 أحرف.",
                     "slugMin": "يجب ألا يقل الرابط المختصر عن 5 أحرف.",
@@ -71,6 +94,106 @@
         "empty": {
             "title": "لم يتم العثور على أنظمة",
             "description": "جرّب البحث عن شيء آخر."
+        },
+        "details": {
+            "loading": "جارٍ تحميل تفاصيل النظام",
+            "error": "تعذر تحميل النظام.",
+            "description": "الوصف",
+            "noDescription": "لم تتم إضافة وصف بعد.",
+            "price": "السعر",
+            "systemOverview": "نظرة عامة على النظام",
+            "categories": "التصنيفات",
+            "noCategories": "لا توجد تصنيفات",
+            "accessStatus": "حالة الوصول",
+            "publicAccess": "وصول عام",
+            "privateAccess": "وصول خاص",
+            "createdAt": "تاريخ الإنشاء",
+            "slug": "الرابط المختصر",
+            "active": "نشط",
+            "inactive": "غير نشط",
+            "getNow": "احصل عليه الآن"
+        },
+        "purchase": {
+            "title": "اختر خطة",
+            "chooseLicense": "اختر نوع الترخيص",
+            "loadError": "تعذر تحميل تفاصيل النظام. يرجى المحاولة مرة أخرى.",
+            "perMonthShort": "/شهر",
+            "perMonth": "/ شهريًا",
+            "processing": "جارٍ معالجة الطلب...",
+            "continueToCheckout": "المتابعة إلى الدفع ({price} {currency})",
+            "plans": {
+                "starter": {
+                    "name": "المبدئية",
+                    "tagline": "مثالية للأفراد",
+                    "description": "مثالية للمستقلين والمشاريع الشخصية، وتشمل الميزات الأساسية للبدء بسرعة."
+                },
+                "pro": {
+                    "name": "برو",
+                    "tagline": "الأفضل للأعمال النامية",
+                    "description": "مصممة للشركات الناشئة والفرق النامية مع ميزات متقدمة وتقارير والوصول إلى واجهة API."
+                },
+                "business": {
+                    "name": "الأعمال",
+                    "tagline": "مصممة للمؤسسات",
+                    "description": "حل متكامل للشركات التي تحتاج إلى أعلى مستويات التوسع والتعاون وإمكانات المؤسسات."
+                }
+            },
+            "licenses": {
+                "subscription": {
+                    "label": "اشتراك",
+                    "shortDescription": "اشتراك شهري متجدد",
+                    "description": "ادفع رسوم اشتراك متجددة واختر الخطة الأنسب لعملك، مع تحديثات ودعم مستمرين طوال مدة الاشتراك."
+                },
+                "reseller": {
+                    "label": "ترخيص إعادة البيع",
+                    "shortDescription": "شراء لمرة واحدة مع حقوق إعادة البيع",
+                    "description": "اشترِ النظام مرة واحدة واحصل على حق إعادة بيعه لعملائك دون اشتراك متجدد."
+                },
+                "exclusive": {
+                    "label": "شراء حصري",
+                    "shortDescription": "ملكية حصرية",
+                    "description": "احصل على ملكية حصرية للنظام، ولن يصبح متاحًا للبيع لعملاء آخرين بعد الشراء."
+                }
+            },
+            "features": {
+                "admins": "حتى {count, plural, one {مشرف واحد} two {مشرفين} few {# مشرفين} many {# مشرفًا} other {# مشرف}}",
+                "advancedReports": "تقارير متقدمة",
+                "basicAnalytics": "تحليلات أساسية",
+                "wordAssistant": "مساعد الكلمات مشمول",
+                "noWordAssistant": "دون مساعد الكلمات",
+                "fullApiAccess": "وصول كامل إلى واجهة API",
+                "noApiAccess": "دون وصول إلى واجهة API"
+            },
+            "coupon": {
+                "label": "رمز الكوبون",
+                "apply": "تطبيق"
+            },
+            "summary": {
+                "licenseMode": "نوع الترخيص",
+                "selectedTier": "الخطة المختارة",
+                "subtotal": "المجموع الفرعي",
+                "coupon": "الكوبون ({code})",
+                "totalAmount": "المبلغ الإجمالي",
+                "recurringFee": "رسوم اشتراك متجددة",
+                "oneTimePurchase": "شراء كامل لمرة واحدة"
+            },
+            "feedback": {
+                "orderFailed": "تعذر إنشاء الطلب.",
+                "orderCreated": "تم إنشاء الطلب بنجاح.",
+                "genericError": "حدث خطأ ما.",
+                "invalidCoupon": "الكوبون غير صالح.",
+                "couponApplied": "تم تطبيق الكوبون."
+            },
+            "pendingOrder": {
+                "title": "طلب غير مكتمل",
+                "description": "لديك طلب غير مكتمل لهذا النظام.",
+                "resume": "متابعة الدفع",
+                "cancel": "إلغاء الطلب",
+                "cancelling": "جارٍ الإلغاء...",
+                "cancelled": "تم إلغاء طلبك المعلق.",
+                "cancelFailed": "تعذر إلغاء الطلب المعلق.",
+                "redirecting": "جارٍ تحويلك إلى طلبك المعلق الحالي..."
+            }
         },
         "card": {
             "badge": "نظام",
@@ -202,9 +325,19 @@
             "title": "إنشاء نظام جديد",
             "subtitle": "أنشئ نظامك لبدء التكامل مع Graphood.",
             "fields": {
-                "name": { "label": "اسم النظام", "placeholder": "نظام إدارة العملاء" },
-                "slug": { "label": "الرابط المختصر", "placeholder": "awesome-crm", "description": "يُستخدم في الروابط العامة." },
-                "description": { "label": "الوصف", "placeholder": "صِف إمكانات نظامك وميزاته..." },
+                "name": {
+                    "label": "اسم النظام",
+                    "placeholder": "نظام إدارة العملاء"
+                },
+                "slug": {
+                    "label": "الرابط المختصر",
+                    "placeholder": "awesome-crm",
+                    "description": "يُستخدم في الروابط العامة."
+                },
+                "description": {
+                    "label": "الوصف",
+                    "placeholder": "صِف إمكانات نظامك وميزاته..."
+                },
                 "category": {
                     "label": "التصنيفات",
                     "placeholder": "اختر التصنيفات",
@@ -214,12 +347,26 @@
                     "selectedCount": "تم اختيار {count}",
                     "remove": "إزالة {category}"
                 },
-                "tags": { "label": "الوسوم", "placeholder": "عملاء، مبيعات، أعمال", "description": "افصل بين الوسوم بفواصل." },
-                "starterPrice": { "label": "سعر الباقة المبدئية (ج.م)" },
-                "proPrice": { "label": "سعر الباقة الاحترافية (ج.م)" },
-                "businessPrice": { "label": "سعر باقة الأعمال (ج.م)" },
-                "resellerPrice": { "label": "سعر إعادة البيع (ج.م)" },
-                "exclusivePrice": { "label": "السعر الحصري (ج.م)" }
+                "tags": {
+                    "label": "الوسوم",
+                    "placeholder": "عملاء، مبيعات، أعمال",
+                    "description": "افصل بين الوسوم بفواصل."
+                },
+                "starterPrice": {
+                    "label": "سعر الباقة المبدئية (ج.م)"
+                },
+                "proPrice": {
+                    "label": "سعر الباقة برو (ج.م)"
+                },
+                "businessPrice": {
+                    "label": "سعر باقة الأعمال (ج.م)"
+                },
+                "resellerPrice": {
+                    "label": "سعر إعادة البيع (ج.م)"
+                },
+                "exclusivePrice": {
+                    "label": "السعر الحصري (ج.م)"
+                }
             },
             "pricing": {
                 "subscriptionTitle": "تسعير الاشتراكات",
@@ -227,7 +374,10 @@
                 "licenseTitle": "تسعير التراخيص",
                 "licenseSubtitle": "حدد رسوم الشراء لمرة واحدة أو التراخيص الخاصة."
             },
-            "notifications": { "success": "تم إنشاء النظام بنجاح.", "error": "فشل إنشاء النظام." },
+            "notifications": {
+                "success": "تم إنشاء النظام بنجاح.",
+                "error": "فشل إنشاء النظام."
+            },
             "submit": "إنشاء النظام",
             "submitLoading": "جارٍ الإنشاء..."
         }
@@ -252,6 +402,8 @@
         "loading": "جارٍ التحميل...",
         "notFound": "لم يتم العثور على الطلب.",
         "alreadyPaid": "تم دفع هذا الطلب بالفعل.",
+        "alreadyPaidRedirecting": "تم دفع الطلب بالفعل. جارٍ تحويلك إلى لوحة التحكم...",
+        "preparingDashboard": "جارٍ تجهيز مساحة عملك...",
         "checkoutSummary": "ملخص الدفع",
         "orderSummary": "ملخص الطلب",
         "system": "النظام",
@@ -267,7 +419,28 @@
         "paymentMethod": "طريقة الدفع",
         "mockPayment": "دفع تجريبي للمطور",
         "processing": "جارٍ معالجة الدفع...",
-        "completePayment": "إتمام الدفع"
+        "completePayment": "إتمام الدفع",
+        "paymentSuccess": "تم الدفع بنجاح.",
+        "paymentFailed": "تعذر إتمام الدفع. يرجى المحاولة مرة أخرى.",
+        "paymentSetupError": "معالجة الدفع غير متاحة مؤقتًا. يرجى التواصل مع الدعم.",
+        "notApplicable": "لا ينطبق",
+        "plans": {
+            "starter": "المبدئية",
+            "pro": "برو",
+            "business": "الأعمال"
+        },
+        "licenses": {
+            "subscription": "اشتراك",
+            "reseller": "إعادة البيع",
+            "exclusive": "حصري"
+        },
+        "statuses": {
+            "pending": "قيد الانتظار",
+            "paid": "مدفوع",
+            "failed": "فشل",
+            "cancelled": "ملغي",
+            "refunded": "مسترد"
+        }
     },
     "developerCoupons": {
         "header": {
@@ -302,14 +475,23 @@
             "activeDescription": "يمكن استرداد الكوبون مباشرة."
         },
         "feedback": {
-            "created": "تم إنشاء الكوبون.", "createFailed": "تعذر إنشاء الكوبون.",
-            "deleted": "تم حذف الكوبون.", "deleteFailed": "تعذر حذف الكوبون."
+            "created": "تم إنشاء الكوبون.",
+            "createFailed": "تعذر إنشاء الكوبون.",
+            "deleted": "تم حذف الكوبون.",
+            "deleteFailed": "تعذر حذف الكوبون."
         },
         "card": {
-            "percentOff": "خصم {value}%", "fixedOff": "خصم ثابت {value}",
-            "active": "نشط", "inactive": "غير نشط", "license": "الترخيص",
-            "plan": "الخطة", "all": "الكل", "uses": "الاستخدامات", "expires": "ينتهي",
-            "never": "لا ينتهي", "delete": "حذف"
+            "percentOff": "خصم {value}%",
+            "fixedOff": "خصم ثابت {value}",
+            "active": "نشط",
+            "inactive": "غير نشط",
+            "license": "الترخيص",
+            "plan": "الخطة",
+            "all": "الكل",
+            "uses": "الاستخدامات",
+            "expires": "ينتهي",
+            "never": "لا ينتهي",
+            "delete": "حذف"
         }
     },
     "footer": {
@@ -394,6 +576,111 @@
             "createWorkspaceDesc": "ابدأ بإنشاء مساحة جديدة لإدارة نظامك بكفاءة.",
             "customize": "تخصيص",
             "unauthorizedAccess": "عذراً، لا تملك الصلاحية لدخول هذه المساحة."
+        },
+        "sidebar": {
+            "quickCreate": "إنشاء سريع", "inbox": "صندوق الوارد",
+            "documents": "المستندات", "more": "المزيد", "open": "فتح", "share": "مشاركة", "delete": "حذف",
+            "guestUser": "مستخدم زائر", "noEmail": "لا يوجد بريد إلكتروني", "guestInitials": "ز", "account": "الحساب",
+            "billing": "الفوترة", "notifications": "الإشعارات", "logout": "تسجيل الخروج",
+            "quickview": "نظرة سريعة",
+            "subscription": "الاشتراك",
+            "members": "الأعضاء",
+            "settings": "الإعدادات",
+            "dataLibrary": "مكتبة البيانات",
+            "reports": "التقارير",
+            "wordAssistant": "مساعد الكلمات",
+            "getHelp": "الحصول على مساعدة"
+        },
+        "subscription": {
+            "intervals": { "monthly": "شهري", "yearly": "سنوي", "one_time": "مرة واحدة" },
+            "features": { "title": "توفر الميزات", "description": "الميزات المتاحة حاليًا لمساحة عملك.", "reports": "التقارير", "aiAssistant": "مساعد الذكاء الاصطناعي", "apiAccess": "الوصول إلى API", "multiMembers": "أعضاء متعددون", "whiteLabel": "العلامة البيضاء", "enabled": "متاحة", "unavailable": "غير متاحة" },
+            "title": "الاشتراك", "unlimited": "غير محدود",
+            "plans": { "starter": "المبدئية", "pro": "الاحترافية", "business": "الأعمال" },
+            "licenses": { "subscription": "اشتراك", "reseller": "إعادة البيع", "exclusive": "حصري" },
+            "statuses": { "active": "نشط", "trial": "تجريبي", "past_due": "متأخر الدفع", "canceled": "ملغي", "expired": "منتهي", "unknown": "غير معروف" },
+            "overview": { "title": "نظرة عامة على الاشتراك", "description": "إدارة اشتراك مساحة العمل الحالي.", "currentPlan": "الخطة الحالية", "licenseType": "نوع الترخيص", "status": "الحالة", "renewalDate": "تاريخ التجديد", "billingInterval": "دورة الفوترة" },
+            "usage": { "title": "الاستخدام", "description": "راقب حدود مساحة العمل الحالية.", "administrators": "المشرفون", "unlimitedAdministrators": "يتضمن ترخيصك عددًا غير محدود من حسابات المشرفين.", "remainingAdministrators": "{count, plural, zero {لا يوجد مشرفون متبقون.} one {مشرف واحد متبقٍ.} two {مشرفان متبقيان.} few {# مشرفين متبقين.} many {# مشرفًا متبقيًا.} other {# مشرف متبقٍ.}}" },
+            "limits": { "title": "حدود الخطة", "description": "الحدود الحالية المشمولة في اشتراكك.", "administrators": "المشرفون", "members": "الأعضاء", "storage": "التخزين", "storageValue": "{value, number} جيجابايت" },
+            "billing": { "title": "ملخص الفوترة", "description": "نظرة عامة على معلومات الفوترة الحالية.", "currentPrice": "السعر الحالي", "currency": "العملة", "billingCycle": "دورة الفوترة", "nextPayment": "الدفعة التالية" }
+        },
+        "members": {
+            "actions": { "transfer": "نقل الملكية", "transferDescription": "هل تريد نقل ملكية مساحة العمل إلى {name}؟ سيصبح دورك مشرفًا.", "transferConfirm": "نقل", "leave": "مغادرة مساحة العمل", "remove": "إزالة العضو" },
+            "invitations": { "title": "الدعوات المعلقة", "description": "إدارة الدعوات التي تنتظر القبول.", "expires": "تنتهي", "loadError": "تعذر تحميل الدعوات.", "emptyTitle": "لا توجد دعوات معلقة", "emptyDescription": "تم قبول جميع الدعوات أو انتهت صلاحيتها.", "cancel": "إلغاء الدعوة", "cancelDescription": "هل أنت متأكد من إلغاء الدعوة المرسلة إلى <strong>{email}</strong>؟ لن يتمكن هذا المستخدم من قبولها بعد ذلك.", "resend": "إعادة إرسال الدعوة", "resending": "جارٍ إعادة الإرسال..." },
+            "title": "الأعضاء", "system": "النظام",
+            "table": { "member": "العضو", "name": "الاسم", "email": "البريد الإلكتروني", "role": "الدور", "status": "الحالة", "invitedBy": "تمت الدعوة بواسطة", "actions": "الإجراءات" },
+            "roles": { "owner": "المالك", "admin": "مشرف", "member": "عضو" },
+            "statuses": { "active": "نشط", "pending": "قيد الانتظار", "suspended": "موقوف", "inactive": "غير نشط" },
+            "empty": { "title": "لم يتم العثور على أعضاء.", "description": "ادعُ أول عضو للتعاون في مساحة العمل هذه." },
+            "permissions": { "read": "قراءة", "write": "كتابة", "delete": "حذف", "manage": "إدارة" },
+            "invite": { "title": "دعوة عضو", "action": "دعوة", "description": "ادعُ متعاونًا جديدًا للانضمام إلى مساحة عملك وحدد دوره.", "email": "البريد الإلكتروني", "emailPlaceholder": "colleague@example.com", "role": "دور مساحة العمل", "selectRole": "اختر دورًا", "roleDescription": "تحدد الأدوار مستوى الوصول والصلاحيات المتاحة للعضو.", "message": "رسالة دعوة شخصية", "messagePlaceholder": "اكتب رسالة ترحيب أو وضّح المهام (اختياري)...", "sending": "جارٍ الإرسال...", "send": "إرسال الدعوة", "feedback": { "sent": "تم إرسال الدعوة بنجاح!", "alreadyMember": "هذا البريد عضو بالفعل في مساحة العمل.", "invalid": "البيانات أو الدور المقدم غير صالح.", "unauthorized": "ليس لديك صلاحية إرسال الدعوات.", "overLimit": "لقد بلغت الحد الأقصى للمشرفين في خطتك الحالية.", "exists": "تم إرسال دعوة نشطة بالفعل إلى هذا البريد.", "failed": "تعذر إرسال الدعوة. يرجى المحاولة مرة أخرى.", "connectionError": "حدث خطأ في الاتصال بالخادم. يرجى المحاولة لاحقًا." } }
+        },
+        "settings": {
+            "cancel": "إلغاء", "continue": "متابعة",
+            "localization": { "title": "إعدادات التوطين", "selectTimezone": "اختر المنطقة الزمنية", "save": "حفظ الموقع" },
+            "danger": {
+                "title": "منطقة الخطر", "description": "هذه الإجراءات دائمة ويجب استخدامها بحذر.",
+                "delete": { "title": "حذف مساحة العمل", "description": "حذف مساحة العمل وجميع بياناتها نهائيًا. لا يمكن التراجع عن هذا الإجراء.", "action": "حذف مساحة العمل", "confirmTitle": "حذف مساحة العمل؟", "notImplemented": "حذف مساحة العمل غير متاح حاليًا." },
+                "leave": { "title": "مغادرة مساحة العمل", "description": "غادر مساحة العمل. يمكن دعوتك مرة أخرى لاحقًا.", "action": "مغادرة مساحة العمل", "confirmTitle": "مغادرة مساحة العمل؟", "notImplemented": "هذه الميزة غير متاحة حاليًا." }
+            },
+            "title": "الإعدادات", "save": "حفظ التغييرات", "saving": "جارٍ الحفظ...",
+            "fields": { "name": "اسم مساحة العمل", "slug": "الرابط المختصر", "email": "البريد الإلكتروني", "phone": "الهاتف", "country": "الدولة", "city": "المدينة", "address": "العنوان", "timezone": "المنطقة الزمنية", "primaryColor": "اللون الأساسي" },
+            "logo": { "title": "شعار مساحة العمل", "alt": "شعار مساحة العمل", "none": "لا يوجد شعار", "choose": "انقر لاختيار شعار", "requirements": "PNG أو JPG أو WEBP • بحد أقصى 2 ميجابايت", "selected": "تم اختيار صورة جديدة" },
+            "feedback": { "invalidImageType": "يُسمح فقط بصور PNG وJPG وJPEG وWEBP.", "imageTooLarge": "يجب ألا يتجاوز حجم الصورة 2 ميجابايت.", "forbidden": "ليست لديك صلاحية إدارة مساحة العمل هذه.", "notFound": "لم يتم العثور على مساحة العمل." }
+        },
+        "quickview": {
+            "title": "نظرة سريعة",
+            "loading": "جارٍ تحميل مساحة العمل...",
+            "active": "نشطة",
+            "enabled": "مفعّل",
+            "disabled": "معطّل",
+            "unlimited": "غير محدود",
+            "launch": {
+                "title": "أطلق مساحة عملك",
+                "action": "إطلاق الآن"
+            },
+            "plans": {
+                "starter": "المبدئية",
+                "pro": "برو",
+                "business": "الأعمال"
+            },
+            "licenses": {
+                "subscription": "اشتراك",
+                "reseller": "إعادة البيع",
+                "exclusive": "حصري"
+            },
+            "plan": {
+                "title": "خطة مساحة العمل",
+                "type": "النوع: {type}",
+                "unlimitedTerms": "ترخيص غير محدود لمساحة العمل.",
+                "standardTerms": "شروط الاشتراك القياسية."
+            },
+            "administrators": {
+                "title": "المشرفون",
+                "usage": "{current, number}/{limit, number} مستخدمون",
+                "seats": "المقاعد",
+                "accessControl": "التحكم في الوصول مفعّل",
+                "unlimitedSeats": "مقاعد المشرفين غير محدودة.",
+                "remaining": "{count, plural, zero {لا توجد مقاعد متبقية.} one {مقعد واحد متبقٍ.} two {مقعدان متبقيان.} few {# مقاعد متبقية.} many {# مقعدًا متبقيًا.} other {# مقعد متبقٍ.}}"
+            },
+            "ai": {
+                "title": "مساعد الكلمات بالذكاء الاصطناعي",
+                "tools": "أدوات الذكاء الاصطناعي",
+                "smartEditing": "التحرير الذكي مفعّل",
+                "upgradeRequired": "الترقية مطلوبة",
+                "description": "كتابة المستندات وتحسين السياق باستخدام الذكاء الاصطناعي."
+            },
+            "details": {
+                "title": "تفاصيل الترخيص والاشتراك",
+                "description": "أدِر حدود مساحة العمل وإمكانات خطتك النشطة.",
+                "maxAdministrators": "الحد الأقصى للمشرفين",
+                "administratorLimit": "{count, plural, one {مشرف واحد} two {مشرفان} few {# مشرفين} many {# مشرفًا} other {# مشرف}}",
+                "activeFeatures": "ميزات مساحة العمل النشطة",
+                "features": {
+                    "reports": "تقارير متقدمة ولوحات أداء تفاعلية",
+                    "wordAssistant": "مساعد كلمات بالذكاء الاصطناعي وأدوات تحرير ذكية",
+                    "exclusiveOwnership": "ملكية حصرية مدى الحياة دون رسوم متكررة"
+                }
+            }
         }
     },
     "ChangelogPage": {

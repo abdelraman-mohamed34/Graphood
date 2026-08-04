@@ -1,8 +1,10 @@
 "use client";
 
 import { CircleUserRoundIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function MembersEmpty() {
+    const t = useTranslations("dashboard.members");
     return (
         <tr>
             <td
@@ -13,11 +15,11 @@ export default function MembersEmpty() {
                     <CircleUserRoundIcon className="h-10 w-10 opacity-50" />
 
                     <p className="font-medium">
-                        No members found.
+                        {t("empty.title")}
                     </p>
 
                     <p className="text-xs">
-                        Invite your first member to collaborate on this workspace.
+                        {t("empty.description")}
                     </p>
                 </div>
             </td>

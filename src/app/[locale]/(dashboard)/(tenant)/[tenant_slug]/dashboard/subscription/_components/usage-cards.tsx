@@ -11,8 +11,10 @@ import { Progress } from "@/components/ui/progress";
 import { Shield } from "lucide-react";
 
 import { useTenantUsage } from "@/shared/lib/hooks";
+import { useTranslations } from "next-intl";
 
 export default function UsageCards() {
+    const t = useTranslations("dashboard.subscription");
     const {
         admins,
         isLoading,
@@ -26,12 +28,11 @@ export default function UsageCards() {
         <section className="space-y-4">
             <div>
                 <h2 className="text-lg font-semibold">
-                    Usage
+                    {t("usage.title")}
                 </h2>
 
                 <p className="text-sm text-muted-foreground">
-                    Monitor your current workspace
-                    limits.
+                    {t("usage.description")}
                 </p>
             </div>
 
@@ -39,7 +40,7 @@ export default function UsageCards() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Administrators
+                            {t("usage.administrators")}
                         </CardTitle>
 
                         <Shield className="size-4 text-muted-foreground" />
@@ -49,13 +50,11 @@ export default function UsageCards() {
                         {admins.unlimited ? (
                             <>
                                 <div className="text-2xl font-bold">
-                                    Unlimited
+                                    {t("unlimited")}
                                 </div>
 
                                 <p className="text-xs text-muted-foreground">
-                                    Your license has
-                                    unlimited administrator
-                                    accounts.
+                                    {t("usage.unlimitedAdministrators")}
                                 </p>
                             </>
                         ) : (
@@ -76,12 +75,7 @@ export default function UsageCards() {
                                 />
 
                                 <p className="text-xs text-muted-foreground">
-                                    {admins.remaining}{" "}
-                                    administrator
-                                    {admins.remaining === 1
-                                        ? ""
-                                        : "s"}{" "}
-                                    remaining.
+                                    {t("usage.remainingAdministrators", { count: admins.remaining ?? 0 })}
                                 </p>
                             </>
                         )}

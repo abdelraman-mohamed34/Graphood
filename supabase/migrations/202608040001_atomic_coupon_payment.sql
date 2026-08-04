@@ -86,3 +86,6 @@ $$;
 
 revoke all on function public.finalize_order_payment(uuid, text) from public, anon, authenticated;
 grant execute on function public.finalize_order_payment(uuid, text) to service_role;
+
+-- Ask PostgREST to discover the function immediately after this migration runs.
+notify pgrst, 'reload schema';

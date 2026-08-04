@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { useTranslations } from "next-intl"
 
 
 type BillingSummaryProps = {
@@ -23,22 +24,23 @@ export default function BillingSummary({
   billingCycle = "-",
   nextPayment = "-",
 }: BillingSummaryProps) {
+  const t = useTranslations("dashboard.subscription")
 
   const items = [
     {
-      label: "Current Price",
+      label: t("billing.currentPrice"),
       value: price,
     },
     {
-      label: "Currency",
+      label: t("billing.currency"),
       value: currency,
     },
     {
-      label: "Billing Cycle",
+      label: t("billing.billingCycle"),
       value: billingCycle,
     },
     {
-      label: "Next Payment",
+      label: t("billing.nextPayment"),
       value: nextPayment,
     },
   ]
@@ -48,11 +50,11 @@ export default function BillingSummary({
     <Card>
       <CardHeader>
         <CardTitle>
-          Billing Summary
+          {t("billing.title")}
         </CardTitle>
 
         <CardDescription>
-          Overview of your current billing information.
+          {t("billing.description")}
         </CardDescription>
       </CardHeader>
 

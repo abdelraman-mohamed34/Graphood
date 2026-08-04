@@ -16,10 +16,11 @@ import {
   ShieldAlert,
 } from "lucide-react";
 
-import { LICENSE_MODELS } from "@/shared/config/licensing";
 import { useTenantUsage } from "@/shared/lib/hooks";
+import { useTranslations } from "next-intl";
 
 export function SectionCards() {
+  const t = useTranslations("dashboard.quickview");
   const {
     plan,
     licenseType,
@@ -41,8 +42,7 @@ export function SectionCards() {
     );
   }
 
-  const licenseLabel =
-    LICENSE_MODELS[licenseType].label;
+  const licenseLabel = t(`licenses.${licenseType.toLowerCase()}`);
 
   const hasAI = features.wordAssistant;
 
@@ -51,11 +51,11 @@ export function SectionCards() {
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>
-            Workspace Plan
+            {t("plan.title")}
           </CardDescription>
 
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {plan}
+            {t.has(`plans.${plan.toLowerCase()}`) ? t(`plans.${plan.toLowerCase()}`) : plan}
           </CardTitle>
 
           <CardAction>
@@ -63,20 +63,20 @@ export function SectionCards() {
               variant="outline"
               className="gap-1 border-primary/20 bg-primary/5 text-primary"
             >
-              Active
+              {t("active")}
             </Badge>
           </CardAction>
         </CardHeader>
 
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="flex items-center gap-2 font-medium">
-            Type: {licenseLabel}
+            {t("plan.type", { type: licenseLabel })}
           </div>
 
           <div className="text-muted-foreground">
             {admins.unlimited
-              ? "Unlimited workspace license."
-              : "Standard subscription terms."}
+              ? t("plan.unlimitedTerms")
+              : t("plan.standardTerms")}
           </div>
         </CardFooter>
       </Card>
@@ -84,25 +84,17 @@ export function SectionCards() {
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>
-            Administrators
+            {t("administrators.title")}
           </CardDescription>
 
           <CardTitle className="flex items-baseline text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {admins.unlimited ? (
               <>
-                Unlimited
+                {t("unlimited")}
               </>
             ) : (
               <>
-                {admins.current}
-
-                <span className="ml-0.5 text-xl font-normal text-primary/50">
-                  /{admins.limit}
-                </span>
-
-                <span className="ml-1 text-sm font-normal text-muted-foreground">
-                  Users
-                </span>
+                <span>{t("administrators.usage", { current: admins.current, limit: admins.limit! })}</span>
               </>
             )}
           </CardTitle>
@@ -113,22 +105,22 @@ export function SectionCards() {
               className="gap-1"
             >
               <Users className="size-3" />
-              Seats
+              {t("administrators.seats")}
             </Badge>
           </CardAction>
         </CardHeader>
 
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="flex items-center gap-2 font-medium">
-            Access Control Enabled
+            {t("administrators.accessControl")}
 
             <CheckCircle2 className="size-4 text-emerald-500" />
           </div>
 
           <div className="text-muted-foreground">
             {admins.unlimited
-              ? "Unlimited administrator seats."
-              : `${admins.remaining} seat(s) remaining.`}
+              ? t("administrators.unlimitedSeats")
+              : t("administrators.remaining", { count: admins.remaining ?? 0 })}
           </div>
         </CardFooter>
       </Card>
@@ -136,13 +128,13 @@ export function SectionCards() {
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>
-            AI Word Assistant
+            {t("ai.title")}
           </CardDescription>
 
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {hasAI
-              ? "Enabled"
-              : "Disabled"}
+              ? t("enabled")
+              : t("disabled")}
           </CardTitle>
 
           <CardAction>
@@ -154,7 +146,7 @@ export function SectionCards() {
                 }`}
             >
               <Sparkles className="size-3" />
-              AI Tools
+              {t("ai.tools")}
             </Badge>
           </CardAction>
         </CardHeader>
@@ -163,13 +155,13 @@ export function SectionCards() {
           <div className="flex items-center gap-2 font-medium">
             {hasAI ? (
               <>
-                Smart Editing Active
+                {t("ai.smartEditing")}
 
                 <CheckCircle2 className="size-4 text-emerald-500" />
               </>
             ) : (
               <>
-                Upgrade Required
+                {t("ai.upgradeRequired")}
 
                 <ShieldAlert className="size-4 text-amber-500" />
               </>
@@ -177,7 +169,7 @@ export function SectionCards() {
           </div>
 
           <div className="text-muted-foreground">
-            AI-powered document writing and context enhancement.
+            {t("ai.description")}
           </div>
         </CardFooter>
       </Card>

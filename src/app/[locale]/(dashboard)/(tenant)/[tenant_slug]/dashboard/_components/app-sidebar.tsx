@@ -2,10 +2,7 @@
 
 import * as React from "react"
 import {
-    IconCamera,
     IconDatabase,
-    IconFileAi,
-    IconFileDescription,
     IconFileWord,
     IconHelp,
     IconInnerShadowTop,
@@ -32,118 +29,28 @@ import { useAuth } from "@/shared/lib/auth/auth-context"
 import { NavMain } from "./nav-main"
 import { Link } from "@/i18n/navigation"
 import brandConfig from "../../../../../../../../public/data.json"
-
-// mock data
-const data = {
-    user: {
-        name: "shad",
-        email: "m@example.com",
-        avatar: "/avatars/shadcn.jpg",
-    },
-    navMain: [
-        {
-            title: "Quick view",
-            url: "quickview",
-            icon: IconListDetails,
-        },
-        {
-            title: "subscription",
-            url: "subscription",
-            icon: IconPill,
-        },
-        {
-            title: "Members",
-            url: "members",
-            icon: IconUsers,
-        },
-        {
-            title: "Settings",
-            url: "settings",
-            icon: IconSettings,
-        }
-    ],
-    navClouds: [
-        {
-            title: "Capture",
-            icon: IconCamera,
-            isActive: true,
-            url: "#",
-            items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "/members",
-                },
-            ],
-        },
-        {
-            title: "Proposal",
-            icon: IconFileDescription,
-            url: "#",
-            items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Prompts",
-            icon: IconFileAi,
-            url: "#",
-            items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "#",
-                },
-            ],
-        },
-    ],
-    navSecondary: [
-        {
-            title: "Settings",
-            url: "/settings/profile",
-            icon: IconSettings,
-        },
-        {
-            title: "Get Help",
-            url: "#",
-            icon: IconHelp,
-        }
-    ],
-    documents: [
-        {
-            name: "Data Library",
-            url: "#",
-            icon: IconDatabase,
-        },
-        {
-            name: "Reports",
-            url: "#",
-            icon: IconReport,
-        },
-        {
-            name: "Word Assistant",
-            url: "#",
-            icon: IconFileWord,
-        },
-    ],
-}
+import { useTranslations } from "next-intl"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
     const { user } = useAuth()
+    const t = useTranslations("dashboard.sidebar")
+    const navMain = [
+        { title: t("quickview"), url: "quickview", icon: IconListDetails },
+        { title: t("subscription"), url: "subscription", icon: IconPill },
+        { title: t("members"), url: "members", icon: IconUsers },
+        { title: t("settings"), url: "settings", icon: IconSettings },
+    ]
+    const navSecondary = [
+        { title: t("settings"), url: "/settings/profile", icon: IconSettings },
+        { title: t("getHelp"), url: "#", icon: IconHelp },
+    ]
+
+    const documents = [
+        { name: t("dataLibrary"), url: "#", icon: IconDatabase },
+        { name: t("reports"), url: "#", icon: IconReport },
+        { name: t("wordAssistant"), url: "#", icon: IconFileWord },
+    ]
 
     return (
         <Sidebar collapsible="offcanvas" {...props}>
@@ -163,9 +70,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarMenu>
             </SidebarHeader>
             <SidebarContent>
-                <NavMain items={data.navMain} />
-                <NavDocuments items={data.documents} />
-                <NavSecondary items={data.navSecondary} className="mt-auto" />
+                <NavMain items={navMain} />
+                {/* <NavDocuments items={documents} /> */}
+                <NavSecondary items={navSecondary} className="mt-auto" />
             </SidebarContent>
             <SidebarFooter>
                 <NavUser user={user} />
@@ -173,3 +80,4 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </Sidebar>
     )
 }
+    

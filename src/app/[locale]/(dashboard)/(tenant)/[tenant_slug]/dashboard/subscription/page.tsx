@@ -18,6 +18,7 @@ import {
     useTenant,
     useTenantUsage,
 } from "@/shared/lib/hooks";
+import { useTranslations } from "next-intl";
 
 function SubscriptionSkeleton() {
     return (
@@ -80,6 +81,7 @@ function SubscriptionSkeleton() {
 }
 
 export default function SubscriptionPage() {
+    const t = useTranslations("dashboard.subscription");
     const { tenantId } = useTenant();
     const { subscription, isLoading: subscriptionLoading } = useSubscription(tenantId ?? undefined);
 
@@ -93,7 +95,7 @@ export default function SubscriptionPage() {
     if (isLoading) {
         return (
             <SidebarInset>
-                <SiteHeader title="subscription" />
+                <SiteHeader title={t("title")} />
                 <Dir />
 
                 <DashboardContainer className="space-y-5">
@@ -109,7 +111,7 @@ export default function SubscriptionPage() {
 
     return (
         <SidebarInset>
-            <SiteHeader title="subscription" />
+            <SiteHeader title={t("title")} />
             <Dir />
 
             <DashboardContainer className="space-y-5">

@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/card'
 import { Loader2, Send } from 'lucide-react'
 import { RoleSelect } from './role-select'
+import { useTranslations } from 'next-intl'
 
 type Props = {
     locale: string
@@ -28,6 +29,7 @@ export default function InviteMemberForm({
     locale,
     tenantSlug,
 }: Props) {
+    const t = useTranslations('dashboard.members')
 
     const {
         handleSubmit,
@@ -54,43 +56,43 @@ export default function InviteMemberForm({
             console.log("INVITATION RESULT:", result);
 
             if (result && result.success) {
-                toast.success('Invitation sent successfully!')
+                toast.success(t('invite.feedback.sent'))
                 reset()
                 return
             }
 
             switch (result?.code) {
                 case 'ALREADY_MEMBER':
-                    toast.error('This email is already a member of this workspace.')
+                    toast.error(t('invite.feedback.alreadyMember'))
                     break
                 case 'INVALID_INPUT':
-                    toast.error('The provided input or role is invalid.')
+                    toast.error(t('invite.feedback.invalid'))
                     break
                 case 'UNAUTHORIZED':
-                    toast.error('You do not have the required permissions to send invitations.')
+                    toast.error(t('invite.feedback.unauthorized'))
                     break
                 case 'OVER_LIMIT':
-                    toast.error('You have reached the maximum number of administrators allowed for your current plan.')
+                    toast.error(t('invite.feedback.overLimit'))
                     break
                 case 'INVITATION_EXISTS':
-                    toast.error('An active invitation has already been sent to this email.')
+                    toast.error(t('invite.feedback.exists'))
                     break
                 default:
-                    toast.error('Failed to send invitation. Please try again.')
+                    toast.error(t('invite.feedback.failed'))
                     break
             }
         } catch (error) {
             console.error('An unexpected error occurred:', error)
-            toast.error('A server connection error occurred. Please try again later.')
+            toast.error(t('invite.feedback.connectionError'))
         }
     }
 
     return (
         <div className="max-w-xl">
             <CardHeader className="space-y-1">
-                <CardTitle className="text-2xl font-bold tracking-tight">Invite Member</CardTitle>
+                <CardTitle className="text-2xl font-bold tracking-tight">{t('invite.title')}</CardTitle>
                 <CardDescription>
-                    Invite a new collaborator to join your workspace and assign their role.
+                    {t('invite.description')}
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -99,14 +101,14 @@ export default function InviteMemberForm({
                     className="space-y-5"
                 >
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">Email Address</label>
+                        <label className="text-sm font-semibold text-slate-700">{t('invite.email')}</label>
                         <Controller
                             control={control}
                             name="email"
                             render={({ field }) => (
                                 <Input
                                     type="email"
-                                    placeholder="colleague@example.com"
+                                    placeholder={t('invite.emailPlaceholder')}
                                     disabled={isSubmitting}
                                     className={`h-10 ${errors.email ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                                     {...field}
@@ -121,7 +123,7 @@ export default function InviteMemberForm({
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">Workspace Role</label>
+                        <label className="text-sm font-semibold text-slate-700">{t('invite.role')}</label>
                         <Controller
                             control={control}
                             name="role"
@@ -134,7 +136,7 @@ export default function InviteMemberForm({
                             )}
                         />
                         <p className="text-xs text-slate-400">
-                            Roles define the level of access and permissions this member will have.
+                            {t('invite.roleDescription')}
                         </p>
                         {errors.role && (
                             <p className="text-xs font-medium text-red-500">
@@ -144,14 +146,14 @@ export default function InviteMemberForm({
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">Personal Invitation Message</label>
+                        <label className="text-sm font-semibold text-slate-700">{t('invite.message')}</label>
                         <Controller
                             control={control}
                             name="message"
                             render={({ field }) => (
                                 <Textarea
                                     rows={4}
-                                    placeholder="Write a warm welcome message or let them know what they will be working on (optional)..."
+                                    placeholder={t('invite.messagePlaceholder')}
                                     disabled={isSubmitting}
                                     className="resize-none min-h-[100px]"
                                     value={field.value ?? ''}
@@ -174,13 +176,13 @@ export default function InviteMemberForm({
                         >
                             {isSubmitting ? (
                                 <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Sending...
+                                    <Loader2 className="me-2 h-4 w-4 animate-spin" />
+                                    {t('invite.sending')}
                                 </>
                             ) : (
                                 <>
-                                    <Send className="mr-2 h-4 w-4" />
-                                    Send Invitation
+                                    <Send className="me-2 h-4 w-4" />
+                                    {t('invite.send')}
                                 </>
                             )}
                         </Button>

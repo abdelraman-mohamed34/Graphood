@@ -11,8 +11,10 @@ import { useMemberships, useUser } from "@/shared/lib/hooks";
 import MemberRow from "./member-row";
 import MembersEmpty from "./members-empty";
 import MembersSkeleton from "./members-skeleton";
+import { useTranslations } from "next-intl";
 
 export default function MembersTable() {
+    const t = useTranslations("dashboard.members");
     const {
         memberships,
         currentMembership,
@@ -43,8 +45,8 @@ export default function MembersTable() {
         <div className="space-y-2">
             <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-black/70">
-                    Members
-                    <span className="ml-2 text-xs">
+                    {t("title")}
+                    <span className="ms-2 text-xs">
                         ({memberships.length})
                     </span>
                 </h3>
@@ -54,8 +56,8 @@ export default function MembersTable() {
                         variant="outline"
                         size="sm"
                     >
-                        <PlusIcon className="mr-2 h-4 w-4" />
-                        Invite
+                        <PlusIcon className="me-2 h-4 w-4" />
+                        {t("invite.action")}
                     </Button>
                 </Link>
             </div>
@@ -64,20 +66,20 @@ export default function MembersTable() {
                 <table className="w-full border-collapse">
                     <thead>
                         <tr className="bg-muted/50">
-                            <th className="px-6 py-4 text-left">
-                                Member
+                            <th className="px-6 py-4 text-start">
+                                {t("table.member")}
                             </th>
 
-                            <th className="px-6 py-4 text-left">
-                                Role
+                            <th className="px-6 py-4 text-start">
+                                {t("table.role")}
                             </th>
 
-                            <th className="px-6 py-4 text-left">
-                                Status
+                            <th className="px-6 py-4 text-start">
+                                {t("table.status")}
                             </th>
 
-                            <th className="px-6 py-4 text-left">
-                                Invited By
+                            <th className="px-6 py-4 text-start">
+                                {t("table.invitedBy")}
                             </th>
 
                             <th className="w-12"></th>

@@ -14,6 +14,7 @@ export async function getOrderById({
         .select(`
         id,
         profile_id,
+        subscription_id,
         status,
         original_amount,
         discount_amount,
@@ -36,5 +37,20 @@ export async function getOrderById({
         throw error;
     }
 
-    return data;
+    if (!data?.subscription_id || (data.status !== "PAID" && data.status !== "COMPLETED")) {
+        return data ? { ...data, tenant_slug: null } : null;
+    }
+
+    const { data: tenant, error: tenantError } = await supabase
+        .from("tenants")
+        .select("slug")
+        .eq("subscription_id", data.subscription_id)
+        .maybeSingle();
+
+    if (tenantError) throw tenantError;
+
+    return {
+        ...data,
+        tenant_slug: tenant?.slug ?? null,
+    };
 }

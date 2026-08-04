@@ -5,6 +5,7 @@ import { MailIcon } from "lucide-react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 import { Invitation } from "@/shared/lib/schemas/invitations.schema";
+import { useTranslations } from "next-intl";
 
 type Props = {
     invitation: Invitation;
@@ -19,17 +20,18 @@ export default function ResendInvitation({
     resendInvitation,
     loading,
 }: Props) {
+    const t = useTranslations("dashboard.members");
     return (
         <DropdownMenuItem
             disabled={loading}
             onClick={() => resendInvitation(invitation.id)}
         >
-            <MailIcon className="mr-2 h-4 w-4" />
+            <MailIcon className="me-2 h-4 w-4" />
 
             <span>
                 {loading
-                    ? "Resending..."
-                    : "Resend Invitation"}
+                    ? t("invitations.resending")
+                    : t("invitations.resend")}
             </span>
         </DropdownMenuItem>
     );

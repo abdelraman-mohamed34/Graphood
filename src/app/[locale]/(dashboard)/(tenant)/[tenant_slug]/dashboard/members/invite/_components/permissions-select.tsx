@@ -3,6 +3,7 @@
 import { Checkbox } from '@/components/ui/checkbox'
 import { permissions } from '@/shared/lib/schemas/public/permissions'
 import { Permission } from '@/shared/lib/schemas/public/permissions'
+import { useTranslations } from 'next-intl'
 
 type Props = {
     value: Permission[]
@@ -13,6 +14,8 @@ export default function PermissionsSelect({
     value,
     onChange,
 }: Props) {
+    const t = useTranslations('dashboard.members')
+
     return (
         <div className="space-y-3">
             {permissions.map((permission) => (
@@ -31,7 +34,11 @@ export default function PermissionsSelect({
                         }}
                     />
 
-                    <span>{permission}</span>
+                    <span>
+                        {t.has(`permissions.${permission.toLowerCase()}`)
+                            ? t(`permissions.${permission.toLowerCase()}`)
+                            : permission}
+                    </span>
                 </label>
             ))}
         </div>

@@ -1,9 +1,11 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 import { useOrder } from "@/features/billing/use-order";
 import { useCompletePayment } from "@/features/billing/use-complete-payment";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 
 interface PageProps {
     params: Promise<{
@@ -13,9 +15,19 @@ interface PageProps {
 
 export default function Page({ params }: PageProps) {
     const t = useTranslations("checkout");
+    const locale = useLocale();
+    const router = useRouter();
     const { order_id } = use(params);
     const { order, isLoading, error } = useOrder(order_id);
     const { completePayment, isProcessing } = useCompletePayment();
+    const isPaid = order?.status === "PAID" || order?.status === "COMPLETED";
+    const tenantSlug = order?.tenant_slug;
+
+    useEffect(() => {
+        if (isPaid && tenantSlug) {
+            router.replace(`/${tenantSlug}/dashboard`);
+        }
+    }, [isPaid, router, tenantSlug]);
 
     if (isLoading) {
         return (
@@ -39,16 +51,15 @@ export default function Page({ params }: PageProps) {
         ? order.systems[0]
         : order.systems;
 
-    if (order.status === "PAID") {
+    if (isPaid) {
         return (
-            <div className="p-6 space-y-6">
-                <h1 className="text-2xl font-bold">
-                    {t("title")}
-                </h1>
-                <div className="rounded-lg border p-4">
-                    <h2 className="text-lg font-semibold">
-                        {t("alreadyPaid")}
-                    </h2>
+            <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-6 text-center" role="status">
+                <Loader2 className="size-8 animate-spin text-primary" aria-hidden="true" />
+                <div className="space-y-1">
+                    <p className="font-semibold text-foreground">{t("alreadyPaidRedirecting")}</p>
+                    {!tenantSlug && (
+                        <p className="text-sm text-muted-foreground">{t("preparingDashboard")}</p>
+                    )}
                 </div>
             </div>
         );
@@ -59,6 +70,25 @@ export default function Page({ params }: PageProps) {
         discount: order.discount_amount,
         tax: 0,
         total: order.amount,
+    };
+
+    const formatMoney = (value: number | string | null) => {
+        const amount = Number(value) || 0;
+        try {
+            return new Intl.NumberFormat(locale, {
+                style: "currency",
+                currency: order.currency || "EGP",
+                maximumFractionDigits: 2,
+            }).format(amount);
+        } catch {
+            return `${new Intl.NumberFormat(locale).format(amount)} ${order.currency}`;
+        }
+    };
+
+    const translateValue = (group: "plans" | "licenses" | "statuses", value: string | null) => {
+        if (!value) return t("notApplicable");
+        const key = `${group}.${value.toLowerCase()}`;
+        return t.has(key) ? t(key) : value;
     };
 
     const handleCompletePayment = async () => {
@@ -82,15 +112,15 @@ export default function Page({ params }: PageProps) {
                     </p>
                     <p>
                         <strong>{t("plan")}:</strong>{" "}
-                        {order.plan}
+                        {translateValue("plans", order.plan)}
                     </p>
                     <p>
                         <strong>{t("license")}:</strong>{" "}
-                        {order.license_type}
+                        {translateValue("licenses", order.license_type)}
                     </p>
                     <p>
                         <strong>{t("status")}:</strong>{" "}
-                        {order.status}
+                        {translateValue("statuses", order.status)}
                     </p>
                     <p>
                         <strong>{t("currency")}:</strong>{" "}
@@ -98,7 +128,7 @@ export default function Page({ params }: PageProps) {
                     </p>
                     <p>
                         <strong>{t("amount")}:</strong>{" "}
-                        {order.amount}
+                        {formatMoney(order.amount)}
                     </p>
                 </div>
             </section>
@@ -111,26 +141,26 @@ export default function Page({ params }: PageProps) {
                     <div className="flex justify-between">
                         <span>{t("subtotal")}</span>
                         <span>
-                            {pricing.subtotal} {order.currency}
+                            {formatMoney(pricing.subtotal)}
                         </span>
                     </div>
                     <div className="flex justify-between">
                         <span>{t("discount")}</span>
                         <span>
-                            {pricing.discount} {order.currency}
+                            {formatMoney(pricing.discount)}
                         </span>
                     </div>
                     <div className="flex justify-between">
                         <span>{t("tax")}</span>
                         <span>
-                            {pricing.tax} {order.currency}
+                            {formatMoney(pricing.tax)}
                         </span>
                     </div>
                     <hr />
                     <div className="flex justify-between font-semibold">
                         <span>{t("total")}</span>
                         <span>
-                            {pricing.total} {order.currency}
+                            {formatMoney(pricing.total)}
                         </span>
                     </div>
                 </div>

@@ -16,8 +16,10 @@ import {
 } from "@/components/ui/table";
 
 import { useTenantUsage } from "@/shared/lib/hooks";
+import { useTranslations } from "next-intl";
 
 export default function PlanLimits() {
+    const t = useTranslations("dashboard.subscription");
     const {
         admins,
         members,
@@ -31,22 +33,22 @@ export default function PlanLimits() {
 
     const limits = [
         {
-            name: "Administrators",
+            name: t("limits.administrators"),
             value: admins.unlimited
-                ? "Unlimited"
+                ? t("unlimited")
                 : admins.limit,
         },
         {
-            name: "Members",
+            name: t("limits.members"),
             value: members.unlimited
-                ? "Unlimited"
+                ? t("unlimited")
                 : members.limit,
         },
         {
-            name: "Storage",
+            name: t("limits.storage"),
             value: storage.unlimited
-                ? "Unlimited"
-                : `${storage.limit} GB`,
+                ? t("unlimited")
+                : t("limits.storageValue", { value: storage.limit ?? 0 }),
         },
     ];
 
@@ -54,12 +56,11 @@ export default function PlanLimits() {
         <Card>
             <CardHeader>
                 <CardTitle>
-                    Plan Limits
+                    {t("limits.title")}
                 </CardTitle>
 
                 <CardDescription>
-                    Current limits included with your
-                    subscription.
+                    {t("limits.description")}
                 </CardDescription>
             </CardHeader>
 
@@ -72,7 +73,7 @@ export default function PlanLimits() {
                                     {name}
                                 </TableCell>
 
-                                <TableCell className="text-right text-muted-foreground">
+                                <TableCell className="text-end text-muted-foreground">
                                     {value}
                                 </TableCell>
                             </TableRow>

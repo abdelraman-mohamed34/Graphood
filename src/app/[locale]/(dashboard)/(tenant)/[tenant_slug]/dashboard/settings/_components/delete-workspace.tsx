@@ -13,19 +13,21 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useTranslations } from "next-intl";
 
 export function DeleteWorkspace() {
+    const t = useTranslations("dashboard.settings");
     const [open, setOpen] = useState(false);
 
     return (
         <div className="flex items-center justify-between rounded-lg border border-destructive/30 p-5">
             <div>
                 <h3 className="font-semibold text-destructive">
-                    Delete Workspace
+                    {t("danger.delete.title")}
                 </h3>
 
                 <p className="text-sm text-muted-foreground">
-                    Permanently delete this workspace and all of its data. This action cannot be undone.
+                    {t("danger.delete.description")}
                 </p>
             </div>
 
@@ -35,28 +37,28 @@ export function DeleteWorkspace() {
             >
                 <AlertDialogTrigger asChild>
                     <Button variant="destructive">
-                        Delete Workspace
+                        {t("danger.delete.action")}
                     </Button>
                 </AlertDialogTrigger>
 
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            Delete Workspace?
+                            {t("danger.delete.confirmTitle")}
                         </AlertDialogTitle>
 
                         <AlertDialogDescription>
-                            Workspace deletion is not implemented yet.
+                            {t("danger.delete.notImplemented")}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
 
                     <AlertDialogFooter>
                         <AlertDialogCancel>
-                            Cancel
+                            {t("cancel")}
                         </AlertDialogCancel>
 
                         <AlertDialogAction>
-                            Continue
+                            {t("continue")}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

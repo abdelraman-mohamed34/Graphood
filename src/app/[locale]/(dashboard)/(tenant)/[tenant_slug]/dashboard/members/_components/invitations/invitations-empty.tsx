@@ -1,8 +1,10 @@
 "use client";
 
 import { MailXIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function InvitationsEmpty() {
+    const t = useTranslations("dashboard.members");
     return (
         <div className="rounded-xl border border-dashed py-14">
             <div className="flex flex-col items-center gap-3 text-center">
@@ -10,11 +12,11 @@ export default function InvitationsEmpty() {
 
                 <div>
                     <h3 className="font-medium">
-                        No pending invitations
+                        {t("invitations.emptyTitle")}
                     </h3>
 
                     <p className="mt-1 text-sm text-muted-foreground">
-                        All invitations have been accepted or expired.
+                        {t("invitations.emptyDescription")}
                     </p>
                 </div>
             </div>

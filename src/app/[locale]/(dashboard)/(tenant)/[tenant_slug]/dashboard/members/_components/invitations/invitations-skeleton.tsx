@@ -27,7 +27,7 @@ export default function InvitationsSkeleton() {
                             </th>
 
                             <th className="px-4 py-4">
-                                <Skeleton className="ml-auto h-4 w-8" />
+                                <Skeleton className="ms-auto h-4 w-8" />
                             </th>
                         </tr>
                     </thead>
@@ -51,7 +51,7 @@ export default function InvitationsSkeleton() {
                                 </td>
 
                                 <td className="px-4 py-4">
-                                    <Skeleton className="ml-auto h-8 w-8 rounded-md" />
+                                    <Skeleton className="ms-auto h-8 w-8 rounded-md" />
                                 </td>
                             </tr>
                         ))}

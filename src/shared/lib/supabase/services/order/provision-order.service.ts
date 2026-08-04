@@ -1,6 +1,6 @@
-import { createMembershipFromTenant } from "./create-membership-from-tenant.service";
-import { createSubscription } from "./create-subscription.service";
-import { createTenantFromSubscription } from "./create-tenant-from-subscription.service";
+import { createMembershipFromTenant } from "../billing/create-membership-from-tenant.service";
+import { createSubscription } from "../billing/create-subscription.service";
+import { createTenantFromSubscription } from "../billing/create-tenant-from-subscription.service";
 
 export async function provisionOrder({
     orderId,

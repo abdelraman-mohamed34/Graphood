@@ -5,8 +5,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
 import { LocalizationForm } from "./localization-form";
+import { useTranslations } from "next-intl";
 
 export function LocalizationSettings() {
+    const t = useTranslations("dashboard.settings");
     const {
         tenant,
         permissions,
@@ -15,9 +17,9 @@ export function LocalizationSettings() {
 
     useEffect(() => {
         if (!isLoading && !permissions.canManageWorkspace) {
-            toast.error("You don't have permission to manage this workspace.");
+            toast.error(t("feedback.forbidden"));
         }
-    }, [isLoading, permissions.canManageWorkspace]);
+    }, [isLoading, permissions.canManageWorkspace, t]);
 
     if (isLoading) {
         return (

@@ -4,8 +4,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useTenant } from "@/shared/lib/hooks/tenants/use-tenant";
 import { DeleteWorkspace } from "./delete-workspace";
 import { LeaveWorkspace } from "./leave-workspace";
+import { useTranslations } from "next-intl";
 
 export function DangerZone() {
+    const t = useTranslations("dashboard.settings");
     const {
         permissions,
         isLoading,
@@ -25,11 +27,11 @@ export function DangerZone() {
         <div className="space-y-6 rounded-xl border border-destructive/30 p-6">
             <div>
                 <h2 className="text-xl font-semibold text-destructive">
-                    Danger Zone
+                    {t("danger.title")}
                 </h2>
 
                 <p className="text-sm text-muted-foreground">
-                    These actions are permanent and should be used carefully.
+                    {t("danger.description")}
                 </p>
             </div>
 

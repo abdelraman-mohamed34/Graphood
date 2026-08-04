@@ -7,8 +7,8 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { LICENSE_MODELS } from "@/shared/config/licensing";
 import { useTenantUsage } from "@/shared/lib/hooks";
+import { useTranslations } from "next-intl";
 
 import SubscriptionStatusBadge from "./subscription-status-badge";
 
@@ -25,6 +25,7 @@ type SubscriptionOverviewProps = {
 export default function SubscriptionOverview({
     subscription,
 }: SubscriptionOverviewProps) {
+    const t = useTranslations("dashboard.subscription");
     const {
         plan,
         licenseType,
@@ -59,12 +60,11 @@ export default function SubscriptionOverview({
         <Card>
             <CardHeader>
                 <CardTitle>
-                    Subscription Overview
+                    {t("overview.title")}
                 </CardTitle>
 
                 <CardDescription>
-                    Manage your current workspace
-                    subscription.
+                    {t("overview.description")}
                 </CardDescription>
             </CardHeader>
 
@@ -73,11 +73,11 @@ export default function SubscriptionOverview({
                     <Card>
                         <CardHeader className="pb-2">
                             <CardDescription>
-                                Current Plan
+                                {t("overview.currentPlan")}
                             </CardDescription>
 
                             <CardTitle>
-                                {plan}
+                                {t.has(`plans.${plan.toLowerCase()}`) ? t(`plans.${plan.toLowerCase()}`) : plan}
                             </CardTitle>
                         </CardHeader>
                     </Card>
@@ -85,15 +85,13 @@ export default function SubscriptionOverview({
                     <Card>
                         <CardHeader className="pb-2">
                             <CardDescription>
-                                License Type
+                                {t("overview.licenseType")}
                             </CardDescription>
 
                             <CardTitle>
-                                {
-                                    LICENSE_MODELS[
-                                        licenseType
-                                    ].label
-                                }
+                                {t.has(`licenses.${licenseType.toLowerCase()}`)
+                                    ? t(`licenses.${licenseType.toLowerCase()}`)
+                                    : licenseType}
                             </CardTitle>
                         </CardHeader>
                     </Card>
@@ -101,7 +99,7 @@ export default function SubscriptionOverview({
                     <Card>
                         <CardHeader className="pb-2">
                             <CardDescription>
-                                Status
+                                {t("overview.status")}
                             </CardDescription>
 
                             <SubscriptionStatusBadge
@@ -116,7 +114,7 @@ export default function SubscriptionOverview({
                     <Card>
                         <CardHeader className="pb-2">
                             <CardDescription>
-                                Renewal Date
+                                {t("overview.renewalDate")}
                             </CardDescription>
 
                             <CardTitle>
@@ -129,12 +127,15 @@ export default function SubscriptionOverview({
                     <Card>
                         <CardHeader className="pb-2">
                             <CardDescription>
-                                Billing Interval
+                                {t("overview.billingInterval")}
                             </CardDescription>
 
                             <CardTitle>
-                                {subscription?.billingInterval ??
-                                    "-"}
+                                {subscription?.billingInterval
+                                    ? (t.has(`intervals.${subscription.billingInterval.toLowerCase()}`)
+                                        ? t(`intervals.${subscription.billingInterval.toLowerCase()}`)
+                                        : subscription.billingInterval)
+                                    : "-"}
                             </CardTitle>
                         </CardHeader>
                     </Card>

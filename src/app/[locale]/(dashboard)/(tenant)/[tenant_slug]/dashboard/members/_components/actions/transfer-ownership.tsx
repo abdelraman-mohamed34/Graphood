@@ -10,6 +10,7 @@ import { ConfirmationDialog } from "@/shared/_components/confirmation-dialog";
 
 import { Membership } from "@/shared/lib/schemas/memberships.schema";
 import { transferOwnershipAction } from "@/shared/lib/actions/memberships/transfer-ownership.action";
+import { useTranslations } from "next-intl";
 
 type Props = {
     member: Membership;
@@ -18,6 +19,7 @@ type Props = {
 export default function TransferOwnership({
     member,
 }: Props) {
+    const t = useTranslations("dashboard.members");
     const params = useParams();
 
     const locale =
@@ -50,13 +52,13 @@ export default function TransferOwnership({
                         e.preventDefault()
                     }
                 >
-                    <CrownIcon className="mr-2 h-4 w-4" />
-                    Transfer Ownership
+                    <CrownIcon className="me-2 h-4 w-4" />
+                    {t("actions.transfer")}
                 </DropdownMenuItem>
             }
-            title="Transfer Ownership"
-            description={`Transfer workspace ownership to ${member.profile?.first_name} ${member.profile?.last_name}? You will become an Admin.`}
-            confirmText="Transfer"
+            title={t("actions.transfer")}
+            description={t("actions.transferDescription", { name: `${member.profile?.first_name ?? ""} ${member.profile?.last_name ?? ""}`.trim() })}
+            confirmText={t("actions.transferConfirm")}
             onConfirm={onTransfer}
         />
     );

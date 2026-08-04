@@ -3,9 +3,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { processPaymentWebhookAction } from "@/shared/lib/actions/billing/process-payment-webhook.action";
+import { useTranslations } from "next-intl";
 
 export function useCompletePayment() {
     const queryClient = useQueryClient();
+    const t = useTranslations("checkout");
 
     const mutation = useMutation({
         mutationFn: async (orderId: string) => {
@@ -28,17 +30,13 @@ export function useCompletePayment() {
                 queryKey: ["order", orderId],
             });
 
-            toast.success(
-                "Payment completed successfully."
-            );
+            toast.success(t("paymentSuccess"));
         },
 
         onError: (error) => {
-            toast.error(
-                error instanceof Error
-                    ? error.message
-                    : "Payment failed."
-            );
+            const message = error instanceof Error ? error.message : "";
+            const isMissingPaymentFunction = message.includes("finalize_order_payment") || message.includes("schema cache");
+            toast.error(isMissingPaymentFunction ? t("paymentSetupError") : t("paymentFailed"));
         },
     });
 

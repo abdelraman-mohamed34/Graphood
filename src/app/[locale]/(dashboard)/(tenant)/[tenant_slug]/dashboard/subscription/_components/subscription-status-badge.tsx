@@ -1,6 +1,7 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge"
+import { useTranslations } from "next-intl"
 
 type SubscriptionStatus =
     | "ACTIVE"
@@ -17,6 +18,7 @@ type SubscriptionStatusBadgeProps = {
 export default function SubscriptionStatusBadge({
     status,
 }: SubscriptionStatusBadgeProps) {
+    const t = useTranslations("dashboard.subscription")
     const styles: Record<
         SubscriptionStatus,
         { label: string; className: string }
@@ -56,7 +58,7 @@ export default function SubscriptionStatusBadge({
 
     return (
         <Badge variant="outline" className={current.className}>
-            {current.label}
+            {t.has(`statuses.${status.toLowerCase()}`) ? t(`statuses.${status.toLowerCase()}`) : current.label}
         </Badge>
     )
 }

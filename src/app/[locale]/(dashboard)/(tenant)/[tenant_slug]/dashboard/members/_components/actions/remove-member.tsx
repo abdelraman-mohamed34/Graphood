@@ -5,6 +5,7 @@ import { LogOutIcon } from "lucide-react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 import { Membership } from "@/shared/lib/schemas/memberships.schema";
+import { useTranslations } from "next-intl";
 
 type Props = {
     member: Membership;
@@ -17,6 +18,7 @@ export default function RemoveMember({
     profileId,
     removeMember,
 }: Props) {
+    const t = useTranslations("dashboard.members");
     const isSelf =
         profileId === member.profile_id;
 
@@ -25,11 +27,11 @@ export default function RemoveMember({
             className="text-destructive focus:text-destructive"
             onClick={() => removeMember(member.id)}
         >
-            <LogOutIcon className="mr-2 h-4 w-4" />
+            <LogOutIcon className="me-2 h-4 w-4" />
 
             {isSelf
-                ? "Leave Workspace"
-                : "Remove Member"}
+                ? t("actions.leave")
+                : t("actions.remove")}
         </DropdownMenuItem>
     );
 }

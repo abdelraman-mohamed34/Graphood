@@ -3,6 +3,7 @@
 import InvitationActions from "./invitation-actions";
 
 import { Invitation } from "@/shared/lib/schemas/invitations.schema";
+import { useLocale, useTranslations } from "next-intl";
 
 type Props = {
     invitation: Invitation;
@@ -20,6 +21,9 @@ export default function InvitationRow({
     cancelInvitation,
     loading,
 }: Props) {
+    const locale = useLocale();
+    const t = useTranslations("dashboard.members");
+    const roleKey = `roles.${invitation.role.toLowerCase()}`;
     return (
         <tr className="transition-colors hover:bg-muted/30">
             <td className="px-6 py-4">
@@ -30,17 +34,17 @@ export default function InvitationRow({
 
             <td className="px-6 py-4">
                 <span className="inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase">
-                    {invitation.role}
+                    {t.has(roleKey) ? t(roleKey) : invitation.role}
                 </span>
             </td>
 
             <td className="px-6 py-4 text-muted-foreground">
                 {new Date(
                     invitation.expires_at
-                ).toLocaleDateString()}
+                ).toLocaleDateString(locale)}
             </td>
 
-            <td className="px-4 py-4 text-right">
+            <td className="px-4 py-4 text-end">
                 <InvitationActions
                     invitation={invitation}
                     resendInvitation={resendInvitation}

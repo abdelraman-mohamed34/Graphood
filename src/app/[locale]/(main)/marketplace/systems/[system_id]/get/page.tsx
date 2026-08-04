@@ -1,23 +1,27 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { Check, X, ArrowRight, Loader2 } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { AlertCircle, Check, X, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 import { PLAN_LIMITS, PlanType } from "@/shared/config/plans";
 import {
     licenseTypes,
-    LICENSE_MODELS,
     LicenseType,
 } from "@/shared/config/licensing";
 import { useCreateOrder } from "@/features/billing/use-create-order";
 import { useSystem } from "@/shared/lib/hooks";
 import { useValidateCoupon } from "@/shared/lib/hooks/billings/use-validate-coupon";
+import { getPendingOrderAction } from "@/shared/lib/actions/billing/pending-order.action";
+import { useRouter } from "@/i18n/navigation";
 
 export default function Page() {
-    const params = useParams();
-    const systemId = (params?.system_id || params?.id) as string;
+    const params = useParams<{ system_id: string }>();
+    const systemId = params.system_id;
+    const t = useTranslations("marketplace.purchase");
 
     const [selectedPlan, setSelectedPlan] = useState<PlanType>("PRO");
     const [selectedLicense, setSelectedLicense] = useState<LicenseType>("SUBSCRIPTION");
@@ -34,7 +38,13 @@ export default function Page() {
     } | null>(null);
 
     const { system, isLoading, error } = useSystem(systemId);
-    const { createOrder, isCreating } = useCreateOrder();
+    const { createOrder, isCreating, cancelOrder, isCancellingOrder } = useCreateOrder();
+    const pendingOrderQuery = useQuery({
+        queryKey: ["orders", "pending", systemId],
+        queryFn: () => getPendingOrderAction(systemId),
+        enabled: Boolean(systemId),
+    });
+
     const {
         validateCoupon,
         isValidating,
@@ -48,30 +58,31 @@ export default function Page() {
         return [
             {
                 id: "STARTER" as const,
-                name: "Starter",
-                tagline: "Perfect for individuals",
-                description:
-                    "Ideal for freelancers and personal projects. Includes essential features to get started quickly.",
+                name: t("plans.starter.name"),
+                tagline: t("plans.starter.tagline"),
+                description: t("plans.starter.description"),
                 monthlyPrice: Number(system.starter_price) || 0,
             },
             {
                 id: "PRO" as const,
-                name: "Pro",
-                tagline: "Best for growing businesses",
-                description:
-                    "Designed for startups and growing teams with advanced features, reports, and API access.",
+                name: t("plans.pro.name"),
+                tagline: t("plans.pro.tagline"),
+                description: t("plans.pro.description"),
                 monthlyPrice: Number(system.pro_price) || 0,
             },
             {
                 id: "BUSINESS" as const,
-                name: "Business",
-                tagline: "Built for organizations",
-                description:
-                    "Complete solution for companies that need maximum scalability, collaboration, and enterprise capabilities.",
+                name: t("plans.business.name"),
+                tagline: t("plans.business.tagline"),
+                description: t("plans.business.description"),
                 monthlyPrice: Number(system.business_price) || 0,
             },
         ];
-    }, [system]);
+    }, [system, t]);
+
+    const licenseLabel = (type: LicenseType) => t(`licenses.${type.toLowerCase()}.label`);
+    const licenseShortDescription = (type: LicenseType) => t(`licenses.${type.toLowerCase()}.shortDescription`);
+    const licenseDescription = (type: LicenseType) => t(`licenses.${type.toLowerCase()}.description`);
 
     const activePlan = useMemo(() => {
         return plans.find((p) => p.id === selectedPlan) || plans[1];
@@ -131,18 +142,32 @@ export default function Page() {
                 toast.error(
                     typeof result?.error === "string"
                         ? result.error
-                        : "Failed to create order."
+                        : t("feedback.orderFailed")
                 );
                 return;
             }
 
-            toast.success("Order created successfully.");
+            if (result.isExisting) {
+                toast.info(t("pendingOrder.redirecting"));
+            } else {
+                toast.success(t("feedback.orderCreated"));
+            }
             router.push(`/marketplace/checkout/${result.orderId}`);
         } catch (err) {
             console.error(err);
             toast.error(
-                err instanceof Error ? err.message : "Something went wrong."
+                err instanceof Error ? err.message : t("feedback.genericError")
             );
+        }
+    };
+
+    const handleCancelOrder = async (orderId: string) => {
+        try {
+            await cancelOrder({ orderId, systemId });
+            toast.success(t("pendingOrder.cancelled"));
+        } catch (cancelError) {
+            console.error(cancelError);
+            toast.error(t("pendingOrder.cancelFailed"));
         }
     };
 
@@ -151,10 +176,10 @@ export default function Page() {
         if (!limits) return [];
 
         return [
-            { text: `Up to ${limits.maxAdmins} Admin${limits.maxAdmins > 1 ? "s" : ""}`, included: true },
-            { text: limits.hasReports ? "Advanced Reports" : "Basic Analytics", included: limits.hasReports },
-            { text: limits.hasWordAssistant ? "Word Assistant Included" : "No Word Assistant", included: limits.hasWordAssistant },
-            { text: limits.api ? "Full API Access" : "No API Access", included: limits.api },
+            { text: t("features.admins", { count: limits.maxAdmins }), included: true },
+            { text: limits.hasReports ? t("features.advancedReports") : t("features.basicAnalytics"), included: limits.hasReports },
+            { text: limits.hasWordAssistant ? t("features.wordAssistant") : t("features.noWordAssistant"), included: limits.hasWordAssistant },
+            { text: limits.api ? t("features.fullApiAccess") : t("features.noApiAccess"), included: limits.api },
         ];
     };
 
@@ -169,29 +194,58 @@ export default function Page() {
     if (error || !system) {
         return (
             <div className="flex justify-center items-center min-h-[60vh] text-neutral-500 text-sm">
-                Failed to load system details. Please try again.
+                {t("loadError")}
             </div>
         );
     }
+
+    const pendingOrder = pendingOrderQuery.data;
 
     return (
         <div className="w-full min-h-screen flex justify-center pt-8 pb-16">
             <div className="w-full max-w-4xl mx-auto p-6 font-sans">
                 <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-6">
-                    Select a Plan
+                    {t("title")}
                 </h2>
+
+                {pendingOrder && (
+                    <div className="mb-8 flex flex-col gap-4 rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 text-start sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex min-w-0 items-start gap-3">
+                            <AlertCircle className="mt-0.5 size-5 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+                            <div className="min-w-0">
+                                <p className="font-semibold text-foreground">{t("pendingOrder.title")}</p>
+                                <p className="mt-1 text-sm text-muted-foreground">{t("pendingOrder.description")}</p>
+                            </div>
+                        </div>
+                        <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end">
+                            <button
+                                type="button"
+                                onClick={() => router.push(`/marketplace/checkout/${pendingOrder.id}`)}
+                                className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
+                            >
+                                {t("pendingOrder.resume")}
+                            </button>
+                            <button
+                                type="button"
+                                disabled={isCancellingOrder}
+                                onClick={() => handleCancelOrder(pendingOrder.id)}
+                                className="rounded-lg border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50"
+                            >
+                                {isCancellingOrder ? t("pendingOrder.cancelling") : t("pendingOrder.cancel")}
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* License Types Selection */}
                 <div className="mb-8">
                     <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-3">
-                        Choose License Type
+                        {t("chooseLicense")}
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {licenseTypes.map((type) => {
                             const isSelected = selectedLicense === type;
-                            const model = LICENSE_MODELS[type];
-
                             return (
                                 <button
                                     key={type}
@@ -200,16 +254,16 @@ export default function Page() {
                                         setSelectedLicense(type);
                                         clearCoupon();
                                     }}
-                                    className={`rounded-xl border p-4 text-left transition-all ${isSelected
+                                    className={`rounded-xl border p-4 text-start transition-all ${isSelected
                                         ? "border-neutral-900 dark:border-white ring-1 ring-neutral-900 dark:ring-white bg-neutral-50/50 dark:bg-neutral-900/50"
                                         : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
                                         }`}
                                 >
                                     <div className="font-semibold text-neutral-900 dark:text-white text-sm">
-                                        {model?.label}
+                                        {licenseLabel(type)}
                                     </div>
                                     <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-                                        {model?.shortDescription}
+                                        {licenseShortDescription(type)}
                                     </p>
                                 </button>
                             );
@@ -247,11 +301,11 @@ export default function Page() {
                                                 </p>
                                             </div>
 
-                                            <div className="text-right">
+                                            <div className="text-end">
                                                 <div className="text-base font-bold text-neutral-900 dark:text-white">
                                                     ${(Number(plan.monthlyPrice) || 0).toFixed(2)}
                                                 </div>
-                                                <div className="text-[11px] text-neutral-400">/mo</div>
+                                                <div className="text-[11px] text-neutral-400">{t("perMonthShort")}</div>
                                             </div>
                                         </div>
 
@@ -285,10 +339,10 @@ export default function Page() {
                     <div className="mb-8">
                         <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 bg-white dark:bg-neutral-900">
                             <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
-                                {LICENSE_MODELS.RESELLER.label}
+                                {licenseLabel("RESELLER")}
                             </h3>
                             <p className="text-xs text-neutral-500 mt-1">
-                                {LICENSE_MODELS.RESELLER.shortDescription}
+                                {licenseShortDescription("RESELLER")}
                             </p>
                             <div className="mt-6 text-3xl font-bold text-neutral-900 dark:text-white">
                                 ${(Number(system.reseller_price) || 0).toFixed(2)}
@@ -302,10 +356,10 @@ export default function Page() {
                     <div className="mb-8">
                         <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 bg-white dark:bg-neutral-900">
                             <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
-                                {LICENSE_MODELS.EXCLUSIVE.label}
+                                {licenseLabel("EXCLUSIVE")}
                             </h3>
                             <p className="text-xs text-neutral-500 mt-1">
-                                {LICENSE_MODELS.EXCLUSIVE.shortDescription}
+                                {licenseShortDescription("EXCLUSIVE")}
                             </p>
                             <div className="mt-6 text-3xl font-bold text-neutral-900 dark:text-white">
                                 ${(Number(system.exclusive_price) || 0).toFixed(2)}
@@ -316,7 +370,7 @@ export default function Page() {
 
                 <div className="mb-8">
                     <label className="text-sm font-medium text-neutral-900 dark:text-white">
-                        Coupon Code
+                        {t("coupon.label")}
                     </label>
 
                     <div className="mt-2 flex gap-2">
@@ -346,20 +400,20 @@ export default function Page() {
                                     toast.error(
                                         typeof result.error === "string"
                                             ? result.error
-                                            : "Invalid coupon."
+                                            : t("feedback.invalidCoupon")
                                     );
                                     setPreview(null);
                                     return;
                                 }
 
                                 setPreview(result.data || null);
-                                toast.success("Coupon applied.");
+                                toast.success(t("feedback.couponApplied"));
                             }}
                         >
                             {isValidating ? (
                                 <Loader2 className="w-4 h-4 animate-spin mx-auto" />
                             ) : (
-                                "Apply"
+                                t("coupon.apply")
                             )}
                         </button>
                     </div>
@@ -370,20 +424,20 @@ export default function Page() {
                     <div className="space-y-5">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-                                License Mode
+                                {t("summary.licenseMode")}
                             </p>
                             <p className="font-medium text-neutral-900 dark:text-white mt-1">
-                                {LICENSE_MODELS[selectedLicense]?.label}
+                                {licenseLabel(selectedLicense)}
                             </p>
                             <p className="mt-1 text-xs text-neutral-500">
-                                {LICENSE_MODELS[selectedLicense]?.description}
+                                {licenseDescription(selectedLicense)}
                             </p>
                         </div>
 
                         {selectedLicense === "SUBSCRIPTION" && activePlan && (
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-                                    Selected Tier
+                                    {t("summary.selectedTier")}
                                 </p>
                                 <p className="font-medium text-neutral-900 dark:text-white mt-1">
                                     {activePlan.name}
@@ -397,14 +451,14 @@ export default function Page() {
                         {preview && preview.discountAmount > 0 && (
                             <>
                                 <div className="flex justify-between text-sm text-neutral-900 dark:text-white">
-                                    <span>Subtotal</span>
+                                    <span>{t("summary.subtotal")}</span>
                                     <span>
                                         {(Number(preview.originalAmount) || 0).toFixed(2)} {system.currency}
                                     </span>
                                 </div>
 
                                 <div className="flex justify-between text-sm text-green-600 dark:text-green-500">
-                                    <span>Coupon ({preview.coupon?.code})</span>
+                                    <span>{t("summary.coupon", { code: preview.coupon?.code ?? "" })}</span>
                                     <span>
                                         -{(Number(preview.discountAmount) || 0).toFixed(2)} {system.currency}
                                     </span>
@@ -415,22 +469,22 @@ export default function Page() {
                         <div className="border-t border-neutral-100 dark:border-neutral-800 pt-5 flex items-center justify-between">
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-                                    Total Amount
+                                    {t("summary.totalAmount")}
                                 </p>
                                 <p className="text-xs text-neutral-500 mt-0.5">
                                     {selectedLicense === "SUBSCRIPTION"
-                                        ? "Recurring subscription fee"
-                                        : "One-time full purchase"}
+                                        ? t("summary.recurringFee")
+                                        : t("summary.oneTimePurchase")}
                                 </p>
                             </div>
 
-                            <div className="text-right">
+                            <div className="text-end">
                                 <div className="text-3xl font-bold text-neutral-900 dark:text-white">
                                     {displayPrice} {system.currency}
                                 </div>
                                 {selectedLicense === "SUBSCRIPTION" && (
                                     <div className="text-xs text-neutral-400">
-                                        / month
+                                        {t("perMonth")}
                                     </div>
                                 )}
                             </div>
@@ -448,12 +502,12 @@ export default function Page() {
                         {isCreating ? (
                             <>
                                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                Processing Order...
+                                {t("processing")}
                             </>
                         ) : (
                             <>
-                                Continue to Checkout ({displayPrice} {system.currency})
-                                <ArrowRight className="w-3.5 h-3.5" />
+                                {t("continueToCheckout", { price: displayPrice, currency: system.currency })}
+                                <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
                             </>
                         )}
                     </button>

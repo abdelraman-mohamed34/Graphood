@@ -13,19 +13,21 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useTranslations } from "next-intl";
 
 export function LeaveWorkspace() {
+    const t = useTranslations("dashboard.settings");
     const [open, setOpen] = useState(false);
 
     return (
         <div className="flex items-center justify-between rounded-lg border p-5">
             <div>
                 <h3 className="font-semibold">
-                    Leave Workspace
+                    {t("danger.leave.title")}
                 </h3>
 
                 <p className="text-sm text-muted-foreground">
-                    Leave this workspace. You can be invited again later.
+                    {t("danger.leave.description")}
                 </p>
             </div>
 
@@ -35,28 +37,28 @@ export function LeaveWorkspace() {
             >
                 <AlertDialogTrigger asChild>
                     <Button variant="outline">
-                        Leave Workspace
+                        {t("danger.leave.action")}
                     </Button>
                 </AlertDialogTrigger>
 
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            Leave Workspace?
+                            {t("danger.leave.confirmTitle")}
                         </AlertDialogTitle>
 
                         <AlertDialogDescription>
-                            This feature is not implemented yet.
+                            {t("danger.leave.notImplemented")}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
 
                     <AlertDialogFooter>
                         <AlertDialogCancel>
-                            Cancel
+                            {t("cancel")}
                         </AlertDialogCancel>
 
                         <AlertDialogAction>
-                            Continue
+                            {t("continue")}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
