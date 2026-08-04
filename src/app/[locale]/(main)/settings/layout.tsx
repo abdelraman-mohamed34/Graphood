@@ -1,67 +1,79 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
-import { useParams, useSelectedLayoutSegment } from "next/navigation";
+import { useMemo } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { useSelectedLayoutSegment } from "next/navigation";
+
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { Dir } from "@/shared/_components/dirs";
+
+interface SettingsLayoutProps {
+    children: React.ReactNode;
+}
 
 export default function SettingsLayout({
     children,
-}: {
-    children: React.ReactNode;
-}) {
-    const params = useParams();
+}: SettingsLayoutProps) {
+    const locale = useLocale();
     const segment = useSelectedLayoutSegment();
-    const t = useTranslations('settings');
+    const t = useTranslations("settings");
 
-    const locale = params.locale as string;
-
-    const basePath = `/${locale}/settings`;
-
-    const tabs = [
-        { id: "profile", label: t("tabs.profile"), href: `${basePath}/profile` },
-        { id: "notifications", label: t("tabs.notifications"), href: `${basePath}/notifications` },
-        { id: "developer", label: t("tabs.developer"), href: `${basePath}/developer` },
-    ];
+    const tabs = useMemo(
+        () => [
+            {
+                id: "profile",
+                label: t("tabs.profile"),
+                href: `/${locale}/settings/profile`,
+            }
+        ],
+        [locale, t]
+    );
 
     return (
-        <div className="w-full max-w-6xl mx-auto px-4 py-8 space-y-6">
-            <div className="space-y-1">
-                <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                    {t("title")}
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                    {t("description")}
-                </p>
-            </div>
+        <>
+            <Dir />
+            <div className="mx-auto w-full max-w-6xl space-y-6 px-4 py-8">
+                <header className="space-y-1">
+                    <h1 className="text-2xl font-bold tracking-tight">
+                        {t("title")}
+                    </h1>
 
-            <div className="border-b border-border/60">
-                <nav className="flex gap-6 -mb-px" aria-label="Tabs">
-                    {tabs.map((tab) => {
-                        const isActive = segment === tab.id;
+                    <p className="text-sm text-muted-foreground">
+                        {t("description")}
+                    </p>
+                </header>
 
-                        return (
-                            <Link
-                                key={tab.id}
-                                href={tab.href}
-                                className={cn(
-                                    "py-3 px-1 border-b-2 text-sm font-medium transition-all duration-200 whitespace-nowrap",
-                                    isActive
-                                        ? "border-primary text-primary"
-                                        : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
-                                )}
-                            >
-                                {tab.label}
-                            </Link>
-                        );
-                    })}
+                <nav
+                    aria-label="Settings navigation"
+                    className="border-b border-border/60"
+                >
+                    <div className="-mb-px flex gap-6">
+                        {tabs.map((tab) => {
+                            const active = segment === tab.id;
+
+                            return (
+                                <Link
+                                    key={tab.id}
+                                    href={tab.href}
+                                    className={cn(
+                                        "border-b-2 px-1 py-3 text-sm font-medium transition-colors",
+                                        active
+                                            ? "border-primary text-primary"
+                                            : "border-transparent text-muted-foreground hover:border-border hover:text-foreground"
+                                    )}
+                                >
+                                    {tab.label}
+                                </Link>
+                            );
+                        })}
+                    </div>
                 </nav>
-            </div>
 
-            <div className="mt-6 bg-card/40 border border-border/50 rounded-xl p-6 backdrop-blur-sm">
-                {children}
+                <section className="rounded-xl backdrop-blur-sm sm:pb-15">
+                    {children}
+                </section>
             </div>
-        </div>
+        </>
     );
 }

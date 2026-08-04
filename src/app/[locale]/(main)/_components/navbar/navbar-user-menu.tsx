@@ -9,6 +9,9 @@ import { useLogin } from "@/shared/lib/supabase";
 
 import { useRef, useState } from "react";
 import { useClickOutside } from "./hooks/use-click-outside";
+import { useLocale } from "next-intl";
+import { useProfile } from "@/shared/lib/hooks/profile/use-profile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function UserMenu() {
     const { user, isLoading } = useAuth();
@@ -16,6 +19,10 @@ export default function UserMenu() {
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
     useClickOutside(ref, () => setOpen(false));
+
+    const locale = useLocale();
+
+    const { profile, } = useProfile(locale);
 
     if (isLoading) {
         return (
@@ -43,19 +50,17 @@ export default function UserMenu() {
                 onClick={() => setOpen((prev) => !prev)}
                 className="flex items-center justify-center"
             >
-                {user.avatar_url ? (
-                    <Image
-                        src={user.avatar_url}
-                        alt={user.first_name}
-                        width={32}
-                        height={32}
-                        className="rounded-full border border-gray-100 object-cover dark:border-zinc-800"
+                <Avatar className="h-8 w-8 border border-gray-100 dark:border-zinc-800">
+                    <AvatarImage
+                        src={profile?.avatarUrl ?? undefined}
+                        alt={`${user.first_name} ${user.last_name}`}
+                        className="object-cover"
                     />
-                ) : (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-gray-100 text-gray-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-gray-400">
+
+                    <AvatarFallback className="bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-gray-400">
                         <User className="h-4 w-4" />
-                    </div>
-                )}
+                    </AvatarFallback>
+                </Avatar>
             </button>
 
             {open && (

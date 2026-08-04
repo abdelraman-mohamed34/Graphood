@@ -1,6 +1,5 @@
 import React from "react";
 import { redirect, notFound } from "next/navigation";
-import { fetchProfile } from "@/shared/lib/supabase/services/auth/profile/fetch-profile.service";
 import { getSystemAction } from "@/shared/lib/actions/developer/systems";
 import { System } from "@/shared/lib/schemas/systems.schema";
 import { QueryClient, HydrationBoundary, dehydrate } from "@tanstack/react-query";
@@ -9,6 +8,7 @@ import { requireUser } from "@/shared/lib/auth/requires/require-user";
 import Navbar from "@/app/[locale]/(main)/_components/navbar";
 import { Dir } from "@/shared/_components/dirs";
 import SystemSidebar from "./_components/system-sidebar";
+import { fetchProfile } from "@/shared/lib/supabase/services/profile";
 
 interface SystemDetailLayoutProps {
     children: React.ReactNode;

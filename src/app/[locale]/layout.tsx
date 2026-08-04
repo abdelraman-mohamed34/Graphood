@@ -10,9 +10,9 @@ import { Toaster } from "@/components/ui/sonner";
 import { locales } from "../../../public/data";
 
 import { getMembershipsByProfileId } from "@/shared/lib/supabase/services/auth/membership/get-memberships-by-profile-id.service";
-import { fetchProfile } from "@/shared/lib/supabase/services/auth/profile/fetch-profile.service";
 import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
+import { fetchProfile } from "@/shared/lib/supabase/services/profile";
 
 const robotoSans = Roboto({
     variable: "--font-roboto-sans",

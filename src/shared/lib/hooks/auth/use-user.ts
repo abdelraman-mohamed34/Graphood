@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "../../supabase/client";
 import { fetchUser } from "../../supabase/services/auth/user/fetch-user.service";
-import { fetchProfile } from "../../supabase/services/auth/profile/fetch-profile.service";
+import { fetchProfile } from "../../supabase/services/profile";
 
 export function useUser() {
     const supabase = createClient();

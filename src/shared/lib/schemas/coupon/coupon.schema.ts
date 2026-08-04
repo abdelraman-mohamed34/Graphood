@@ -71,7 +71,7 @@ export const couponSchema = z.object({
 
     starts_at: z.date().nullable(),
     expires_at: z.date().nullable(),
-    
+
     is_active: z.boolean(),
 
     created_at: z.coerce.date(),

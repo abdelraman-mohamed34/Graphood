@@ -10,6 +10,7 @@ import {
     type FieldValues,
     type UseFormReturn,
     type ControllerRenderProps,
+    type ControllerFieldState,
 } from "react-hook-form"
 
 import { cn } from "@/lib/utils"
@@ -40,7 +41,10 @@ export function FormField<
 }: {
     control: Control<TFieldValues>
     name: TName
-    render: (props: ControllerRenderProps<TFieldValues, TName>) => React.ReactNode
+    render: (props: {
+        field: ControllerRenderProps<TFieldValues, TName>["field"]
+        fieldState: ControllerRenderProps<TFieldValues, TName>["fieldState"]
+    }) => React.ReactNode
 }) {
     return (
         <Controller<TFieldValues, TName>
@@ -48,7 +52,7 @@ export function FormField<
             name={name}
             render={({ field, fieldState }) => (
                 <FormFieldContext.Provider value={{ error: fieldState.error }}>
-                    {render({ field })}
+                    {render({ field, fieldState })}
                 </FormFieldContext.Provider>
             )}
         />

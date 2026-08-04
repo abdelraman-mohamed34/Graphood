@@ -20,8 +20,8 @@ export default function Navbar() {
                 <NavbarLogo />
             </div>
             <div className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
-                <Notifications />
-                <div className="mx-4 h-5 w-px bg-gray-200 dark:bg-zinc-700" />
+                {/* <Notifications /> */}
+                {/* <div className="mx-4 h-5 w-px bg-gray-200 dark:bg-zinc-700" /> */}
                 <LanguageMenu />
                 <div className="mx-4 h-5 w-px bg-gray-200 dark:bg-zinc-700" />
                 <UserMenu />
