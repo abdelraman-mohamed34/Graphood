@@ -14,10 +14,10 @@ export const tagsQueryKey = ["tags"] as const;
 export const tagsQueryOptions = queryOptions({
     queryKey: tagsQueryKey,
     queryFn: getTags,
-    staleTime: 1000 * 60 * 60,
-    gcTime: 1000 * 60 * 60 * 24,
+    staleTime: 1000 * 60 * 60, // 1 hour
+    gcTime: 1000 * 60 * 60 * 24, // 24 hours
 });
 
-export function useTag(): UseQueryResult<Tag[], Error> {
+export function useTags(): UseQueryResult<Tag[], Error> {
     return useQuery(tagsQueryOptions);
 }

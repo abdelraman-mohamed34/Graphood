@@ -3,19 +3,10 @@
 import Image from "next/image";
 import { memo, useDeferredValue, useMemo, useState } from "react";
 import { ExternalLink, Layers, Search } from "lucide-react";
+import { useLocale } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
-
-const CATEGORIES = [
-    "all",
-    "popular",
-    "developerTools",
-    "security",
-    "ecommerce",
-    "monitoring",
-] as const;
-
-type Category = (typeof CATEGORIES)[number];
+import { useTags } from "@/shared/lib/hooks/tags/use-tag";
 
 export interface MarketplaceSystem {
     id: string;
@@ -35,7 +26,7 @@ interface MarketplaceLabels {
     searchButton: string;
     contentEyebrow: string;
     contentTitle: string;
-    categories: Record<Category, string>;
+    categories: Record<string, string>;
     emptyTitle: string;
     emptyDescription: string;
     cardBadge: string;
@@ -107,9 +98,14 @@ const SystemCard = memo(function SystemCard({
 });
 
 export default function MarketplaceExplorer({ systems, labels }: MarketplaceExplorerProps) {
+    const locale = useLocale();
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState<Category>("all");
+    const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const deferredQuery = useDeferredValue(searchQuery);
+
+    // استدعاء הـ React Query Hook
+    const { data: tagsData } = useTags();
+    const tagsList = tagsData ?? [];
 
     const filteredSystems = useMemo(() => {
         const query = deferredQuery.trim().toLocaleLowerCase();
@@ -206,21 +202,37 @@ export default function MarketplaceExplorer({ systems, labels }: MarketplaceExpl
                                 role="group"
                                 aria-label={labels.contentEyebrow}
                             >
-                                {CATEGORIES.map((category) => (
-                                    <button
-                                        key={category}
-                                        type="button"
-                                        aria-pressed={selectedCategory === category}
-                                        onClick={() => setSelectedCategory(category)}
-                                        className={`shrink-0 snap-start rounded-xl px-4 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm ${
-                                            selectedCategory === category
-                                                ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                                                : "border border-border bg-card text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                <button
+                                    type="button"
+                                    aria-pressed={selectedCategory === "all"}
+                                    onClick={() => setSelectedCategory("all")}
+                                    className={`shrink-0 snap-start rounded-xl px-4 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm ${selectedCategory === "all"
+                                            ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                                            : "border border-border bg-card text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                                         }`}
-                                    >
-                                        {labels.categories[category]}
-                                    </button>
-                                ))}
+                                >
+                                    {labels.categories["all"] ?? "All"}
+                                </button>
+
+                                {tagsList.map((tag) => {
+                                    const categoryKey = tag.slug;
+                                    const categoryLabel = locale === "ar" ? tag.name_ar : tag.name_en;
+
+                                    return (
+                                        <button
+                                            key={tag.id}
+                                            type="button"
+                                            aria-pressed={selectedCategory === categoryKey}
+                                            onClick={() => setSelectedCategory(categoryKey)}
+                                            className={`shrink-0 snap-start rounded-xl px-4 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm ${selectedCategory === categoryKey
+                                                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                                                    : "border border-border bg-card text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                                }`}
+                                        >
+                                            {labels.categories[categoryKey] ?? categoryLabel}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </header>
 
