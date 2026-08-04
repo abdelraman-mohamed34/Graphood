@@ -6,7 +6,7 @@ import { createServerClient } from "@supabase/ssr";
 
 const handleI18nRouting = createMiddleware(routing);
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
     const pathname = req.nextUrl.pathname;
 
     const locale = pathname.split("/")[1] || routing.defaultLocale;
