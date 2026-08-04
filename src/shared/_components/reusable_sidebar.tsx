@@ -24,12 +24,14 @@ export interface ReusableSidebarProps
     items: SidebarItem[] | SidebarGroup[];
     header?: React.ReactNode;
     footer?: React.ReactNode;
+    onNavigate?: () => void;
 }
 
 export function ReusableSidebar({
     items,
     header,
     footer,
+    onNavigate,
     className,
     ...props
 }: ReusableSidebarProps) {
@@ -98,6 +100,7 @@ export function ReusableSidebar({
                                         <li key={item.href}>
                                             <Link
                                                 href={item.href}
+                                                onClick={onNavigate}
                                                 aria-current={
                                                     active
                                                         ? "page"

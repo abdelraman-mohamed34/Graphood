@@ -4,24 +4,35 @@ import { Menu } from "lucide-react";
 import NavbarLogo from "./navbar-logo";
 import LanguageMenu from "./navbar-language-menu";
 import UserMenu from "./navbar-user-menu";
+import { useSystemNavigation } from "@/shared/_components/system-navigation-provider";
+import { useTranslations } from "next-intl";
 
 
 export default function Navbar() {
+    const systemNavigation = useSystemNavigation();
+    const t = useTranslations("systemSidebar");
+
     return (
         <header
-            className="w-full h-13 px-6 flex items-center justify-between border-b border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-colors"
+            className="flex h-14 w-full items-center justify-between gap-3 border-b border-gray-100 bg-white px-4 transition-colors dark:border-zinc-800 dark:bg-zinc-900 md:px-6"
         >
-            <div className="flex items-center gap-4">
-                <button className="p-1 text-muted-foreground hover:text-foreground transition-colors hidden">
-                    <Menu className="w-5 h-5" />
-                </button>
+            <div className="flex min-w-0 items-center gap-2 md:gap-3">
+                {systemNavigation && (
+                    <button
+                        type="button"
+                        onClick={systemNavigation.toggle}
+                        className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-primary/20 md:hidden"
+                        aria-label={t("open_navigation")}
+                        aria-expanded={systemNavigation.open}
+                    >
+                        <Menu className="h-5 w-5" />
+                    </button>
+                )}
                 <NavbarLogo />
             </div>
-            <div className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
-                {/* <Notifications /> */}
-                {/* <div className="mx-4 h-5 w-px bg-gray-200 dark:bg-zinc-700" /> */}
+            <div className="flex shrink-0 items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 md:gap-3">
                 <LanguageMenu />
-                <div className="mx-4 h-5 w-px bg-gray-200 dark:bg-zinc-700" />
+                <div className="h-5 w-px shrink-0 bg-gray-200 dark:bg-zinc-700" />
                 <UserMenu />
             </div>
         </header>

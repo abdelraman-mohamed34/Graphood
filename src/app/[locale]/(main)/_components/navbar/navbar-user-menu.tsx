@@ -44,10 +44,10 @@ export default function UserMenu() {
     }
 
     return (
-        <div ref={ref} className="relative">
+        <div ref={ref} className="relative shrink-0">
             <button
                 onClick={() => setOpen((prev) => !prev)}
-                className="flex items-center justify-center cursor-pointer transition-transform active:scale-95 outline-none"
+                className="flex shrink-0 cursor-pointer items-center justify-center rounded-full outline-none transition-transform active:scale-95 focus-visible:ring-1 focus-visible:ring-primary/20"
             >
                 <Avatar className="h-8 w-8 border border-gray-100 dark:border-zinc-800">
                     <AvatarImage
@@ -69,7 +69,7 @@ export default function UserMenu() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: -6 }}
                         transition={{ duration: 0.15, ease: "easeOut" }}
-                        className={`absolute z-50 mt-2 w-56 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-800 end-0 ${isRtl ? "origin-top-right" : "origin-top-left"
+                        className={`absolute end-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-800 ${isRtl ? "origin-top-left" : "origin-top-right"
                             }`}
                     >
                         <div className="border-b border-gray-100 px-4 py-3 dark:border-zinc-700">

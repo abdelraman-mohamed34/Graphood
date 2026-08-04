@@ -15,16 +15,16 @@ export default function LanguageMenu() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 hover:text-gray-900 dark:hover:text-gray-100 transition-colors px-1 h-10 outline-none cursor-pointer">
-                    <Globe className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                    <span className="capitalize text-sm font-medium">
+                <button className="flex h-10 shrink-0 cursor-pointer items-center gap-2 rounded-md px-1.5 outline-none transition-colors hover:bg-muted hover:text-gray-900 focus-visible:ring-1 focus-visible:ring-primary/20 dark:hover:text-gray-100">
+                    <Globe className="h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400" />
+                    <span className="hidden whitespace-nowrap text-sm font-medium sm:inline">
                         {locale === "ar" ? "العربية" : "English"}
                     </span>
                 </button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent
-                align="end"
+                align={locale === "ar" ? "start" : "end"}
                 side="bottom"
                 sideOffset={6}
                 className="w-36 min-w-[9rem]"

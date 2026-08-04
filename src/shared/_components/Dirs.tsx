@@ -59,7 +59,7 @@ export function Dir({
 
     return (
         <Breadcrumb className="w-full rounded-lg bg-primary/5 p-4 px-6 md:px-10">
-            <BreadcrumbList className="text-start">
+            <BreadcrumbList className="flex items-center text-start">
                 <BreadcrumbItem>
                     <BreadcrumbLink asChild>
                         <Link href="/">{t.has("home") ? t("home") : "Home"}</Link>

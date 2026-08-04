@@ -49,7 +49,10 @@
         "coupons": "الكوبونات",
         "orders": "الطلبات",
         "pricing": "التسعير",
-        "settings": "الإعدادات"
+        "settings": "الإعدادات",
+        "navigation": "التنقل في النظام",
+        "open_navigation": "فتح قائمة التنقل في النظام",
+        "close_navigation": "إغلاق قائمة التنقل في النظام"
     },
     "header": {
         "nav": {

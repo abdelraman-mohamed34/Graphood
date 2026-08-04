@@ -49,7 +49,10 @@
         "coupons": "Coupons",
         "orders": "Orders",
         "pricing": "Pricing",
-        "settings": "Settings"
+        "settings": "Settings",
+        "navigation": "System navigation",
+        "open_navigation": "Open system navigation",
+        "close_navigation": "Close system navigation"
     },
     "header": {
         "nav": {
