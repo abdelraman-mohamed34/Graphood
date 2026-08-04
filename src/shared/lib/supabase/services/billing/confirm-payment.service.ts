@@ -3,13 +3,7 @@ import { createAdminClient } from "../../admin";
 import { provisionOrder } from "../order/provision-order.service";
 import { applyCoupon } from "../coupons/apply-coupon.service";
 
-function isMissingFinalizePaymentRpc(error: { code?: string; message?: string } | null) {
-    return error?.code === "PGRST202"
-        || error?.message?.includes("finalize_order_payment")
-        || error?.message?.includes("schema cache");
-}
-
-async function finalizePaymentWithoutRpc(
+async function finalizePayment(
     orderId: string,
     transactionRef: string
 ) {
@@ -21,58 +15,68 @@ async function finalizePaymentWithoutRpc(
         .single();
 
     if (orderError || !order) throw orderError ?? new Error("Order not found.");
-    if (order.status === "PAID") return order;
-    if (order.status !== "PENDING") throw new Error("Order is not pending.");
-
-    if (order.coupon_id) {
-        await applyCoupon({
-            supabase,
-            couponId: order.coupon_id,
-            orderId: order.id,
-            profileId: order.profile_id,
-            systemId: order.system_id,
-        });
+    if (order.status !== "PENDING" && order.status !== "PAID") {
+        throw new Error("Order is not pending.");
     }
 
     const now = new Date().toISOString();
-    const { data: payment, error: paymentError } = await supabase
-        .from("payments")
-        .update({
-            status: "SUCCESS",
-            transaction_ref: transactionRef,
-            paid_at: now,
-            updated_at: now,
-        })
-        .eq("order_id", order.id)
-        .select("id")
-        .maybeSingle();
+    let paidOrder = order;
 
-    if (paymentError || !payment) {
-        throw paymentError ?? new Error("Payment not found.");
-    }
+    if (order.status === "PENDING") {
+        const { data: payment, error: paymentError } = await supabase
+            .from("payments")
+            .update({
+                status: "SUCCESS",
+                transaction_ref: transactionRef,
+                paid_at: now,
+                updated_at: now,
+            })
+            .eq("order_id", order.id)
+            .select("id")
+            .maybeSingle();
 
-    const { data: updatedOrder, error: updateError } = await supabase
-        .from("orders")
-        .update({ status: "PAID", updated_at: now })
-        .eq("id", order.id)
-        .eq("status", "PENDING")
-        .select()
-        .maybeSingle();
+        if (paymentError || !payment) {
+            throw paymentError ?? new Error("Payment not found.");
+        }
 
-    if (updateError) throw updateError;
-
-    if (!updatedOrder) {
-        const { data: paidOrder, error: paidOrderError } = await supabase
+        const { data: updatedOrder, error: updateError } = await supabase
             .from("orders")
-            .select("*")
+            .update({ status: "PAID", updated_at: now })
             .eq("id", order.id)
-            .eq("status", "PAID")
-            .single();
-        if (paidOrderError || !paidOrder) throw paidOrderError ?? new Error("Payment finalization failed.");
-        return paidOrder;
+            .eq("status", "PENDING")
+            .select()
+            .maybeSingle();
+
+        if (updateError) throw updateError;
+
+        if (updatedOrder) {
+            paidOrder = updatedOrder;
+        } else {
+            const { data: concurrentOrder, error: concurrentOrderError } = await supabase
+                .from("orders")
+                .select("*")
+                .eq("id", order.id)
+                .eq("status", "PAID")
+                .single();
+
+            if (concurrentOrderError || !concurrentOrder) {
+                throw concurrentOrderError ?? new Error("Payment finalization failed.");
+            }
+            paidOrder = concurrentOrder;
+        }
     }
 
-    return updatedOrder;
+    if (paidOrder.coupon_id) {
+        await applyCoupon({
+            supabase,
+            couponId: paidOrder.coupon_id,
+            orderId: paidOrder.id,
+            profileId: paidOrder.profile_id,
+            systemId: paidOrder.system_id,
+        });
+    }
+
+    return paidOrder;
 }
 
 export async function confirmOrderPayment(
@@ -83,22 +87,7 @@ export async function confirmOrderPayment(
         throw new Error("Invalid transaction reference.");
     }
 
-    const supabase = createAdminClient();
-
-    const { data, error } = await supabase.rpc("finalize_order_payment", {
-        p_order_id: orderId,
-        p_transaction_ref: transactionRef.trim(),
-    });
-    let updatedOrder = Array.isArray(data) ? data[0] : data;
-
-    // Compatibility path for environments where the checked-in RPC migration
-    // has not been deployed yet. The database function remains preferred
-    // because it completes payment and coupon redemption atomically.
-    if (error && isMissingFinalizePaymentRpc(error)) {
-        updatedOrder = await finalizePaymentWithoutRpc(orderId, transactionRef.trim());
-    } else if (error || !updatedOrder) {
-        throw new Error(error?.message ?? "Failed to finalize payment.");
-    }
+    const updatedOrder = await finalizePayment(orderId, transactionRef.trim());
 
     // --------------------------------------------------
     // 7. Provision

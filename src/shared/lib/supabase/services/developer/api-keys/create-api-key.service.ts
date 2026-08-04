@@ -21,6 +21,7 @@ export async function createApiKey(
 
     const payload = {
         ...data,
+        expires_at: data.expires_at?.toISOString() ?? null,
         key_hash,
         encrypted_key,
     };

@@ -43,9 +43,13 @@ export async function resolveDeveloperContextAction(
         );
     }
 
-    const subscription = await getSubscriptionById(
-        tenant.subscription_id
-    );
+    if (!tenant.subscription_id) {
+        throw new Error(
+            DeveloperApiErrorCodes.SUBSCRIPTION_INACTIVE
+        );
+    }
+
+    const subscription = await getSubscriptionById(tenant.subscription_id);
 
     if (!subscription) {
         throw new Error(
@@ -61,7 +65,7 @@ export async function resolveDeveloperContextAction(
 
         subscription: {
             plan: subscriptionCapabilities.planName,
-            status: subscription.status,
+            status: subscription.status ?? "EXPIRED",
             licenseType: subscriptionCapabilities.licenseType,
             billingInterval: subscription.billing_interval,
         },

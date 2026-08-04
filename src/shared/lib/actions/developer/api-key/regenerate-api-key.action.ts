@@ -43,7 +43,9 @@ export async function regenerateApiKeyAction(
             system_id: currentApiKey.system_id,
             name: currentApiKey.name,
             is_active: currentApiKey.is_active,
-            expires_at: currentApiKey.expires_at,
+            expires_at: currentApiKey.expires_at
+                ? new Date(currentApiKey.expires_at)
+                : null,
         });
 
     await deleteApiKey(

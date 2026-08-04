@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Tables } from "@/shared/types/database.types";
 
 export const DeveloperApiKeySchema = z.object({
     id: z.string().uuid(),
@@ -32,6 +33,6 @@ export const DeveloperApiKeyInsertSchema = DeveloperApiKeySchema.omit({
 export const DeveloperApiKeyUpdateSchema =
     DeveloperApiKeyInsertSchema.partial();
 
-export type DeveloperApiKey = z.infer<typeof DeveloperApiKeySchema>;
+export type DeveloperApiKey = Tables<"developer_api_keys">;
 export type DeveloperApiKeyInsert = z.infer<typeof DeveloperApiKeyInsertSchema>;
 export type DeveloperApiKeyUpdate = z.infer<typeof DeveloperApiKeyUpdateSchema>;

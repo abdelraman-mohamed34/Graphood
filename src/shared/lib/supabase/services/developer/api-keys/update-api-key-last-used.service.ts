@@ -9,7 +9,7 @@ export async function updateApiKeyLastUsed(
     const { error } = await supabase
         .from("developer_api_keys")
         .update({
-            last_used_at: new Date(),
+            last_used_at: new Date().toISOString(),
         })
         .eq("id", id);
 

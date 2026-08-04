@@ -25,7 +25,7 @@ export async function updateSystem(
         is_public: data.is_public,
         status: data.status,
 
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
     };
 
     const supabase =

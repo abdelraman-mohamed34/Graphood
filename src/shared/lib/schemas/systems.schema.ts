@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { status } from "./public/shared";
+import type { Tables } from "@/shared/types/database.types";
 
 // systems.schema.ts
 export const systemSchema = z.object({
@@ -48,7 +49,7 @@ export const systemSchema = z.object({
     updated_at: z.coerce.date().optional(),
 });
 
-export type System = z.infer<typeof systemSchema>;
+export type System = Tables<"systems">;
 
 export const systemInsertSchema = systemSchema.omit({
     id: true,

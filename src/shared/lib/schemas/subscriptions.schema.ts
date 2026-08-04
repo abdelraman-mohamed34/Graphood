@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { default_pay } from "./public/shared";
 import { licenseTypes } from "@/shared/config/licensing";
+import type { Tables } from "@/shared/types/database.types";
 
 export const billingIntervals = [
     "MONTHLY",
@@ -53,4 +54,4 @@ export const subscriptionSchema = z.object({
     updated_at: z.coerce.date().optional(),
 });
 
-export type Subscription = z.infer<typeof subscriptionSchema>;
+export type Subscription = Tables<"subscriptions">;

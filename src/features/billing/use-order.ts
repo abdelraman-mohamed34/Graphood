@@ -26,7 +26,7 @@ export function useOrder(orderId: string) {
         staleTime: 1000 * 60 * 5,
         refetchInterval: (query) => {
             const order = query.state.data;
-            const isPaid = order?.status === "PAID" || order?.status === "COMPLETED";
+            const isPaid = order?.status === "PAID";
             return isPaid && !order.tenant_slug ? 1500 : false;
         },
     });

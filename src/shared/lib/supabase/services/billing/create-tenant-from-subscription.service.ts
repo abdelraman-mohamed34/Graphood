@@ -17,6 +17,10 @@ export async function createTenantFromSubscription({
         throw new Error("Subscription not found.");
     }
 
+    if (!subscription.profile_id) {
+        throw new Error("Subscription is not linked to a profile.");
+    }
+
     const {
         data: existingTenant,
         error: existingTenantError,
@@ -40,7 +44,7 @@ export async function createTenantFromSubscription({
         .eq("id", subscription.profile_id)
         .single();
 
-    if (profileError || !profile) {
+    if (profileError || !profile?.email) {
         throw new Error("Profile not found.");
     }
 

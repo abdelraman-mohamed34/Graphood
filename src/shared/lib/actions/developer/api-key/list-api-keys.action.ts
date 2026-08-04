@@ -13,7 +13,12 @@ export async function listApiKeysAction(
     await getSystemAction(systemId, supabase);
     const apiKeys = await getApiKeyBySystemId(systemId);
 
-    return apiKeys.map((apiKey) => ({
+    return apiKeys.map((apiKey) => {
+        if (!apiKey.encrypted_key) {
+            throw new Error("API key is missing encrypted key material.");
+        }
+
+        return {
         id: apiKey.id,
         name: apiKey.name,
         apiKey: decryptApiKey(apiKey.encrypted_key),
@@ -30,5 +35,6 @@ export async function listApiKeysAction(
         updatedAt: new Date(
             apiKey.updated_at
         ).toISOString(),
-    }));
+        };
+    });
 }

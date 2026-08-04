@@ -37,7 +37,7 @@ export async function getOrderById({
         throw error;
     }
 
-    if (!data?.subscription_id || (data.status !== "PAID" && data.status !== "COMPLETED")) {
+    if (!data?.subscription_id || data.status !== "PAID") {
         return data ? { ...data, tenant_slug: null } : null;
     }
 

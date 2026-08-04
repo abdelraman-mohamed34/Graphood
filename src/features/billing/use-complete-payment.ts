@@ -33,10 +33,8 @@ export function useCompletePayment() {
             toast.success(t("paymentSuccess"));
         },
 
-        onError: (error) => {
-            const message = error instanceof Error ? error.message : "";
-            const isMissingPaymentFunction = message.includes("finalize_order_payment") || message.includes("schema cache");
-            toast.error(isMissingPaymentFunction ? t("paymentSetupError") : t("paymentFailed"));
+        onError: () => {
+            toast.error(t("paymentFailed"));
         },
     });
 

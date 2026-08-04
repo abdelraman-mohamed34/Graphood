@@ -12,8 +12,10 @@ export async function updateApiKey(
     const payload = {
         name: data.name,
         is_active: data.is_active,
-        expires_at: data.expires_at,
-        updated_at: new Date(),
+        expires_at: data.expires_at instanceof Date
+            ? data.expires_at.toISOString()
+            : data.expires_at,
+        updated_at: new Date().toISOString(),
     };
 
     const supabase = await createSupabaseServerClient();

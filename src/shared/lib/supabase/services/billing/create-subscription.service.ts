@@ -62,7 +62,7 @@ export async function createSubscription({
         return existingSubscription;
     }
 
-    const now = new Date();
+    const now = new Date().toISOString();
 
     const { data: subscription, error } = await supabase
         .from("subscriptions")
@@ -74,7 +74,7 @@ export async function createSubscription({
             // Snapshot from Order
             plan_name:
                 order.license_type === "SUBSCRIPTION"
-                    ? order.plan
+                    ? order.plan ?? "STARTER"
                     : order.license_type,
 
             license_type: order.license_type,

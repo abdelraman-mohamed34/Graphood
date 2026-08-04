@@ -18,6 +18,10 @@ export async function createMembershipFromTenant({
         throw new Error("Tenant not found.");
     }
 
+    if (!tenant.subscription_id) {
+        throw new Error("Tenant is not linked to a subscription.");
+    }
+
     // 2. Get subscription
     const { data: subscription, error: subscriptionError } =
         await supabase
@@ -26,7 +30,7 @@ export async function createMembershipFromTenant({
             .eq("id", tenant.subscription_id)
             .single();
 
-    if (subscriptionError || !subscription) {
+    if (subscriptionError || !subscription?.profile_id) {
         throw new Error("Subscription not found.");
     }
 

@@ -20,7 +20,7 @@ export default function Page({ params }: PageProps) {
     const { order_id } = use(params);
     const { order, isLoading, error } = useOrder(order_id);
     const { completePayment, isProcessing } = useCompletePayment();
-    const isPaid = order?.status === "PAID" || order?.status === "COMPLETED";
+    const isPaid = order?.status === "PAID";
     const tenantSlug = order?.tenant_slug;
 
     useEffect(() => {
