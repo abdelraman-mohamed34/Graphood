@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 import type { Coupon } from "@/shared/lib/schemas/coupon/coupon.schema";
+import { useTranslations } from "next-intl";
 
 interface CouponCardProps {
     coupon: Coupon;
@@ -24,6 +25,7 @@ export default function CouponCard({
     onDelete,
     isDeleting = false,
 }: CouponCardProps) {
+    const t = useTranslations("developerCoupons.card");
     return (
         <div className="rounded-2xl border bg-card p-5 transition-shadow hover:shadow-md">
             <div className="flex items-start justify-between">
@@ -38,8 +40,8 @@ export default function CouponCard({
 
                     <p className="mt-1 text-sm text-muted-foreground">
                         {coupon.discount_type === "PERCENT"
-                            ? `${coupon.discount_value}% OFF`
-                            : `${coupon.discount_value} Fixed Discount`}
+                            ? t("percentOff", { value: coupon.discount_value })
+                            : t("fixedOff", { value: coupon.discount_value })}
                     </p>
                 </div>
 
@@ -51,36 +53,36 @@ export default function CouponCard({
                     }
                 >
                     {coupon.is_active
-                        ? "Active"
-                        : "Inactive"}
+                        ? t("active")
+                        : t("inactive")}
                 </Badge>
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
                 <div>
                     <p className="text-muted-foreground">
-                        License
+                        {t("license")}
                     </p>
 
                     <p className="font-medium">
                         {coupon.license_type ??
-                            "All"}
+                            t("all")}
                     </p>
                 </div>
 
                 <div>
                     <p className="text-muted-foreground">
-                        Plan
+                        {t("plan")}
                     </p>
 
                     <p className="font-medium">
-                        {coupon.plan ?? "All"}
+                        {coupon.plan ?? t("all")}
                     </p>
                 </div>
 
                 <div>
                     <p className="text-muted-foreground">
-                        Uses
+                        {t("uses")}
                     </p>
 
                     <div className="flex items-center gap-1">
@@ -96,7 +98,7 @@ export default function CouponCard({
 
                 <div>
                     <p className="text-muted-foreground">
-                        Expires
+                        {t("expires")}
                     </p>
 
                     <div className="flex items-center gap-1">
@@ -108,7 +110,7 @@ export default function CouponCard({
                                     coupon.expires_at,
                                     "dd MMM yyyy"
                                 )
-                                : "Never"}
+                                : t("never")}
                         </span>
                     </div>
                 </div>
@@ -125,7 +127,7 @@ export default function CouponCard({
                 >
                     <Trash2 className="mr-2 h-4 w-4" />
 
-                    Delete
+                    {t("delete")}
                 </Button>
             </div>
         </div>

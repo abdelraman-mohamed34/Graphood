@@ -2,6 +2,9 @@
 
 import { z } from "zod";
 import { confirmOrderPayment } from "../../supabase/services/billing";
+import { createSupabaseServerClient } from "../../supabase/server";
+import { fetchUser } from "../../supabase/services/auth/user/fetch-user.service";
+import { getOrderById } from "../../supabase/services/billing";
 
 const processPaymentWebhookSchema = z.object({
     orderId: z.string().uuid(),
@@ -39,6 +42,15 @@ export async function processPaymentWebhookAction(
     const { orderId, transactionRef } = parsed.data;
 
     try {
+        const supabase = await createSupabaseServerClient();
+        const user = await fetchUser(supabase);
+        if (!user) return { success: false, error: "Unauthorized." };
+
+        const order = await getOrderById({ orderId });
+        if (!order || order.profile_id !== user.id) {
+            return { success: false, error: "Unauthorized." };
+        }
+
         const result = await confirmOrderPayment(
             orderId,
             transactionRef

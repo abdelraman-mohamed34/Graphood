@@ -9,17 +9,13 @@ const handleI18nRouting = createMiddleware(routing);
 export async function proxy(req: NextRequest) {
     const pathname = req.nextUrl.pathname;
 
-    const locale = pathname.split("/")[1] || routing.defaultLocale;
-
-    const cleanPath = pathname.replace(`/${locale}`, "");
-
-    if (cleanPath === "" || cleanPath === "/") {
-        return NextResponse.redirect(
-            new URL(`/${locale}/home`, req.url)
-        );
-    }
-
     let response = handleI18nRouting(req);
+
+    const locales = routing.locales;
+    const pathLocale = pathname.split("/")[1];
+    const isLocaleInPath = locales.includes(pathLocale as any);
+
+    const cleanPath = pathname.replace(new RegExp(`^/(${locales.join("|")})`), "") || "/";
 
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -55,6 +51,35 @@ export async function proxy(req: NextRequest) {
     const {
         data: { user },
     } = await supabase.auth.getUser();
+
+    let effectiveLocale = isLocaleInPath ? pathLocale : routing.defaultLocale;
+
+    if (user) {
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("preferred_language")
+            .eq("id", user.id)
+            .single();
+
+        if (profile?.preferred_language && locales.includes(profile.preferred_language as any)) {
+            effectiveLocale = profile.preferred_language;
+
+            if (!isLocaleInPath || pathLocale !== effectiveLocale) {
+                const redirectPath = cleanPath === "/" ? "/home" : cleanPath;
+                return NextResponse.redirect(
+                    new URL(`/${effectiveLocale}${redirectPath.startsWith("/") ? redirectPath : `/${redirectPath}`}`, req.url)
+                );
+            }
+        }
+    }
+
+    const locale = effectiveLocale;
+
+    if (cleanPath === "/") {
+        return NextResponse.redirect(
+            new URL(`/${locale}/home`, req.url)
+        );
+    }
 
     const isAuth =
         cleanPath.startsWith("/login") ||

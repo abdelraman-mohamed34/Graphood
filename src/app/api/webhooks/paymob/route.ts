@@ -1,14 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { processPaymentWebhookAction } from "@/shared/lib/actions/billing/process-payment-webhook.action";
+import { confirmOrderPayment } from "@/shared/lib/supabase/services/billing";
 
 export async function POST(req: NextRequest) {
     try {
-        const body = await req.json();
+        const secret = process.env.PAYMOB_WEBHOOK_SECRET;
+        if (!secret || req.headers.get("x-webhook-secret") !== secret) {
+            return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
+        }
 
-        const result = await processPaymentWebhookAction({
-            orderId: body.orderId,
-            transactionRef: body.transactionRef,
-        });
+        const body = await req.json();
+        if (typeof body.orderId !== "string" || typeof body.transactionRef !== "string") {
+            return NextResponse.json({ success: false, error: "Invalid payload." }, { status: 400 });
+        }
+
+        const data = await confirmOrderPayment(body.orderId, body.transactionRef);
+        const result = { success: true, data };
 
         return NextResponse.json(result);
 

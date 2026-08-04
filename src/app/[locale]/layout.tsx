@@ -19,12 +19,14 @@ const robotoSans = Roboto({
     variable: "--font-roboto-sans",
     subsets: ["latin"],
     weight: ["400", "500", "700"],
+    display: "swap",
 });
 
 const robotoMono = Roboto_Mono({
     variable: "--font-roboto-mono",
     subsets: ["latin"],
     weight: ["400", "500", "700"],
+    display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -49,8 +51,14 @@ export default async function LocaleLayout({
         notFound();
     }
 
-    const messages = await getMessages();
-    const supabase = await createSupabaseServerClient()
+    const supabasePromise = createSupabaseServerClient();
+    const messagesPromise = getMessages();
+
+    const [supabase, messages] = await Promise.all([
+        supabasePromise,
+        messagesPromise,
+    ]);
+
     const user = await fetchUser(supabase);
 
     let profile = null;
@@ -63,7 +71,7 @@ export default async function LocaleLayout({
                 getMembershipsByProfileId(supabase, user.id),
             ]);
         } catch {
-            console.log('failed')
+            console.error("Failed to load user profile or memberships");
         }
     }
 

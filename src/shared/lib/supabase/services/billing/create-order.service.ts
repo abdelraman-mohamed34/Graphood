@@ -3,6 +3,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { LicenseType } from "@/shared/config/licensing";
 import { PlanType } from "@/shared/config/plans";
 import { PaymentProvider } from "@/shared/lib/providers/billings/payment-provider";
+import { roundMoney } from "@/shared/lib/billing/money";
 
 interface CreateInitialOrderParams {
     supabase: SupabaseClient;
@@ -45,12 +46,24 @@ export async function createPendingOrder({
 
     description,
 }: CreateInitialOrderParams) {
-    if (amount <= 0) {
+    const normalizedOriginalAmount = roundMoney(originalAmount);
+    const normalizedDiscountAmount = roundMoney(discountAmount);
+    const normalizedAmount = roundMoney(amount);
+
+    if (normalizedAmount < 0 || normalizedOriginalAmount <= 0) {
         throw new Error("Invalid amount.");
     }
 
     if (originalAmount < amount) {
         // طبيعي لو فيه خصم
+    }
+
+    if (
+        normalizedDiscountAmount < 0 ||
+        normalizedDiscountAmount > normalizedOriginalAmount ||
+        normalizedAmount !== roundMoney(normalizedOriginalAmount - normalizedDiscountAmount)
+    ) {
+        throw new Error("Invalid order totals.");
     }
 
     const { data: order, error: orderError } = await supabase
@@ -62,11 +75,11 @@ export async function createPendingOrder({
             plan,
             license_type: licenseType,
 
-            original_amount: originalAmount,
-            discount_amount: discountAmount,
+            original_amount: normalizedOriginalAmount,
+            discount_amount: normalizedDiscountAmount,
             coupon_id: couponId ?? null,
 
-            amount,
+            amount: normalizedAmount,
             currency,
 
             status: "PENDING",
@@ -87,7 +100,7 @@ export async function createPendingOrder({
 
             provider,
 
-            amount,
+            amount: normalizedAmount,
             currency,
 
             status: "PENDING",

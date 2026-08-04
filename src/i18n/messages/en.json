@@ -172,6 +172,28 @@
         "toastRegenerateSuccess": "API key regenerated successfully.",
         "toastRegenerateError": "Failed to regenerate the API key."
     },
+    "checkout": {
+        "title": "Checkout",
+        "loading": "Loading...",
+        "notFound": "Order not found.",
+        "alreadyPaid": "This order has already been paid.",
+        "checkoutSummary": "Checkout Summary",
+        "orderSummary": "Order Summary",
+        "system": "System",
+        "plan": "Plan",
+        "license": "License",
+        "status": "Status",
+        "currency": "Currency",
+        "amount": "Amount",
+        "subtotal": "Subtotal",
+        "discount": "Discount",
+        "tax": "Tax",
+        "total": "Total",
+        "paymentMethod": "Payment Method",
+        "mockPayment": "Developer Mock Payment",
+        "processing": "Processing Payment...",
+        "completePayment": "Complete Payment"
+    },
     "developerCoupons": {
         "header": {
             "title": "Coupons",
@@ -203,6 +225,16 @@
             "oneUsePerSystemDescription": "Allow this coupon only once for each tenant.",
             "active": "Active",
             "activeDescription": "Coupon can be redeemed immediately."
+        },
+        "feedback": {
+            "created": "Coupon created.", "createFailed": "Failed to create coupon.",
+            "deleted": "Coupon deleted.", "deleteFailed": "Failed to delete coupon."
+        },
+        "card": {
+            "percentOff": "{value}% off", "fixedOff": "{value} fixed discount",
+            "active": "Active", "inactive": "Inactive", "license": "License",
+            "plan": "Plan", "all": "All", "uses": "Uses", "expires": "Expires",
+            "never": "Never", "delete": "Delete"
         }
     },
     "footer": {

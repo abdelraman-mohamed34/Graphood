@@ -3,6 +3,7 @@
 import { use } from "react";
 import { useOrder } from "@/features/billing/use-order";
 import { useCompletePayment } from "@/features/billing/use-complete-payment";
+import { useTranslations } from "next-intl";
 
 interface PageProps {
     params: Promise<{
@@ -11,6 +12,7 @@ interface PageProps {
 }
 
 export default function Page({ params }: PageProps) {
+    const t = useTranslations("checkout");
     const { order_id } = use(params);
     const { order, isLoading, error } = useOrder(order_id);
     const { completePayment, isProcessing } = useCompletePayment();
@@ -18,7 +20,7 @@ export default function Page({ params }: PageProps) {
     if (isLoading) {
         return (
             <div className="p-6">
-                Loading...
+                {t("loading")}
             </div>
         );
     }
@@ -27,7 +29,7 @@ export default function Page({ params }: PageProps) {
         return (
             <div className="p-6">
                 <h1 className="text-xl font-semibold">
-                    Order not found.
+                    {t("notFound")}
                 </h1>
             </div>
         );
@@ -41,11 +43,11 @@ export default function Page({ params }: PageProps) {
         return (
             <div className="p-6 space-y-6">
                 <h1 className="text-2xl font-bold">
-                    Checkout
+                    {t("title")}
                 </h1>
                 <div className="rounded-lg border p-4">
                     <h2 className="text-lg font-semibold">
-                        This order has already been paid.
+                        {t("alreadyPaid")}
                     </h2>
                 </div>
             </div>
@@ -53,8 +55,8 @@ export default function Page({ params }: PageProps) {
     }
 
     const pricing = {
-        subtotal: order.amount,
-        discount: 0,
+        subtotal: order.original_amount,
+        discount: order.discount_amount,
         tax: 0,
         total: order.amount,
     };
@@ -66,36 +68,36 @@ export default function Page({ params }: PageProps) {
     return (
         <div className="mx-auto max-w-4xl space-y-6 p-6">
             <h1 className="text-3xl font-bold">
-                Checkout
+                {t("title")}
             </h1>
 
             <section className="rounded-lg border p-6">
                 <h2 className="mb-4 text-xl font-semibold">
-                    Checkout Summary
+                    {t("checkoutSummary")}
                 </h2>
                 <div className="space-y-2">
                     <p>
-                        <strong>System:</strong>{" "}
+                        <strong>{t("system")}:</strong>{" "}
                         {system?.name}
                     </p>
                     <p>
-                        <strong>Plan:</strong>{" "}
+                        <strong>{t("plan")}:</strong>{" "}
                         {order.plan}
                     </p>
                     <p>
-                        <strong>License:</strong>{" "}
+                        <strong>{t("license")}:</strong>{" "}
                         {order.license_type}
                     </p>
                     <p>
-                        <strong>Status:</strong>{" "}
+                        <strong>{t("status")}:</strong>{" "}
                         {order.status}
                     </p>
                     <p>
-                        <strong>Currency:</strong>{" "}
+                        <strong>{t("currency")}:</strong>{" "}
                         {order.currency}
                     </p>
                     <p>
-                        <strong>Amount:</strong>{" "}
+                        <strong>{t("amount")}:</strong>{" "}
                         {order.amount}
                     </p>
                 </div>
@@ -103,30 +105,30 @@ export default function Page({ params }: PageProps) {
 
             <section className="rounded-lg border p-6">
                 <h2 className="mb-4 text-xl font-semibold">
-                    Order Summary
+                    {t("orderSummary")}
                 </h2>
                 <div className="space-y-2">
                     <div className="flex justify-between">
-                        <span>Subtotal</span>
+                        <span>{t("subtotal")}</span>
                         <span>
                             {pricing.subtotal} {order.currency}
                         </span>
                     </div>
                     <div className="flex justify-between">
-                        <span>Discount</span>
+                        <span>{t("discount")}</span>
                         <span>
                             {pricing.discount} {order.currency}
                         </span>
                     </div>
                     <div className="flex justify-between">
-                        <span>Tax</span>
+                        <span>{t("tax")}</span>
                         <span>
                             {pricing.tax} {order.currency}
                         </span>
                     </div>
                     <hr />
                     <div className="flex justify-between font-semibold">
-                        <span>Total</span>
+                        <span>{t("total")}</span>
                         <span>
                             {pricing.total} {order.currency}
                         </span>
@@ -136,7 +138,7 @@ export default function Page({ params }: PageProps) {
 
             <section className="rounded-lg border p-6">
                 <h2 className="mb-4 text-xl font-semibold">
-                    Payment Method
+                    {t("paymentMethod")}
                 </h2>
                 <label className="flex items-center gap-2">
                     <input
@@ -145,7 +147,7 @@ export default function Page({ params }: PageProps) {
                         readOnly
                     />
                     <span>
-                        Developer Mock Payment
+                        {t("mockPayment")}
                     </span>
                 </label>
             </section>
@@ -157,8 +159,8 @@ export default function Page({ params }: PageProps) {
                 className="w-full rounded-lg bg-black px-4 py-3 text-white disabled:opacity-50"
             >
                 {isProcessing
-                    ? "Processing Payment..."
-                    : "Complete Payment"}
+                    ? t("processing")
+                    : t("completePayment")}
             </button>
         </div>
     );

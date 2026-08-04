@@ -221,10 +221,6 @@ export async function createCoupon({
         is_active: isActive,
     };
 
-    // Log the payload to aid debugging of DB constraint violations
-    // (will appear in server logs / terminal running Next.js)
-    console.error("Supabase Create Coupon Insert Payload:", insert);
-
     const { data: coupon, error } =
         await supabase
             .from("coupons")

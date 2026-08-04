@@ -172,6 +172,28 @@
         "toastRegenerateSuccess": "تمت إعادة إنشاء مفتاح API بنجاح.",
         "toastRegenerateError": "فشل في إعادة إنشاء مفتاح API."
     },
+    "checkout": {
+        "title": "الدفع",
+        "loading": "جارٍ التحميل...",
+        "notFound": "لم يتم العثور على الطلب.",
+        "alreadyPaid": "تم دفع هذا الطلب بالفعل.",
+        "checkoutSummary": "ملخص الدفع",
+        "orderSummary": "ملخص الطلب",
+        "system": "النظام",
+        "plan": "الخطة",
+        "license": "الترخيص",
+        "status": "الحالة",
+        "currency": "العملة",
+        "amount": "المبلغ",
+        "subtotal": "المجموع الفرعي",
+        "discount": "الخصم",
+        "tax": "الضريبة",
+        "total": "الإجمالي",
+        "paymentMethod": "طريقة الدفع",
+        "mockPayment": "دفع تجريبي للمطور",
+        "processing": "جارٍ معالجة الدفع...",
+        "completePayment": "إتمام الدفع"
+    },
     "developerCoupons": {
         "header": {
             "title": "الكوبونات",
@@ -203,6 +225,16 @@
             "oneUsePerSystemDescription": "اسمح بهذا الكوبون مرة واحدة فقط لكل مستأجر.",
             "active": "نشط",
             "activeDescription": "يمكن استرداد الكوبون مباشرة."
+        },
+        "feedback": {
+            "created": "تم إنشاء الكوبون.", "createFailed": "تعذر إنشاء الكوبون.",
+            "deleted": "تم حذف الكوبون.", "deleteFailed": "تعذر حذف الكوبون."
+        },
+        "card": {
+            "percentOff": "خصم {value}%", "fixedOff": "خصم ثابت {value}",
+            "active": "نشط", "inactive": "غير نشط", "license": "الترخيص",
+            "plan": "الخطة", "all": "الكل", "uses": "الاستخدامات", "expires": "ينتهي",
+            "never": "لا ينتهي", "delete": "حذف"
         }
     },
     "footer": {

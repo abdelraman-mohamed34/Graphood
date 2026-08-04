@@ -3,6 +3,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { LicenseType } from "@/shared/config/licensing";
 import { PlanType } from "@/shared/config/plans";
 import { getCouponByCode } from "./get-coupon-by-code.service";
+import { calculateDiscount } from "@/shared/lib/billing/money";
 
 interface ValidateCouponParams {
     supabase: SupabaseClient;
@@ -199,42 +200,16 @@ export async function validateCoupon({
     // Calculate Discount
     //----------------------------------
 
-    let discountAmount = 0;
-
-    if (coupon.discount_type === "PERCENT") {
-        discountAmount =
-            (amount * coupon.discount_value) / 100;
-
-        if (
-            coupon.max_discount !== null &&
-            discountAmount > coupon.max_discount
-        ) {
-            discountAmount = coupon.max_discount;
-        }
-    } else {
-        discountAmount = coupon.discount_value;
-    }
-
-    //----------------------------------
-    // Never exceed order amount
-    //----------------------------------
-
-    if (discountAmount > amount) {
-        discountAmount = amount;
-    }
-
-    const finalAmount = Math.max(
-        0,
-        amount - discountAmount
-    );
+    const calculation = calculateDiscount({
+        amount,
+        discountType: coupon.discount_type,
+        discountValue: Number(coupon.discount_value),
+        maxDiscount: coupon.max_discount == null ? null : Number(coupon.max_discount),
+    });
 
     return {
         coupon,
 
-        originalAmount: amount,
-
-        discountAmount,
-
-        finalAmount,
+        ...calculation,
     };
 }

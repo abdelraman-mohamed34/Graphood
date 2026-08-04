@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function LanguageMenu() {
-    const { locale, changeLocale } = useLocaleSwitcher();
+    const { locale, changeLocale, isChangingLocale } = useLocaleSwitcher();
 
     return (
         <DropdownMenu>
@@ -31,6 +31,7 @@ export default function LanguageMenu() {
             >
                 <DropdownMenuItem
                     onClick={() => changeLocale("en")}
+                    disabled={isChangingLocale}
                     className="flex items-center justify-between cursor-pointer"
                 >
                     <span>English</span>
@@ -39,6 +40,7 @@ export default function LanguageMenu() {
 
                 <DropdownMenuItem
                     onClick={() => changeLocale("ar")}
+                    disabled={isChangingLocale}
                     className="flex items-center justify-between cursor-pointer"
                 >
                     <span>العربية</span>

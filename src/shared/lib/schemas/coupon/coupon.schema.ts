@@ -10,6 +10,7 @@ export const couponSchema = z.object({
         .trim()
         .min(4, "Coupon code must be at least 4 characters")
         .max(50, "Coupon code cannot exceed 50 characters")
+        .regex(/^[A-Z0-9_-]+$/i, "Coupon code may only contain letters, numbers, hyphens, and underscores")
         .toUpperCase(),
 
     is_generated: z.boolean(),
@@ -101,6 +102,14 @@ const rawCreateCouponSchema = couponSchema.pick({
 });
 
 export const createCouponSchema = rawCreateCouponSchema
+    .refine(
+        (data) => data.discount_type === "PERCENT" || data.max_discount === null,
+        { message: "Maximum discount only applies to percentage coupons", path: ["max_discount"] }
+    )
+    .refine(
+        (data) => data.max_uses === null || data.max_uses_per_user <= data.max_uses,
+        { message: "Per-user limit cannot exceed the total usage limit", path: ["max_uses_per_user"] }
+    )
     .refine(
         (data) => {
             if (data.discount_type === "PERCENT") {

@@ -13,8 +13,10 @@ import {
     getCouponsAction,
 } from "../../actions/coupon";
 import type { CreateCouponInput } from "@/shared/lib/schemas/coupon/coupon.schema";
+import { useTranslations } from "next-intl";
 
 export function useCoupons(systemId: string) {
+    const t = useTranslations("developerCoupons.feedback");
     const queryClient = useQueryClient();
 
     const queryKey = ["coupons", systemId] as const;
@@ -63,7 +65,7 @@ export function useCoupons(systemId: string) {
         },
 
         onSuccess() {
-            toast.success("Coupon created.");
+            toast.success(t("created"));
             invalidate();
         },
 
@@ -71,7 +73,7 @@ export function useCoupons(systemId: string) {
             toast.error(
                 error instanceof Error
                     ? error.message
-                    : "Failed to create coupon."
+                    : t("createFailed")
             );
         },
     });
@@ -92,7 +94,7 @@ export function useCoupons(systemId: string) {
         },
 
         onSuccess() {
-            toast.success("Coupon deleted.");
+            toast.success(t("deleted"));
             invalidate();
         },
 
@@ -100,7 +102,7 @@ export function useCoupons(systemId: string) {
             toast.error(
                 error instanceof Error
                     ? error.message
-                    : "Failed to delete coupon."
+                    : t("deleteFailed")
             );
         },
     });
