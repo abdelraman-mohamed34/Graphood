@@ -1,5 +1,5 @@
 import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
-import { hasAnyPermission, hasPermission } from "@/shared/lib/auth/requires/require-permission";
+import { hasAnyPermission } from "@/shared/lib/auth/requires/require-permission";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
 import { redirect } from "next/navigation";
 

@@ -8,6 +8,7 @@ import {
     hasAnyPermission,
     hasAllPermissions,
 } from "../../auth/requires/require-permission";
+import type { Permission } from "../../schemas/public/permissions";
 
 /**
  * Hook wrapper for permission checks in React
@@ -21,13 +22,13 @@ export function usePermission(membership: Membership | null) {
     return {
         permissions,
 
-        can: (permission: string) =>
-            membership ? hasPermission(membership, permission as any) : false,
+        can: (permission: Permission) =>
+            membership ? hasPermission(membership, permission) : false,
 
-        canAny: (perms: string[]) =>
-            membership ? hasAnyPermission(membership, perms as any) : false,
+        canAny: (perms: Permission[]) =>
+            membership ? hasAnyPermission(membership, perms) : false,
 
-        canAll: (perms: string[]) =>
-            membership ? hasAllPermissions(membership, perms as any) : false,
+        canAll: (perms: Permission[]) =>
+            membership ? hasAllPermissions(membership, perms) : false,
     };
 }

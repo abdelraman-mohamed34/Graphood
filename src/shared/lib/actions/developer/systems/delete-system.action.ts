@@ -1,7 +1,6 @@
 'use server'
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
-import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
-import { deleteSystem, getSystemById } from "@/shared/lib/supabase/services/systems";
+import { deleteSystem } from "@/shared/lib/supabase/services/systems";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { getSystemAction } from "./get-system.action";
 

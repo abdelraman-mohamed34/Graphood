@@ -11,7 +11,6 @@ import { createInvitationAction } from '@/shared/lib/actions/invitations/create-
 import { toast } from 'sonner'
 
 import {
-    Card,
     CardContent,
     CardDescription,
     CardHeader,

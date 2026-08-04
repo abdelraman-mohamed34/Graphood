@@ -1,6 +1,5 @@
 import { System, SystemUpdate } from "@/shared/lib/schemas/systems.schema";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
-import { SupabaseClient } from "@supabase/supabase-js";
 
 export async function updateSystem(
     id: string,

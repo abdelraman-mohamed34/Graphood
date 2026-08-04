@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useParams } from "next/navigation";
 
 import { CrownIcon } from "lucide-react";
@@ -19,9 +18,6 @@ type Props = {
 export default function TransferOwnership({
     member,
 }: Props) {
-    const [loading, setLoading] =
-        useState(false);
-
     const params = useParams();
 
     const locale =
@@ -31,25 +27,19 @@ export default function TransferOwnership({
         params.tenant_slug as string;
 
     async function onTransfer() {
-        setLoading(true);
-
-        try {
-            const result =
+        const result =
                 await transferOwnershipAction(
                     locale,
                     tenantSlug,
                     member.id
                 );
 
-            if (!result.success) {
-                toast.error(result.message);
-                return;
-            }
-
-            toast.success(result.message);
-        } finally {
-            setLoading(false);
+        if (!result.success) {
+            toast.error(result.message);
+            return;
         }
+
+        toast.success(result.message);
     }
 
     return (

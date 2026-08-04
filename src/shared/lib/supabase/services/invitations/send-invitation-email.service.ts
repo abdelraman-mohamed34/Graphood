@@ -89,7 +89,7 @@ export async function sendInvitationEmail({
 }: Props) {
     const acceptUrl =
         `${process.env.NEXT_PUBLIC_APP_URL}` +
-        `/invitations/accept?token=${token}&tenant=${tenantSlug}`
+        `/${locale}/invitations/accept?token=${token}&tenant=${tenantSlug}`
 
     console.log('MAILPIT SENDING TO:', email)
 

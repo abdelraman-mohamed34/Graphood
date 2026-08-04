@@ -2,8 +2,6 @@
 
 import { Menu } from "lucide-react";
 import NavbarLogo from "./navbar-logo";
-import NavbarSearch from "./navbar-search-Input";
-import Notifications from "./navbar-notifications";
 import LanguageMenu from "./navbar-language-menu";
 import UserMenu from "./navbar-user-menu";
 

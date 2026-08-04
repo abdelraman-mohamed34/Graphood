@@ -12,8 +12,14 @@ import { useTenantUsage } from "@/shared/lib/hooks";
 
 import SubscriptionStatusBadge from "./subscription-status-badge";
 
+interface SubscriptionSummary {
+    status?: "ACTIVE" | "TRIAL" | "PAST_DUE" | "CANCELED" | "EXPIRED" | null;
+    renewalDate?: string | null;
+    billingInterval?: string | null;
+}
+
 type SubscriptionOverviewProps = {
-    subscription?: any;
+    subscription?: SubscriptionSummary | null;
 };
 
 export default function SubscriptionOverview({

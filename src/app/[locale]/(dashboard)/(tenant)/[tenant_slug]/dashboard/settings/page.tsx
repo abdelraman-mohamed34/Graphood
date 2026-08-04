@@ -1,9 +1,7 @@
 import DashboardContainer from "@/shared/_components/dashboard-container";
 import { SiteHeader } from "../_components/site-header";
-import { Button } from "@/components/ui/button";
 import { GeneralSettings } from "./_components/general-settings";
 import { SidebarInset } from "@/components/ui/sidebar";
-import { Suspense } from "react";
 import { Dir } from "@/shared/_components/dirs";
 
 export default function TenantSettingsPage() {

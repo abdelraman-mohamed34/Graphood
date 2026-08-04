@@ -133,8 +133,8 @@ export async function acceptInvitationAction(
                 tenantSlug,
             },
         };
-    } catch (error: any) {
-        if (error.message !== "AUTH_REQUIRED") {
+    } catch (error: unknown) {
+        if (!(error instanceof Error) || error.message !== "AUTH_REQUIRED") {
             console.error(
                 "[Server Action Error] acceptInvitationAction:",
                 error

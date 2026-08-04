@@ -57,11 +57,11 @@ export function useRegister() {
 
                 if (token && tenant) {
                     try {
-                        const result = await acceptInvitationAction(token, tenant);
+                        await acceptInvitationAction(token, tenant);
 
                         router.replace(`/${tenant}/dashboard`);
                         router.refresh();
-                    } catch (error) {
+                    } catch {
                         toast.error("Failed to auto-accept invitation. Redirecting...");
                         router.replace(`/invitations/accept?token=${token}&tenant=${tenant}`);
                     }
@@ -75,8 +75,8 @@ export function useRegister() {
             }
         },
 
-        onError: (error: any) => {
-            const message = error?.message || t("errors.generic_register_error")
+        onError: (error: Error) => {
+            const message = error.message || t("errors.generic_register_error")
             toast.error(message)
         },
     })

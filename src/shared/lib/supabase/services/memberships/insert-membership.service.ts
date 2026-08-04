@@ -5,7 +5,7 @@ type InsertMembershipData = {
     invited_by: string
 }
 
-export async function insertMembership(supabase: any, data: InsertMembershipData) {
+export async function insertMembership(supabase: SupabaseClient, data: InsertMembershipData) {
     const { profileId, tenantId, role, invited_by } = data
 
     const { error } = await supabase
@@ -22,3 +22,4 @@ export async function insertMembership(supabase: any, data: InsertMembershipData
 
     return { error }
 }
+import type { SupabaseClient } from "@supabase/supabase-js"

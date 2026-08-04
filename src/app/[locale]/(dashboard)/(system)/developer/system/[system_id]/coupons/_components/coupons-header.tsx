@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -11,15 +12,17 @@ interface CouponsHeaderProps {
 export default function CouponsHeader({
     onCreateClick,
 }: CouponsHeaderProps) {
+    const t = useTranslations("developerCoupons");
+
     return (
         <div className="flex flex-col gap-4 border-b pb-6 md:flex-row md:items-center md:justify-between">
             <div className="space-y-1">
                 <h1 className="text-3xl font-bold tracking-tight">
-                    Coupons
+                    {t("header.title")}
                 </h1>
 
                 <p className="text-sm text-muted-foreground">
-                    Create and manage discount coupons for your system.
+                    {t("header.description")}
                 </p>
             </div>
 
@@ -29,7 +32,7 @@ export default function CouponsHeader({
             >
                 <Plus className="h-4 w-4" />
 
-                Create Coupon
+                {t("header.createButton")}
             </Button>
         </div>
     );

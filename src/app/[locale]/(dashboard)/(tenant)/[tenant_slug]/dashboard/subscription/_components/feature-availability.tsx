@@ -9,9 +9,10 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { CheckCircle2, XCircle } from "lucide-react"
+import type { SubscriptionCapabilities } from "@/shared/lib/auth/requires/require-subscription"
 
 type FeatureAvailabilityProps = {
-    capabilities: any
+    capabilities: SubscriptionCapabilities | null
 }
 
 export default function FeatureAvailability({

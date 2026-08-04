@@ -3,6 +3,54 @@
         "name_error": "Name must be at least 3 characters",
         "phone_error": "Phone number is too short"
     },
+    "marketplace": {
+        "error": "Failed to load systems.",
+        "hero": {
+            "titleLineOne": "Discover powerful systems",
+            "titleLineTwo": "for your workspace",
+            "description": "Browse, install, and connect system modules to extend your workflow — from automation to developer tools."
+        },
+        "search": {
+            "placeholder": "Search for systems, features, or modules...",
+            "button": "Search"
+        },
+        "content": {
+            "eyebrow": "SYSTEMS FOR YOUR APP",
+            "title": "Let your tools connect, act, and automate"
+        },
+        "categories": {
+            "all": "All",
+            "popular": "Popular",
+            "developerTools": "Developer Tools",
+            "security": "Security",
+            "ecommerce": "Ecommerce",
+            "monitoring": "Monitoring"
+        },
+        "empty": {
+            "title": "No systems found",
+            "description": "Try searching for something else."
+        },
+        "card": {
+            "badge": "SYSTEM",
+            "description": "Enable seamless integration and tools with {name} workspace features.",
+            "viewDetails": "View Details"
+        }
+    },
+    "developerOverview": {
+        "systemNotFound": "System not found or could not be loaded.",
+        "statusLabel": "Status",
+        "statusActive": "Active",
+        "statusInactive": "Inactive",
+        "categoryLabel": "Category"
+    },
+    "systemSidebar": {
+        "overview": "Overview",
+        "api_keys": "API Keys",
+        "coupons": "Coupons",
+        "orders": "Orders",
+        "pricing": "Pricing",
+        "settings": "Settings"
+    },
     "header": {
         "nav": {
             "features": "Features",
@@ -13,6 +61,12 @@
         "auth": {
             "login": "Login",
             "getStarted": "Get Started"
+        },
+        "userMenu": {
+            "signedInAs": "Signed in as",
+            "workspaces": "Workspaces",
+            "settings": "Settings",
+            "logout": "Logout"
         }
     },
     "home": {
@@ -72,6 +126,82 @@
             }
         }
     },
+    "breadcrumbs": {
+        "home": "Home",
+        "details": "Details",
+        "developer": "Developer",
+        "system": "System",
+        "settings": "Settings",
+        "workspaces": "Workspaces",
+        "marketplace": "Marketplace",
+        "dashboard": "Dashboard",
+        "overview": "Overview",
+        "api-keys": "API Keys",
+        "coupons": "Coupons",
+        "orders": "Orders",
+        "pricing": "Pricing",
+        "subscription": "Subscription",
+        "quickview": "Quick View",
+        "profile": "Profile",
+        "notifications": "Notifications"
+    },
+    "developerSystems": {
+        "dashboardTitle": "Developer Systems",
+        "dashboardSubtitle": "Manage the systems you build and publish to your workspace.",
+        "newSystemBtn": "New System",
+        "emptyTitle": "No systems yet",
+        "emptyDescription": "Create your first system to start building integrations and sharing APIs.",
+        "createFirstSystem": "Create your first system",
+        "noDescription": "No description provided yet."
+    },
+    "developerApiKeys": {
+        "title": "API Keys",
+        "systemNotFound": "System not found.",
+        "warningTitle": "Keep this key secure",
+        "warningDescription": "This API key is shown only once. Copy it now and store it safely before leaving this page.",
+        "regenerateBtn": "Regenerate Key",
+        "regeneratingBtn": "Regenerating...",
+        "dialogTitle": "Regenerate API Key",
+        "dialogDescription": "This will create a new API key and invalidate the current one. Continue?",
+        "cancel": "Cancel",
+        "confirm": "Continue",
+        "noKeysFound": "No API keys found for this system yet.",
+        "toastRegenerateSuccess": "API key regenerated successfully.",
+        "toastRegenerateError": "Failed to regenerate the API key."
+    },
+    "developerCoupons": {
+        "header": {
+            "title": "Coupons",
+            "description": "Create and manage discount coupons for your system.",
+            "createButton": "Create Coupon"
+        },
+        "empty": {
+            "title": "No coupons yet",
+            "description": "Coupons help you create promotions and discounts for your customers. Create your first coupon to start increasing conversions.",
+            "createButton": "Create Coupon"
+        },
+        "dialog": {
+            "title": "Create Coupon",
+            "description": "Create a discount coupon for this system.",
+            "cancel": "Cancel",
+            "submit": "Create Coupon"
+        },
+        "form": {
+            "couponCode": "Coupon Code",
+            "discountType": "Discount Type",
+            "discountValue": "Discount Value",
+            "maxDiscount": "Max Discount",
+            "license": "License",
+            "plan": "Plan",
+            "minimumOrderAmount": "Minimum Order Amount",
+            "maxUses": "Max Uses",
+            "maxUsesPerUser": "Max Uses Per User",
+            "oneUsePerSystem": "One Use Per System",
+            "oneUsePerSystemDescription": "Allow this coupon only once for each tenant.",
+            "active": "Active",
+            "activeDescription": "Coupon can be redeemed immediately."
+        }
+    },
     "footer": {
         "description": "The ultimate global ecosystem to discover, compare, and instantly deploy enterprise-grade SaaS solutions.",
         "rights": "All rights reserved.",
@@ -93,7 +223,9 @@
             "about": "About Graphood",
             "blog": "Blog",
             "careers": "Careers",
-            "contact": "Contact Sales"
+            "contact": "Contact Sales",
+            "privacy": "Privacy Policy",
+            "terms": "Terms of Service"
         }
     },
     "settings": {

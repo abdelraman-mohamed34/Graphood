@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
+import { type SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
@@ -62,6 +63,7 @@ export function CreateCouponDialog({
     createCoupon,
     isCreating,
 }: CreateCouponDialogProps) {
+    const t = useTranslations("developerCoupons");
     const form = useForm<FormValues>({
         resolver: zodResolver(createCouponSchema),
         defaultValues: {
@@ -82,7 +84,10 @@ export function CreateCouponDialog({
         },
     });
 
-    const discountType = form.watch("discount_type");
+    const discountType = useWatch({
+        control: form.control,
+        name: "discount_type",
+    });
 
     useEffect(() => {
         form.setValue("system_id", systemId);
@@ -138,9 +143,9 @@ export function CreateCouponDialog({
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Create Coupon</DialogTitle>
+                    <DialogTitle>{t("dialog.title")}</DialogTitle>
                     <DialogDescription>
-                        Create a discount coupon for this system.
+                        {t("dialog.description")}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -152,7 +157,7 @@ export function CreateCouponDialog({
                                 name="code"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Coupon Code</FormLabel>
+                                        <FormLabel>{t("form.couponCode")}</FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder="SUMMER50"
@@ -172,7 +177,7 @@ export function CreateCouponDialog({
                                 name="discount_type"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Discount Type</FormLabel>
+                                        <FormLabel>{t("form.discountType")}</FormLabel>
                                         <Select
                                             value={field.value}
                                             onValueChange={field.onChange}
@@ -200,7 +205,7 @@ export function CreateCouponDialog({
                                 name="discount_value"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Discount Value</FormLabel>
+                                        <FormLabel>{t("form.discountValue")}</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="number"
@@ -224,7 +229,7 @@ export function CreateCouponDialog({
                                     name="max_discount"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Max Discount</FormLabel>
+                                            <FormLabel>{t("form.maxDiscount")}</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="number"
@@ -250,7 +255,7 @@ export function CreateCouponDialog({
                                 name="license_type"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>License</FormLabel>
+                                        <FormLabel>{t("form.license")}</FormLabel>
                                         <Select
                                             value={field.value ?? "ALL"}
                                             onValueChange={(value) =>
@@ -281,7 +286,7 @@ export function CreateCouponDialog({
                                 name="plan"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Plan</FormLabel>
+                                        <FormLabel>{t("form.plan")}</FormLabel>
                                         <Select
                                             value={field.value ?? "ALL"}
                                             onValueChange={(value) =>
@@ -314,7 +319,7 @@ export function CreateCouponDialog({
                                 name="min_order_amount"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Minimum Order Amount</FormLabel>
+                                        <FormLabel>{t("form.minimumOrderAmount")}</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="number"
@@ -337,7 +342,7 @@ export function CreateCouponDialog({
                                 name="max_uses"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Max Uses</FormLabel>
+                                        <FormLabel>{t("form.maxUses")}</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="number"
@@ -360,7 +365,7 @@ export function CreateCouponDialog({
                                 name="max_uses_per_user"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Max Uses Per User</FormLabel>
+                                        <FormLabel>{t("form.maxUsesPerUser")}</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="number"
@@ -386,9 +391,9 @@ export function CreateCouponDialog({
                                 render={({ field }) => (
                                     <FormItem className="flex items-center justify-between space-y-0">
                                         <div>
-                                            <FormLabel>One Use Per System</FormLabel>
+                                            <FormLabel>{t("form.oneUsePerSystem")}</FormLabel>
                                             <p className="text-xs text-muted-foreground">
-                                                Allow this coupon only once for each tenant.
+                                                {t("form.oneUsePerSystemDescription")}
                                             </p>
                                         </div>
                                         <FormControl>
@@ -407,9 +412,9 @@ export function CreateCouponDialog({
                                 render={({ field }) => (
                                     <FormItem className="flex items-center justify-between space-y-0">
                                         <div>
-                                            <FormLabel>Active</FormLabel>
+                                            <FormLabel>{t("form.active")}</FormLabel>
                                             <p className="text-xs text-muted-foreground">
-                                                Coupon can be redeemed immediately.
+                                                {t("form.activeDescription")}
                                             </p>
                                         </div>
                                         <FormControl>
@@ -430,11 +435,11 @@ export function CreateCouponDialog({
                                 disabled={isCreating}
                                 onClick={() => handleOpenChange(false)}
                             >
-                                Cancel
+                                {t("dialog.cancel")}
                             </Button>
                             <Button type="submit" disabled={isCreating}>
                                 {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Create Coupon
+                                {t("dialog.submit")}
                             </Button>
                         </DialogFooter>
                     </form>

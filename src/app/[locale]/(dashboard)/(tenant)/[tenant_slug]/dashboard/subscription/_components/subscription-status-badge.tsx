@@ -8,6 +8,7 @@ type SubscriptionStatus =
     | "PAST_DUE"
     | "CANCELED"
     | "EXPIRED"
+    | "UNKNOWN"
 
 type SubscriptionStatusBadgeProps = {
     status: SubscriptionStatus
@@ -44,6 +45,10 @@ export default function SubscriptionStatusBadge({
             label: "EXPIRED",
             className:
                 "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400",
+        },
+        UNKNOWN: {
+            label: "UNKNOWN",
+            className: "border-slate-500/20 bg-slate-500/10 text-slate-600 dark:text-slate-400",
         },
     }
 

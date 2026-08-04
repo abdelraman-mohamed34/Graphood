@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Check, X, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -96,17 +96,18 @@ export default function Page() {
         ? (Number(preview.finalAmount) || 0).toFixed(2)
         : totalPrice;
 
-    useEffect(() => {
+    const clearCoupon = () => {
         reset();
         setPreview(null);
-    }, [selectedPlan, selectedLicense, reset]);
+    };
 
-    // Clear preview only if the input code changes from the successfully applied coupon code
-    useEffect(() => {
-        if (preview?.coupon?.code && couponCode !== preview.coupon.code) {
+    const handleCouponCodeChange = (value: string) => {
+        const normalizedValue = value.toUpperCase();
+        setCouponCode(normalizedValue);
+        if (preview?.coupon?.code && normalizedValue !== preview.coupon.code) {
             setPreview(null);
         }
-    }, [couponCode, preview]);
+    };
 
     const handleOrder = async () => {
         try {
@@ -195,7 +196,10 @@ export default function Page() {
                                 <button
                                     key={type}
                                     type="button"
-                                    onClick={() => setSelectedLicense(type)}
+                                    onClick={() => {
+                                        setSelectedLicense(type);
+                                        clearCoupon();
+                                    }}
                                     className={`rounded-xl border p-4 text-left transition-all ${isSelected
                                         ? "border-neutral-900 dark:border-white ring-1 ring-neutral-900 dark:ring-white bg-neutral-50/50 dark:bg-neutral-900/50"
                                         : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
@@ -223,7 +227,10 @@ export default function Page() {
                             return (
                                 <div
                                     key={plan.id}
-                                    onClick={() => setSelectedPlan(plan.id)}
+                                    onClick={() => {
+                                        setSelectedPlan(plan.id);
+                                        clearCoupon();
+                                    }}
                                     className={`relative cursor-pointer rounded-2xl p-5 transition-all duration-200 border flex flex-col justify-between ${isSelected
                                         ? "border-neutral-900 dark:border-white ring-1 ring-neutral-900 dark:ring-white bg-white dark:bg-neutral-900 shadow-sm"
                                         : "border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-900/40 hover:border-neutral-300 dark:hover:border-neutral-700"
@@ -315,7 +322,7 @@ export default function Page() {
                     <div className="mt-2 flex gap-2">
                         <input
                             value={couponCode}
-                            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                            onChange={(e) => handleCouponCodeChange(e.target.value)}
                             placeholder="SUMMER50"
                             className="flex-1 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all"
                         />

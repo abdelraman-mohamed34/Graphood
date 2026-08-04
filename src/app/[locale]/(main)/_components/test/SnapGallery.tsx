@@ -167,6 +167,7 @@ function InfiniteSnapGallery() {
                             className="snap-start shrink-0 w-[85%] sm:w-[45%] md:w-[31%] flex flex-col gap-3 group/card"
                         >
                             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-neutral-900 border border-white/10">
+                                {/* eslint-disable-next-line @next/next/no-img-element -- gallery URLs can target arbitrary external hosts */}
                                 <img
                                     src={card.imageUrl}
                                     alt={card.title}

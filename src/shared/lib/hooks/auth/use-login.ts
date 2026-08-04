@@ -44,8 +44,8 @@ export function useLogin() {
             router.refresh();
         },
 
-        onError: (error: any) => {
-            toast.error(error?.message || t("errors.generic_login_error"))
+        onError: (error: Error) => {
+            toast.error(error.message || t("errors.generic_login_error"))
         },
     })
 
@@ -62,8 +62,8 @@ export function useLogin() {
             router.refresh()
         },
 
-        onError: (error: any) => {
-            toast.error(error?.message || t("errors.generic_logout_error"))
+        onError: (error: Error) => {
+            toast.error(error.message || t("errors.generic_logout_error"))
         },
     })
 

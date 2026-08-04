@@ -1,8 +1,12 @@
 // src/shared/lib/supabase/services/memberships/get-memberships-by-profile-id.service.ts
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Membership } from "@/shared/lib/schemas/memberships.schema";
+import type { Tenant } from "@/shared/lib/schemas/tenants.schema";
 
-export async function getMembershipsByProfileId<T = any>(
+export type MembershipWithTenant = Membership & { tenant: Tenant };
+
+export async function getMembershipsByProfileId<T = MembershipWithTenant>(
     supabase: SupabaseClient,
     profileId: string
 ): Promise<T[]> {

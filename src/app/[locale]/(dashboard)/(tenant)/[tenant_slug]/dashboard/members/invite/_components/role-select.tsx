@@ -26,19 +26,29 @@ export function RoleSelect<T extends FieldValues>({
     onValueChange: onValueChangeProp,
     disabled,
 }: RoleSelectProps<T>) {
-    let value: string | null | undefined = valueProp
-    let onValueChange: ((v: string) => void) | undefined = onValueChangeProp
-
     if (control && name) {
-        const {
-            field: { value: v, onChange },
-        } = useController({
-            control,
-            name,
-        })
-        value = v as any
-        onValueChange = onChange as any
+        return <ControlledRoleSelect control={control} name={name} disabled={disabled} />
     }
+
+    return <RoleSelectView value={valueProp} onValueChange={onValueChangeProp} disabled={disabled} />
+}
+
+function ControlledRoleSelect<T extends FieldValues>({ control, name, disabled }:
+    Required<Pick<RoleSelectProps<T>, "control" | "name">> & Pick<RoleSelectProps<T>, "disabled">) {
+    const { field } = useController({ control, name })
+
+    return <RoleSelectView
+        value={typeof field.value === "string" ? field.value : null}
+        onValueChange={field.onChange}
+        disabled={disabled}
+    />
+}
+
+function RoleSelectView({ value, onValueChange, disabled }: {
+    value?: string | null
+    onValueChange?: (value: string) => void
+    disabled?: boolean
+}) {
 
     const membershipRoles = ["ADMIN"]
 

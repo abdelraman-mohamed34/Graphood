@@ -6,6 +6,7 @@ import { createAdminClient } from '../../supabase/admin'
 import { createHash } from 'crypto'
 
 export async function rejectInvitationAction(token: string, tenant: string) {
+    void tenant;
     try {
         const supabase = await createAdminClient()
         const tokenHash = createHash('sha256')

@@ -20,7 +20,7 @@ export function AppProvider({
 }: AppProviderProps) {
   return (
     <QueryProvider>
-      <AuthProvider user={profile as any}>
+      <AuthProvider user={profile}>
         <MembershipProvider memberships={memberships}>
           {children}
         </MembershipProvider>

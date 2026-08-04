@@ -18,7 +18,6 @@ type Props = {
 export default function CancelInvitation({
     invitation,
     cancelInvitation,
-    loading,
 }: Props) {
     return (
         <ConfirmationDialog

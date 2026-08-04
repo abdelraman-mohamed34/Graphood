@@ -2,11 +2,7 @@
 'use server'
 
 import { requireUser } from '@/shared/lib/auth/requires/require-user';
-import { createSupabaseServerClient } from '@/shared/lib/supabase/server';
-import { fetchUser } from '@/shared/lib/supabase/services/auth/user/fetch-user.service';
-import { SupabaseClient } from '@supabase/supabase-js';
 import { QueryClient, HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { redirect } from 'next/navigation';
 import React from 'react';
 
 interface GetSystemLayoutProps {

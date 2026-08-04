@@ -5,10 +5,7 @@ import { System } from "@/shared/lib/schemas/systems.schema";
 import { QueryClient, HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { SYSTEM_QUERY_KEYS } from "@/shared/lib/hooks/systems/use-system";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
-import Navbar from "@/app/[locale]/(main)/_components/navbar";
-import { Dir } from "@/shared/_components/dirs";
 import { fetchProfile } from "@/shared/lib/supabase/services/profile";
-import SystemSidebar from "./_components/system-sidebar";
 
 interface SystemDetailLayoutProps {
     children: React.ReactNode;

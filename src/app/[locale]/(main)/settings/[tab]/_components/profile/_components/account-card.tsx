@@ -9,9 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
 import { useProfile } from "@/shared/lib/hooks/profile/use-profile";
-import {
-    UpdateProfileInput,
-} from "@/shared/lib/actions/profile";
+import { UpdateProfileInput } from "@/shared/lib/actions/profile";
 
 import {
     Form,
@@ -25,6 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { updateProfileSchema } from "@/shared/lib/schemas/inputs/profile-inputs.schema";
+import { AccountCardSkeleton } from "./avatar/account-card-skeleton";
 
 export function AccountCard() {
     const locale = useLocale();
@@ -49,9 +48,7 @@ export function AccountCard() {
         reset,
         control,
         handleSubmit,
-        formState: {
-            isDirty,
-        },
+        formState: { isDirty },
     } = form;
 
     useEffect(() => {
@@ -63,41 +60,22 @@ export function AccountCard() {
         });
     }, [profile, reset]);
 
-    const onSubmit = async (
-        values: UpdateProfileInput
-    ) => {
-        await toast.promise(
-            updateProfile(values),
-            {
-                loading: t("savingChanges"),
-
-                success: (result) => {
-                    if (!result.success) {
-                        throw new Error();
-                    }
-
-                    reset(values);
-
-                    return t(
-                        "profileUpdateSuccess"
-                    );
-                },
-
-                error: t(
-                    "profileUpdateError"
-                ),
-            }
-        );
+    const onSubmit = async (values: UpdateProfileInput) => {
+        await toast.promise(updateProfile(values), {
+            loading: t("savingChanges"),
+            success: (result) => {
+                if (!result.success) {
+                    throw new Error();
+                }
+                reset(values);
+                return t("profileUpdateSuccess");
+            },
+            error: t("profileUpdateError"),
+        });
     };
 
     if (isLoading) {
-        return (
-            <div className="lg:col-span-2 rounded-xl border border-border/60 bg-card/30 p-6 backdrop-blur-sm">
-                <div className="flex h-60 items-center justify-center">
-                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                </div>
-            </div>
-        );
+        return <AccountCardSkeleton />;
     }
 
     return (
@@ -120,9 +98,7 @@ export function AccountCard() {
 
             <Form {...form}>
                 <form
-                    onSubmit={handleSubmit(
-                        onSubmit
-                    )}
+                    onSubmit={handleSubmit(onSubmit)}
                     className="space-y-5"
                 >
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -182,10 +158,7 @@ export function AccountCard() {
                             <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 
                             <Input
-                                value={
-                                    profile?.email ??
-                                    ""
-                                }
+                                value={profile?.email ?? ""}
                                 disabled
                                 className="cursor-not-allowed bg-muted/40 pl-9"
                             />
@@ -194,27 +167,20 @@ export function AccountCard() {
                         <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                             <Info className="h-3.5 w-3.5" />
 
-                            {t(
-                                "emailCannotBeChanged"
-                            )}
+                            {t("emailCannotBeChanged")}
                         </p>
                     </div>
 
                     <div className="flex justify-end pt-2">
                         <Button
                             type="submit"
-                            disabled={
-                                isUpdating ||
-                                !isDirty
-                            }
+                            disabled={isUpdating || !isDirty}
                         >
                             {isUpdating && (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             )}
 
-                            {t(
-                                "saveChanges"
-                            )}
+                            {t("saveChanges")}
                         </Button>
                     </div>
                 </form>

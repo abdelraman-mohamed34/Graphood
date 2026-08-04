@@ -223,7 +223,6 @@ export async function createCoupon({
 
     // Log the payload to aid debugging of DB constraint violations
     // (will appear in server logs / terminal running Next.js)
-    // eslint-disable-next-line no-console
     console.error("Supabase Create Coupon Insert Payload:", insert);
 
     const { data: coupon, error } =
@@ -242,7 +241,7 @@ export async function createCoupon({
         // Wrap Supabase/Postgres error into a JS Error so callers receive a
         // consistent Error instance with a useful message.
         // Safely extract a message from the Supabase/Postgrest error object.
-        const supabaseErr: any = error;
+        const supabaseErr: { message?: string; error?: string; details?: string } = error;
         const message =
             supabaseErr?.message ?? supabaseErr?.error ?? supabaseErr?.details ??
             JSON.stringify(supabaseErr) ??

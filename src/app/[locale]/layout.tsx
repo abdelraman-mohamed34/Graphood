@@ -13,6 +13,7 @@ import { getMembershipsByProfileId } from "@/shared/lib/supabase/services/auth/m
 import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { fetchProfile } from "@/shared/lib/supabase/services/profile";
+import type { MembershipWithTenant } from "@/shared/lib/supabase/services/auth/membership/get-memberships-by-profile-id.service";
 
 const robotoSans = Roboto({
     variable: "--font-roboto-sans",
@@ -53,7 +54,7 @@ export default async function LocaleLayout({
     const user = await fetchUser(supabase);
 
     let profile = null;
-    let memberships: any[] = [];
+    let memberships: MembershipWithTenant[] = [];
 
     if (user) {
         try {

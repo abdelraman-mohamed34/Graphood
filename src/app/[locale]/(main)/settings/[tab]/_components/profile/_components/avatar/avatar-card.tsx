@@ -2,12 +2,13 @@
 
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { AvatarPreview } from "./avatar-preview";
 import { AvatarActions } from "./avatar-actions";
+import { AvatarCardSkeleton } from "./avatar-card-skeleton"; // 👈 تم الاستيراد هنا
 
 import { useProfile } from "@/shared/lib/hooks/profile/use-profile";
 
@@ -26,11 +27,12 @@ export function AvatarCard() {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const [selectedFile, setSelectedFile] =
-        useState<File | null>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-    const [preview, setPreview] =
-        useState<string | null>(null);
+    const preview = useMemo(
+        () => (selectedFile ? URL.createObjectURL(selectedFile) : null),
+        [selectedFile]
+    );
 
     const {
         profile,
@@ -42,17 +44,10 @@ export function AvatarCard() {
     } = useProfile(locale);
 
     useEffect(() => {
-        if (!selectedFile) {
-            setPreview(null);
-            return;
-        }
-
-        const objectUrl = URL.createObjectURL(selectedFile);
-
-        setPreview(objectUrl);
-
-        return () => URL.revokeObjectURL(objectUrl);
-    }, [selectedFile]);
+        return () => {
+            if (preview) URL.revokeObjectURL(preview);
+        };
+    }, [preview]);
 
     const resetSelection = useCallback(() => {
         setSelectedFile(null);
@@ -67,32 +62,20 @@ export function AvatarCard() {
     }, []);
 
     const handleFileChange = useCallback(
-        (
-            event: React.ChangeEvent<HTMLInputElement>
-        ) => {
+        (event: React.ChangeEvent<HTMLInputElement>) => {
             const file = event.target.files?.[0];
 
             if (!file) return;
 
-            if (
-                !ALLOWED_TYPES.includes(file.type)
-            ) {
-                toast.error(
-                    t("avatarInvalidType")
-                );
-
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                toast.error(t("avatarInvalidType"));
                 resetSelection();
-
                 return;
             }
 
             if (file.size > MAX_FILE_SIZE) {
-                toast.error(
-                    t("avatarTooLarge")
-                );
-
+                toast.error(t("avatarTooLarge"));
                 resetSelection();
-
                 return;
             }
 
@@ -107,28 +90,19 @@ export function AvatarCard() {
             return;
         }
 
-        await toast.promise(
-            uploadAvatar(selectedFile),
-            {
-                loading: t("uploadingAvatar"),
+        await toast.promise(uploadAvatar(selectedFile), {
+            loading: t("uploadingAvatar"),
+            success: (result) => {
+                if (!result.success) {
+                    throw new Error();
+                }
 
-                success: (result) => {
-                    if (!result.success) {
-                        throw new Error();
-                    }
+                resetSelection();
 
-                    resetSelection();
-
-                    return t(
-                        "avatarUploadSuccess"
-                    );
-                },
-
-                error: t(
-                    "avatarUploadError"
-                ),
-            }
-        );
+                return t("avatarUploadSuccess");
+            },
+            error: t("avatarUploadError"),
+        });
     }, [
         selectedFile,
         uploadAvatar,
@@ -138,33 +112,25 @@ export function AvatarCard() {
     ]);
 
     const handleRemove = useCallback(async () => {
-        await toast.promise(
-            removeAvatar(),
-            {
-                loading: t("removingAvatar"),
+        await toast.promise(removeAvatar(), {
+            loading: t("removingAvatar"),
+            success: (result) => {
+                if (!result.success) {
+                    throw new Error();
+                }
 
-                success: (result) => {
-                    if (!result.success) {
-                        throw new Error();
-                    }
+                resetSelection();
 
-                    resetSelection();
+                return t("avatarRemoveSuccess");
+            },
+            error: t("avatarRemoveError"),
+        });
+    }, [removeAvatar, resetSelection, t]);
 
-                    return t(
-                        "avatarRemoveSuccess"
-                    );
-                },
-
-                error: t(
-                    "avatarRemoveError"
-                ),
-            }
-        );
-    }, [
-        removeAvatar,
-        resetSelection,
-        t,
-    ]);
+    // ⚡ إظهار الـ Skeleton عند التحميل
+    if (isLoading) {
+        return <AvatarCardSkeleton />;
+    }
 
     return (
         <div className="bg-card/30 border border-border/60 rounded-xl p-6 backdrop-blur-sm flex flex-col justify-between space-y-6">
@@ -175,21 +141,14 @@ export function AvatarCard() {
 
                 <div className="flex flex-col items-center justify-center py-4 space-y-4">
                     <AvatarPreview
-                        image={
-                            profile?.avatarUrl ??
-                            null
-                        }
+                        image={profile?.avatarUrl ?? null}
                         preview={preview}
                         isLoading={isLoading}
-                        onSelect={
-                            openFilePicker
-                        }
+                        onSelect={openFilePicker}
                     />
 
                     <p className="max-w-[220px] text-center text-xs text-muted-foreground">
-                        {t(
-                            "avatarRequirements"
-                        )}
+                        {t("avatarRequirements")}
                     </p>
 
                     <input
@@ -197,23 +156,17 @@ export function AvatarCard() {
                         type="file"
                         accept="image/png,image/jpeg,image/webp,image/avif"
                         className="hidden"
-                        onChange={
-                            handleFileChange
-                        }
+                        onChange={handleFileChange}
                     />
                 </div>
             </div>
             <AvatarActions
                 hasAvatar={
-                    Boolean(profile?.avatarUrl) ||
-                    Boolean(selectedFile)
+                    Boolean(profile?.avatarUrl) || Boolean(selectedFile)
                 }
                 isUploading={isUploading}
                 isRemoving={isRemoving}
-                disabled={
-                    isUploading ||
-                    isRemoving
-                }
+                disabled={isUploading || isRemoving}
                 onUpload={handleUpload}
                 onRemove={handleRemove}
                 uploadLabel={

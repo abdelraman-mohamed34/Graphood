@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { FooterBrand, FooterColumn } from "./footer-components";
@@ -64,8 +65,8 @@ export function Footer() {
 
                     {/* Links Sections Grid */}
                     <div className="grid grid-cols-2 gap-8 md:grid-cols-3 xl:col-span-2">
-                        {footerSections.map((section, idx) => (
-                            <motion.div key={idx} variants={itemVariants}>
+                        {footerSections.map((section) => (
+                            <motion.div key={section.title} variants={itemVariants}>
                                 <FooterColumn title={section.title} links={section.links} />
                             </motion.div>
                         ))}
@@ -77,13 +78,13 @@ export function Footer() {
                     <p className="text-xs text-[#555555]">
                         &copy; {currentYear} Graphood. {t("rights")}
                     </p>
-                    <div className="flex gap-6 text-xs text-[#666666] hidden">
-                        <a href="/privacy" className="hover:text-[#ffffff] transition-colors">
-                            Privacy Policy
-                        </a>
-                        <a href="/terms" className="hover:text-[#ffffff] transition-colors">
-                            Terms of Service
-                        </a>
+                    <div className="flex gap-6 text-xs text-[#666666]">
+                        <Link href="/privacy" className="hover:text-[#ffffff] transition-colors">
+                            {t("links.privacy")}
+                        </Link>
+                        <Link href="/terms" className="hover:text-[#ffffff] transition-colors">
+                            {t("links.terms")}
+                        </Link>
                     </div>
                 </div>
             </div>

@@ -15,10 +15,6 @@ import {
     DeveloperApiKeyUpdate,
 } from "@/shared/lib/schemas/developer/api-keys";
 
-interface UseDeveloperApiKeysOptions {
-    systemId: string;
-}
-
 export function useDeveloperApiKeys(systemId: string) {
     const queryClient = useQueryClient();
 

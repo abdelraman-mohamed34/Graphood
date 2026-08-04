@@ -1,11 +1,8 @@
 'use server'
 
-import { cookies } from "next/headers"
 import { createSupabaseServerClient } from "../../server"
 
 export async function loginService(formData: FormData) {
-    const cookieStore = await cookies()
-
     const supabase = await createSupabaseServerClient()
 
     const email = String(formData.get('email'))

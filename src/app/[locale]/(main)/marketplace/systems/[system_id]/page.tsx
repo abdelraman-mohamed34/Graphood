@@ -44,11 +44,14 @@ export default function Page() {
                     {/* Icon Container */}
                     <div className="w-20 h-20 rounded-2xl bg-neutral-900 flex items-center justify-center shrink-0 border border-neutral-800 shadow-sm overflow-hidden">
                         {system.icon_url ? (
-                            <img
-                                src={system.icon_url}
-                                alt={system.name}
-                                className="w-full h-full object-cover"
-                            />
+                            <>
+                                {/* eslint-disable-next-line @next/next/no-img-element -- user-configured icon hosts are not known at build time */}
+                                <img
+                                    src={system.icon_url}
+                                    alt={system.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            </>
                         ) : (
                             <Building2 className="w-10 h-10 text-neutral-400" />
                         )}

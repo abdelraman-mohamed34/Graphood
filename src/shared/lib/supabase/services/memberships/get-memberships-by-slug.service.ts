@@ -49,7 +49,7 @@ export async function getMembershipsByTenantSlug({
         return null;
     }
 
-    const sanitizedData = data.map(({ tenants, ...membership }) => ({
+    const sanitizedData = data.map((membership) => ({
         ...membership,
         permissions: membership.permissions ?? [],
     }));

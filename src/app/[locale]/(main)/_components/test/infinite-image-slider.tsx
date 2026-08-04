@@ -57,6 +57,7 @@ function InfiniteImageSlider() {
                         className={`relative shrink-0 overflow-hidden rounded-md bg-neutral-900 ${img.aspectRatio || "w-[300px] h-[350px]"
                             }`}
                     >
+                        {/* eslint-disable-next-line @next/next/no-img-element -- slider URLs can target arbitrary external hosts */}
                         <img
                             src={img.src}
                             alt={img.alt}

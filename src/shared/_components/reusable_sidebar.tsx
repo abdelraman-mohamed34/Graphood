@@ -1,10 +1,9 @@
 "use client";
 
 import React from "react";
-import { usePathname } from "next/navigation";
 import { type LucideIcon } from "lucide-react";
 
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 export interface SidebarItem {
@@ -34,21 +33,18 @@ export function ReusableSidebar({
     className,
     ...props
 }: ReusableSidebarProps) {
-    const rawPathname = usePathname();
-
-    const normalizedPathname =
-        rawPathname.replace(/^\/(ar|en)/, "") || "/";
+    const pathname = usePathname();
 
     const isItemActive = (href: string, exact?: boolean) => {
         const targetHref = href.startsWith("/") ? href : `/${href}`;
 
         if (exact || targetHref === "/") {
-            return normalizedPathname === targetHref;
+            return pathname === targetHref;
         }
 
         return (
-            normalizedPathname === targetHref ||
-            normalizedPathname.startsWith(`${targetHref}/`)
+            pathname === targetHref ||
+            pathname.startsWith(`${targetHref}/`)
         );
     };
 
@@ -66,13 +62,13 @@ export function ReusableSidebar({
     return (
         <aside
             className={cn(
-                "sticky top-[113px] hidden h-[calc(100vh-7.1rem)] w-64 shrink-0 flex-col border-r border-border bg-background p-2 pt-4 md:flex",
+                "sticky top-[113px] hidden h-[calc(100vh-7.1rem)] w-64 shrink-0 flex-col border-e border-border bg-background p-2 pt-4 text-start md:flex",
                 className
             )}
             {...props}
         >
             {header && (
-                <div className="mb-2 border-b border-border px-3 py-2">
+                <div className="mb-2 border-b border-border ps-3 pe-3 py-2 text-start">
                     {header}
                 </div>
             )}
@@ -85,7 +81,7 @@ export function ReusableSidebar({
                     {groups.map((group, index) => (
                         <div key={group.title ?? index}>
                             {group.title && (
-                                <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                <p className="mb-2 ps-3 pe-3 text-start text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                     {group.title}
                                 </p>
                             )}
@@ -108,10 +104,10 @@ export function ReusableSidebar({
                                                         : undefined
                                                 }
                                                 className={cn(
-                                                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                                                    "flex select-none items-center gap-3 rounded-lg border-none ps-3 pe-3 py-2 text-start text-sm outline-none transition-all focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/20",
                                                     active
-                                                        ? "bg-muted font-semibold text-primary"
-                                                        : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                                                        ? "bg-muted font-semibold text-foreground"
+                                                        : "font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                                 )}
                                             >
                                                 <Icon className="h-4 w-4 shrink-0" />

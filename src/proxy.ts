@@ -65,7 +65,8 @@ export async function proxy(req: NextRequest) {
         isAuth ||
         cleanPath.startsWith("/workspaces") ||
         cleanPath.startsWith("/invitations/accept") ||
-        cleanPath.startsWith("/select-workspace");
+        cleanPath.startsWith("/select-workspace") ||
+        cleanPath.startsWith("/marketplace");
 
     if (!isPublic && !user) {
         return NextResponse.redirect(
@@ -77,6 +78,24 @@ export async function proxy(req: NextRequest) {
         return NextResponse.redirect(
             new URL(`/${locale}/workspaces`, req.url)
         );
+    }
+
+    const systemMatch = cleanPath.match(/^\/marketplace\/systems\/([^\/]+)$/);
+
+    if (systemMatch && user) {
+        const systemId = systemMatch[1];
+
+        const { data: system } = await supabase
+            .from("systems")
+            .select("owner_id")
+            .eq("id", systemId)
+            .single();
+
+        if (system && user.id === system.owner_id) {
+            return NextResponse.redirect(
+                new URL(`/${locale}/developer/system/${systemId}`, req.url)
+            );
+        }
     }
 
     return response;

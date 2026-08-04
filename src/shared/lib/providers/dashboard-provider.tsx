@@ -4,17 +4,19 @@ import {
     createContext,
     useContext,
 } from "react";
+import type { Membership } from "@/shared/lib/schemas/memberships.schema";
+import type { Tenant } from "@/shared/lib/schemas/tenants.schema";
 
 interface DashboardContextType {
-    tenant: any;
-    membership: any;
+    tenant: Tenant;
+    membership: Membership;
 }
 
 const DashboardContext = createContext<DashboardContextType | null>(null);
 
 interface DashboardProviderProps {
-    tenant: any;
-    membership: any;
+    tenant: Tenant;
+    membership: Membership;
     children: React.ReactNode;
 }
 

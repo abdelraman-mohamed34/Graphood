@@ -3,6 +3,54 @@
         "name_error": "يجب أن يتكون الاسم من 3 أحرف على الأقل",
         "phone_error": "رقم الهاتف قصير جدًا"
     },
+    "marketplace": {
+        "error": "تعذر تحميل الأنظمة.",
+        "hero": {
+            "titleLineOne": "اكتشف أنظمة قوية",
+            "titleLineTwo": "لمساحة عملك",
+            "description": "تصفح وحدات الأنظمة وثبّتها واربطها لتطوير سير عملك، بدءًا من الأتمتة ووصولًا إلى أدوات المطورين."
+        },
+        "search": {
+            "placeholder": "ابحث عن الأنظمة أو الميزات أو الوحدات...",
+            "button": "بحث"
+        },
+        "content": {
+            "eyebrow": "أنظمة لتطبيقك",
+            "title": "دع أدواتك تتصل وتنفّذ وتؤتمت"
+        },
+        "categories": {
+            "all": "الكل",
+            "popular": "الأكثر شيوعًا",
+            "developerTools": "أدوات المطورين",
+            "security": "الأمان",
+            "ecommerce": "التجارة الإلكترونية",
+            "monitoring": "المراقبة"
+        },
+        "empty": {
+            "title": "لم يتم العثور على أنظمة",
+            "description": "جرّب البحث عن شيء آخر."
+        },
+        "card": {
+            "badge": "نظام",
+            "description": "فعّل التكامل السلس والأدوات باستخدام ميزات {name} لمساحة العمل.",
+            "viewDetails": "عرض التفاصيل"
+        }
+    },
+    "developerOverview": {
+        "systemNotFound": "لم يتم العثور على النظام أو تعذر تحميله.",
+        "statusLabel": "الحالة",
+        "statusActive": "نشط",
+        "statusInactive": "غير نشط",
+        "categoryLabel": "الفئة"
+    },
+    "systemSidebar": {
+        "overview": "نظرة عامة",
+        "api_keys": "مفاتيح واجهة API",
+        "coupons": "الكوبونات",
+        "orders": "الطلبات",
+        "pricing": "التسعير",
+        "settings": "الإعدادات"
+    },
     "header": {
         "nav": {
             "features": "المميزات",
@@ -13,6 +61,12 @@
         "auth": {
             "login": "تسجيل الدخول",
             "getStarted": "ابدأ الآن"
+        },
+        "userMenu": {
+            "signedInAs": "تم تسجيل الدخول باسم",
+            "workspaces": "مساحات العمل",
+            "settings": "الإعدادات",
+            "logout": "تسجيل الخروج"
         }
     },
     "home": {
@@ -72,6 +126,82 @@
             }
         }
     },
+    "breadcrumbs": {
+        "home": "الرئيسية",
+        "details": "التفاصيل",
+        "developer": "المطور",
+        "system": "النظام",
+        "settings": "الإعدادات",
+        "workspaces": "مساحات العمل",
+        "marketplace": "السوق",
+        "dashboard": "لوحة التحكم",
+        "overview": "نظرة عامة",
+        "api-keys": "مفاتيح واجهة API",
+        "coupons": "الكوبونات",
+        "orders": "الطلبات",
+        "pricing": "التسعير",
+        "subscription": "الاشتراك",
+        "quickview": "نظرة سريعة",
+        "profile": "الملف الشخصي",
+        "notifications": "الإشعارات"
+    },
+    "developerSystems": {
+        "dashboardTitle": "أنظمة المطور",
+        "dashboardSubtitle": "إدارة الأنظمة التي تبنيها ونشرها لمساحة العمل الخاصة بك.",
+        "newSystemBtn": "نظام جديد",
+        "emptyTitle": "لا توجد أنظمة بعد",
+        "emptyDescription": "أنشئ أول نظام لك لبدء بناء التكاملات ومشاركة واجهات API.",
+        "createFirstSystem": "أنشئ أول نظام لك",
+        "noDescription": "لم يتم توفير وصف بعد."
+    },
+    "developerApiKeys": {
+        "title": "مفاتيح واجهة API",
+        "systemNotFound": "لم يتم العثور على النظام.",
+        "warningTitle": "احفظ هذه المفتاح بشكل آمن",
+        "warningDescription": "سيظهر مفتاح API هذا مرة واحدة فقط. انسخه الآن وخزنه بأمان قبل مغادرة هذه الصفحة.",
+        "regenerateBtn": "إعادة إنشاء المفتاح",
+        "regeneratingBtn": "جارٍ إعادة الإنشاء...",
+        "dialogTitle": "إعادة إنشاء مفتاح API",
+        "dialogDescription": "سيؤدي هذا إلى إنشاء مفتاح API جديد وإلغاء صلاحية المفتاح الحالي. هل تريد المتابعة؟",
+        "cancel": "إلغاء",
+        "confirm": "متابعة",
+        "noKeysFound": "لا توجد مفاتيح API لهذا النظام بعد.",
+        "toastRegenerateSuccess": "تمت إعادة إنشاء مفتاح API بنجاح.",
+        "toastRegenerateError": "فشل في إعادة إنشاء مفتاح API."
+    },
+    "developerCoupons": {
+        "header": {
+            "title": "الكوبونات",
+            "description": "أنشئ وأدر كوبونات الخصم لنظامك.",
+            "createButton": "إنشاء كوبون"
+        },
+        "empty": {
+            "title": "لا توجد كوبونات بعد",
+            "description": "تساعدك الكوبونات على إنشاء العروض والخصومات لعملائك. أنشئ أول كوبون لك لبدء زيادة التحويلات.",
+            "createButton": "إنشاء كوبون"
+        },
+        "dialog": {
+            "title": "إنشاء كوبون",
+            "description": "أنشئ كوبون خصم لهذا النظام.",
+            "cancel": "إلغاء",
+            "submit": "إنشاء كوبون"
+        },
+        "form": {
+            "couponCode": "رمز الكوبون",
+            "discountType": "نوع الخصم",
+            "discountValue": "قيمة الخصم",
+            "maxDiscount": "الحد الأقصى للخصم",
+            "license": "الترخيص",
+            "plan": "الخطة",
+            "minimumOrderAmount": "الحد الأدنى لقيمة الطلب",
+            "maxUses": "الحد الأقصى للاستخدامات",
+            "maxUsesPerUser": "الحد الأقصى للاستخدامات لكل مستخدم",
+            "oneUsePerSystem": "استخدام واحد لكل نظام",
+            "oneUsePerSystemDescription": "اسمح بهذا الكوبون مرة واحدة فقط لكل مستأجر.",
+            "active": "نشط",
+            "activeDescription": "يمكن استرداد الكوبون مباشرة."
+        }
+    },
     "footer": {
         "description": "النظام البيئي العالمي الشامل لاستكشاف، مقارنة، ونشر حلول البرمجيات كخدمة (SaaS) للمؤسسات بشكل فوري.",
         "rights": "جميع الحقوق محفوظة.",
@@ -93,7 +223,9 @@
             "about": "عن جرافهود",
             "blog": "المدونة",
             "careers": "الوظائف",
-            "contact": "التواصل مع المبيعات"
+            "contact": "التواصل مع المبيعات",
+            "privacy": "سياسة الخصوصية",
+            "terms": "شروط الاستخدام"
         }
     },
     "settings": {

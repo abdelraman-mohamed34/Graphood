@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation'
 import { createHash } from 'crypto'
 import AcceptInvitationButton from './_components/AcceptInvitationButton'
 import { getInvitationByToken } from '@/shared/lib/supabase/services/invitations/get-Invitation-by-token.service'
-import { createClient } from '@/shared/lib/supabase/client'
 import { getWhatByFrom } from '@/shared/lib/supabase/services/get-what-by-from.service'
 import RejectInvitationButton from './_components/RejectInvitationButton'
 import { createAdminClient } from '@/shared/lib/supabase/admin'
@@ -14,7 +13,7 @@ type PageProps = {
     searchParams: Promise<{ token?: string; tenant?: string }>
 }
 
-export default async function page({ params, searchParams }: PageProps) {
+export default async function Page({ params, searchParams }: PageProps) {
     const { locale } = await params
     const { token, tenant } = await searchParams
     const supabase = await createAdminClient()
@@ -66,7 +65,7 @@ export default async function page({ params, searchParams }: PageProps) {
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 mb-4">
                         <span className="text-indigo-600 text-lg">✉️</span>
                     </div>
-                    <h1 className="text-2xl font-bold text-slate-900">You're Invited!</h1>
+                    <h1 className="text-2xl font-bold text-slate-900">You&apos;re Invited!</h1>
                     <p className="text-sm text-slate-500 mt-1">Join your team workspace</p>
                 </div>
 

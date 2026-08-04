@@ -1,8 +1,9 @@
 // src/shared/lib/supabase/services/subscriptions/get-subscription-by-tenant-id.service.ts
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Subscription } from "@/shared/lib/schemas/subscriptions.schema";
 
-export async function getSubscriptionByTenantID<T = any>(
+export async function getSubscriptionByTenantID<T = Subscription>(
     supabase: SupabaseClient,
     tenantId: string
 ): Promise<T | null> {

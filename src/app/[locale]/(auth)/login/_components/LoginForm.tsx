@@ -185,6 +185,7 @@ export function LoginForm({
           </form>
 
           <div className="relative hidden bg-muted md:block">
+            {/* eslint-disable-next-line @next/next/no-img-element -- static decorative SVG does not benefit from optimization */}
             <img
               src="/placeholder.svg"
               alt="Login"

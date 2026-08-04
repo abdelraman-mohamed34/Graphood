@@ -10,39 +10,42 @@ import {
     Settings,
 } from "lucide-react";
 import { ReusableSidebar, SidebarItem } from "@/shared/_components/reusable_sidebar";
+import { useTranslations } from "next-intl";
 
 export default function SystemSidebar() {
     const params = useParams();
     const systemId = params.system_id as string;
+    const t = useTranslations("systemSidebar");
 
     const navItems: SidebarItem[] = [
         {
-            label: "Overview",
+            label: t("overview"),
             href: `/developer/system/${systemId}`,
             icon: LayoutDashboard,
+            exact: true,
         },
         {
-            label: "API Keys",
+            label: t("api_keys"),
             href: `/developer/system/${systemId}/api-keys`,
             icon: KeyRound,
         },
         {
-            label: "Coupons",
+            label: t("coupons"),
             href: `/developer/system/${systemId}/coupons`,
             icon: TicketPercent,
         },
         {
-            label: "Orders",
+            label: t("orders"),
             href: `/developer/system/${systemId}/orders`,
             icon: Receipt,
         },
         {
-            label: "Pricing",
+            label: t("pricing"),
             href: `/developer/system/${systemId}/pricing`,
             icon: CreditCard,
         },
         {
-            label: "Settings",
+            label: t("settings"),
             href: `/developer/system/${systemId}/settings`,
             icon: Settings,
         },

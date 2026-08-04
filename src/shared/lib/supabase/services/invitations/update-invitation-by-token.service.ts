@@ -7,7 +7,7 @@ export async function updateInvitationByToken(
 ) {
     console.log(`[Debug] Attempting to update invitation with token: ${token} to status: ${status}`);
 
-    const { data, error, count } = await supabase
+    const { data, error } = await supabase
         .from('invitations')
         .update({
             status: status,

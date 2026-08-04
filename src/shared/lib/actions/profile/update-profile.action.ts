@@ -6,7 +6,6 @@ import { z } from "zod";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
 
 import { updateProfile } from "@/shared/lib/supabase/services/profile/update-profile.service";
-import { profileSchema } from "../../schemas/profiles.schema";
 import { updateProfileSchema } from "../../schemas/inputs/profile-inputs.schema";
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

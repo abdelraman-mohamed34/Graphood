@@ -4,15 +4,16 @@ import {
     createContext,
     useContext,
 } from "react";
+import type { MembershipWithTenant } from "@/shared/lib/supabase/services/auth/membership/get-memberships-by-profile-id.service";
 
 interface OnboardingContextType {
-    memberships: any[];
+    memberships: MembershipWithTenant[];
 }
 
 const OnboardingContext = createContext<OnboardingContextType | null>(null);
 
 interface OnboardingProviderProps {
-    memberships: any[];
+    memberships: MembershipWithTenant[];
     children: React.ReactNode;
 }
 

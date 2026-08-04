@@ -10,7 +10,6 @@ import {
 
 import {
     CreateSystemInput,
-    System,
     SystemUpdate,
 } from "../../schemas/systems.schema";
 

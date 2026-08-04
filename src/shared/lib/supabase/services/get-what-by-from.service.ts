@@ -1,7 +1,7 @@
 // src/shared/lib/supabase/services/get-what-by-from.service.ts
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-export async function getWhatByFrom<T = any>(
+export async function getWhatByFrom<T = unknown>(
     supabase: SupabaseClient,
     what: string,
     value: string,

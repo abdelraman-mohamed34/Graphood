@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Roboto, Roboto_Mono } from "next/font/google";
 
-const robotoSans = Roboto({
-    variable: "--font-roboto-sans",
-    subsets: ["latin"],
-    weight: ["400", "500", "700"],
-});
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 
-const robotoMono = Roboto_Mono({
-    variable: "--font-roboto-mono",
-    subsets: ["latin"],
-    weight: ["400", "500", "700"],
-});
+import "@fontsource/roboto-mono/400.css";
+import "@fontsource/roboto-mono/500.css";
+import "@fontsource/roboto-mono/700.css";
+
+import "@fontsource/cairo/400.css";
+import "@fontsource/cairo/600.css";
+import "@fontsource/cairo/700.css";
 
 export const metadata: Metadata = {
     title: "Graphood",
@@ -25,8 +24,8 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en" suppressHydrationWarning>
-            <body className={`${robotoSans.variable} ${robotoMono.variable} antialiased font-sans`}>
+        <html lang="ar" dir="rtl" suppressHydrationWarning>
+            <body className="antialiased font-sans">
                 {children}
             </body>
         </html>

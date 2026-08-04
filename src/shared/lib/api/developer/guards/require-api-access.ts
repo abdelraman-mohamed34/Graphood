@@ -1,5 +1,6 @@
 import { DeveloperApiErrorCodes } from "@/shared/lib/api/developer/errors";
 import { requireSubscription } from "@/shared/lib/auth/requires/require-subscription";
+import type { Subscription } from "@/shared/lib/schemas/subscriptions.schema";
 
 
 export function requireApiAccess(
@@ -16,7 +17,7 @@ export function requireApiAccess(
         plan_name: context.subscription?.plan,
         status: context.subscription?.status,
         license_type: context.subscription?.licenseType,
-    } as any);
+    } as Partial<Subscription> as Subscription);
 
 
     if (!capabilities.isActive) {
