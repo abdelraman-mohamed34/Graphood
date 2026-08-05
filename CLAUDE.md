@@ -1,56 +1,57 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for AI coding agents working on the Graphood repository.
 
-@AGENTS.md
+## Required Next.js guidance
 
-**Before writing any Next.js code, read the relevant guide in `node_modules/next/dist/docs/`.** This project pins a Next.js version whose APIs/conventions may differ from training data (App Router, `params`/`searchParams` as Promises, middleware, adapters, etc.) — verify against the local docs rather than assuming.
+Before writing or changing Next.js code, read the relevant guide in `node_modules/next/dist/docs/`. This project uses the pinned Next.js version in `package.json`; verify current App Router APIs locally instead of relying on assumed conventions.
 
 ## Commands
 
-- `npm run dev` — start dev server
-- `npm run build` — production build
-- `npm run start` — run production build
-- `npm run lint` — ESLint (flat config, `eslint.config.mjs`)
+- `npm run dev` — start development
+- `npm run build` — create the production build
+- `npm run start` — serve the production build
+- `npm run lint` — run ESLint
+- `npx tsc --noEmit` — run strict TypeScript verification
 
-No test runner is configured in this repo yet.
+No automated test runner is currently configured.
 
-## Project overview
+## Project architecture
 
-"Graphood" — a multi-tenant SaaS platform. Supabase (Postgres + Auth) is the backend, Next.js App Router is the frontend, next-intl provides `ar`/`en` i18n (Arabic is the default locale, RTL), shadcn/radix-ui + Tailwind v4 for UI, TanStack Query for server-state hydration, react-hook-form + zod for forms.
+Graphood is a multi-tenant SaaS platform built with Next.js App Router, Supabase, `next-intl`, Tailwind CSS, Radix/shadcn UI, TanStack Query, React Hook Form, and Zod.
 
-## Architecture
+- Localized routes live under `src/app/[locale]/`.
+- Public/auth/marketplace pages live in route groups under `src/app/[locale]/(main)` and `src/app/[locale]/(auth)`.
+- Tenant dashboard routes live under `src/app/[locale]/(dashboard)/(tenant)/[tenant_slug]`.
+- Developer system routes live under `src/app/[locale]/(dashboard)/(system)/developer`.
+- Route-local components belong in `_components`; reusable primitives belong in `src/components/ui`.
+- Domain hooks, actions, schemas, providers, and Supabase services belong under `src/shared/lib`; feature-specific client logic belongs under `src/features`.
 
-### Routing structure (App Router, all under `src/app/[locale]/`)
+## Data and security boundaries
 
-- `(auth)/login`, `(auth)/register` — public auth pages
-- `(main)/` — shared layout with Navbar/Footer, wraps most of the app
-  - `(main)/Onboarding`, `(main)/select-workspace`, `(main)/checkout` — pre-tenant flows (creating/joining/paying for a workspace)
-  - `(main)/[tenant_slug]/` — tenant-scoped pages; `layout.tsx` resolves the tenant from the slug, verifies the user has a membership (prefetched via TanStack Query + `HydrationBoundary`), and redirects to `/Onboarding` if none exists
-  - `(main)/settings/[tab]` — dynamic settings tabs
-- Route-local UI lives in `_components/` folders next to the routes that use them; only cross-route UI belongs in `src/components/`.
+- Browser Supabase access uses `src/shared/lib/supabase/client.ts`.
+- Cookie-bound server access uses `src/shared/lib/supabase/server.ts`.
+- The service-role client in `src/shared/lib/supabase/admin.ts` is server-only and bypasses RLS. Use it only after explicit authentication/authorization in a server action or route handler.
+- Database access belongs in `src/shared/lib/supabase/services/`; components should not issue direct Supabase queries.
+- Server Actions are independently callable endpoints. Every action must validate inputs with Zod and repeat authentication, tenant membership, ownership, and permission checks at its own boundary.
+- Return minimal DTOs. Never return service-role keys, webhook secrets, API-key hashes, encrypted API keys, or unrelated database metadata to client components.
+- RLS policies are defined in `supabase/migrations/20260805010000_production_rls.sql` and must be applied and tested in the target Supabase project before production deployment.
 
-Locale resolution and auth gating both happen in `src/middleware.ts`: it runs `next-intl`'s middleware first, then checks Supabase auth cookies to redirect unauthenticated users to `/login` and authenticated users away from `/login`/`/register`. Public paths (no auth required) are listed inline in the middleware — update that list when adding new public routes.
+## TanStack Query conventions
 
-### Layout chain and data loading
+- Use the typed hierarchical key factory in `src/shared/lib/query/query-keys.ts`; do not introduce inline array keys.
+- Use `createQueryClient()` from `src/shared/lib/query/query-client.ts` for providers and server hydration.
+- Keep server-prefetch keys identical to client hook keys.
+- Invalidate the narrowest relevant factory prefix after mutations. Use optimistic updates only when the cached shape and rollback behavior are explicit.
+- Shared default policy is five-minute `staleTime`, thirty-minute `gcTime`, one retry, and no window-focus refetch. Long-lived reference data may use the `longLived` policy.
 
-`app/layout.tsx` (fonts only) → `app/[locale]/layout.tsx` (validates locale, loads i18n messages, fetches `user`/`profile`/`memberships` server-side, wraps children in `AppProvider`) → `(main)/layout.tsx` (Navbar/Footer) → `[tenant_slug]/layout.tsx` (membership check per tenant).
+## Forms, schemas, and localization
 
-`AppProvider` (`src/shared/lib/providers/app-provider.tsx`) composes `QueryProvider` → `AuthProvider` → `MembershipProvider`. Client components read auth/membership state via `useAuth()` (`src/shared/lib/auth/auth-context.tsx`) and `useMembership()` (`src/shared/lib/rbac/membership-context.tsx`) rather than re-fetching.
+- Define or reuse Zod schemas for all client payloads, URL IDs, locale/tenant context, files, and API inputs.
+- Keep inferred TypeScript types close to their schemas.
+- Add user-facing strings to both `src/i18n/messages/en.json` and `src/i18n/messages/ar.json`.
+- Preserve locale-aware links/navigation from `src/i18n/navigation.ts` and RTL/LTR behavior.
 
-### `src/shared/lib/` — the core domain layer
+## Production gates
 
-- `supabase/client.ts` / `supabase/server.ts` — browser vs. server Supabase client factories (server one is cookie-bound, async).
-- `supabase/services/**/*.service.ts` — all DB access goes through named service functions grouped by domain (`auth/`, `tenants/`, `memberships/`, `billing/`, `systems/`). Add new DB operations here rather than calling Supabase directly from components/pages.
-- `schemas/**` — zod schemas and inferred types (e.g. `memberships.schema.ts`, `profiles.schema.ts`); `schemas/public/` holds the permissions model (`permissions.ts` = the full permission list, `role-permissions.ts` = default permission sets per role). `schemas/index.ts` only re-exports the input (form) schemas — import other schemas directly from their file.
-- `rbac/permissions.ts` — `getUserPermissions`/`hasPermission`/`hasAnyPermission`/`hasAllPermissions` combine a membership's role defaults with per-membership permission overrides. This is the real RBAC implementation.
-- `server/get-session.ts` and `server/authorize.ts` are **stub/placeholder code** (hardcoded fake session, duplicated role→permission map) — not wired to Supabase auth. Don't extend them as-is; if session/authorization logic is needed, prefer the real `supabase/services/auth/*` + `rbac/permissions.ts` path, or flag that these stubs need replacing.
-- `auth/hooks/` (`useLogin`, `useRegister`) and `rbac/hooks/` (`use-permission`, `use-system`, `use-memberships`) — client hooks over the services/context above.
-
-### i18n
-
-`src/i18n/routing.ts` defines locales; `src/i18n/request.ts` loads `src/i18n/messages/{locale}.json`; `src/i18n/navigation.ts` provides locale-aware `Link`/`router`. Add new UI strings to both `ar.json` and `en.json`. `public/data.ts` also exports a `locales` array used for route validation in layouts — keep it in sync with `i18n/routing.ts`.
-
-### Path aliases
-
-`@/*` → `src/*` (see `tsconfig.json`). shadcn aliases (`components.json`) point `@/components`, `@/lib`, `@/hooks` at `src/*` — new shadcn-generated UI goes to `src/components/ui`; app-specific components stay in `src/shared/lib` or route-local `_components/`.
+Before handing off a change, run `npx tsc --noEmit` and `npm run lint`. For release work, also run `npm run build`. Payment-provider webhooks must be signature/secret verified and idempotent; Stripe remains disabled until its signed-event implementation is complete.
