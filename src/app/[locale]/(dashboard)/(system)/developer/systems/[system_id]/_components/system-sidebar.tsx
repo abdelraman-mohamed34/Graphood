@@ -5,9 +5,6 @@ import {
     LayoutDashboard,
     KeyRound,
     TicketPercent,
-    Receipt,
-    CreditCard,
-    Settings,
     X,
 } from "lucide-react";
 import { ReusableSidebar, SidebarItem } from "@/shared/_components/reusable_sidebar";
@@ -45,21 +42,6 @@ export default function SystemSidebar() {
             label: t("coupons"),
             href: `/developer/systems/${systemId}/coupons`,
             icon: TicketPercent,
-        },
-        {
-            label: t("orders"),
-            href: `/developer/systems/${systemId}/orders`,
-            icon: Receipt,
-        },
-        {
-            label: t("pricing"),
-            href: `/developer/systems/${systemId}/pricing`,
-            icon: CreditCard,
-        },
-        {
-            label: t("settings"),
-            href: `/developer/systems/${systemId}/settings`,
-            icon: Settings,
         },
     ];
 

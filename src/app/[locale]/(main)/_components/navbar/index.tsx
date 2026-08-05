@@ -1,11 +1,12 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { BookOpen, Menu, Store } from "lucide-react";
 import NavbarLogo from "./navbar-logo";
 import LanguageMenu from "./navbar-language-menu";
 import UserMenu from "./navbar-user-menu";
 import { useSystemNavigation } from "@/shared/_components/system-navigation-provider";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 
 export default function Navbar() {
@@ -31,6 +32,16 @@ export default function Navbar() {
                 <NavbarLogo />
             </div>
             <div className="flex shrink-0 items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 md:gap-3">
+                <nav aria-label={t("primary_navigation")} className="flex items-center gap-1">
+                    <Link href="/marketplace" className="flex items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted hover:text-foreground sm:px-3" aria-label={t("marketplace")}>
+                        <Store className="size-4" aria-hidden="true" />
+                        <span className="hidden md:inline">{t("marketplace")}</span>
+                    </Link>
+                    <Link href="/developer/docs" className="flex items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted hover:text-foreground sm:px-3" aria-label={t("docs")}>
+                        <BookOpen className="size-4" aria-hidden="true" />
+                        <span className="hidden md:inline">{t("docs")}</span>
+                    </Link>
+                </nav>
                 <LanguageMenu />
                 <div className="h-5 w-px shrink-0 bg-gray-200 dark:bg-zinc-700" />
                 <UserMenu />

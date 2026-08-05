@@ -20,7 +20,7 @@ function getTenantLogo(tenant: Tenant) {
 }
 
 function getWorkspaceHref(slug: string) {
-    return `/${slug}/dashboard`;
+    return `/${slug}/dashboard/quickview`;
 }
 
 const containerVariants = {

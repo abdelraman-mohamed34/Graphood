@@ -11,6 +11,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
 import { getOrderById } from "@/shared/lib/supabase/services/billing";
+import { Dir } from "@/shared/_components/dirs";
 
 interface CheckoutLayoutProps {
     children: React.ReactNode;
@@ -60,6 +61,7 @@ export default async function CheckoutLayout({
 
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
+            <Dir unroutableSegments={["checkout"]} />
             {children}
         </HydrationBoundary>
     );

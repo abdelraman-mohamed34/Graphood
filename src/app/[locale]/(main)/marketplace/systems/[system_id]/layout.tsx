@@ -7,6 +7,7 @@ import { getSystemById } from '@/shared/lib/supabase/services/systems';
 import { QueryClient, HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { redirect } from '@/i18n/navigation';
 import React from 'react';
+import { Dir } from '@/shared/_components/dirs';
 
 interface SystemDetailsLayoutProps {
     children: React.ReactNode;
@@ -41,6 +42,7 @@ export default async function SystemDetailsLayout({
 
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
+            <Dir unroutableSegments={["systems"]} />
             {children}
         </HydrationBoundary>
     );

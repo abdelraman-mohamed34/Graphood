@@ -1,6 +1,6 @@
 "use client";
 
-import { User, Settings, LogOut, Network } from "lucide-react";
+import { User, Settings, LogOut, Network, PanelsTopLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Link } from "@/i18n/navigation";
@@ -103,6 +103,15 @@ export default function UserMenu() {
                             >
                                 <Settings className="h-4 w-4 text-gray-400" />
                                 <span>{t("userMenu.settings")}</span>
+                            </Link>
+
+                            <Link
+                                href="/developer/systems"
+                                onClick={() => setOpen(false)}
+                                className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors hover:bg-gray-50 dark:hover:bg-zinc-700/60"
+                            >
+                                <PanelsTopLeft className="h-4 w-4 text-gray-400" />
+                                <span>{t("userMenu.developerSystems")}</span>
                             </Link>
                         </div>
 

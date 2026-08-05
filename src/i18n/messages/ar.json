@@ -232,7 +232,10 @@
         "settings": "الإعدادات",
         "navigation": "التنقل في النظام",
         "open_navigation": "فتح قائمة التنقل في النظام",
-        "close_navigation": "إغلاق قائمة التنقل في النظام"
+        "close_navigation": "إغلاق قائمة التنقل في النظام",
+        "primary_navigation": "التنقل الرئيسي",
+        "marketplace": "السوق",
+        "docs": "وثائق المطور"
     },
     "header": {
         "nav": {
@@ -249,6 +252,7 @@
             "signedInAs": "تم تسجيل الدخول باسم",
             "workspaces": "مساحات العمل",
             "settings": "الإعدادات",
+            "developerSystems": "أنظمة المطور",
             "logout": "تسجيل الخروج"
         }
     },

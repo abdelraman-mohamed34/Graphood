@@ -30,11 +30,13 @@ import { NavMain } from "./nav-main"
 import { Link } from "@/i18n/navigation"
 import brandConfig from "../../../../../../../../public/data.json"
 import { useTranslations } from "next-intl"
+import { useParams } from "next/navigation"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
     const { user } = useAuth()
     const t = useTranslations("dashboard.sidebar")
+    const { tenant_slug: tenantSlug } = useParams<{ tenant_slug: string }>()
     const navMain = [
         { title: t("quickview"), url: "quickview", icon: IconListDetails },
         { title: t("subscription"), url: "subscription", icon: IconPill },
@@ -59,9 +61,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuItem>
                         <SidebarMenuButton
                             asChild
-                            className="data-[slot=sidebar-menu-button]:p-1.5!"
+                            className="cursor-pointer data-[slot=sidebar-menu-button]:p-1.5! hover:bg-transparent! hover:text-sidebar-foreground! active:bg-transparent!"
                         >
-                            <Link href="#">
+                            <Link href={`/${tenantSlug}/dashboard/quickview`}>
                                 <IconInnerShadowTop className="size-5!" />
                                 <span className="text-base font-semibold">{brandConfig.brand}</span>
                             </Link>

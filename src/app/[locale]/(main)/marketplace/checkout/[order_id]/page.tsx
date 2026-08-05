@@ -25,7 +25,7 @@ export default function Page({ params }: PageProps) {
 
     useEffect(() => {
         if (isPaid && tenantSlug) {
-            router.replace(`/${tenantSlug}/dashboard`);
+            router.replace(`/${tenantSlug}/dashboard/quickview`);
         }
     }, [isPaid, router, tenantSlug]);
 

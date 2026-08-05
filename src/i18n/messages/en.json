@@ -182,7 +182,10 @@
         "settings": "Settings",
         "navigation": "System navigation",
         "open_navigation": "Open system navigation",
-        "close_navigation": "Close system navigation"
+        "close_navigation": "Close system navigation",
+        "primary_navigation": "Primary navigation",
+        "marketplace": "Marketplace",
+        "docs": "Developer docs"
     },
     "header": {
         "nav": {
@@ -199,6 +202,7 @@
             "signedInAs": "Signed in as",
             "workspaces": "Workspaces",
             "settings": "Settings",
+            "developerSystems": "Developer systems",
             "logout": "Logout"
         }
     },

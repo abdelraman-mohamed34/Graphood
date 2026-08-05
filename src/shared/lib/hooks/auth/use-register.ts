@@ -59,7 +59,7 @@ export function useRegister() {
                     try {
                         await acceptInvitationAction(token, tenant);
 
-                        router.replace(`/${tenant}/dashboard`);
+                        router.replace(`/${tenant}/dashboard/quickview`);
                         router.refresh();
                     } catch {
                         toast.error(t("errors.invitation_auto_accept_error"));

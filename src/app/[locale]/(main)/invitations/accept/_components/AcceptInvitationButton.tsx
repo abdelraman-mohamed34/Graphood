@@ -27,7 +27,7 @@ export default function AcceptInvitationButton({ token, tenant, locale }: Accept
                 toast.success(t('accepted'))
 
                 await new Promise((resolve) => setTimeout(resolve, 1000))
-                router.push(`/${locale}/${tenant}/dashboard`)
+                router.push(`/${locale}/${tenant}/dashboard/quickview`)
             } else {
                 toast.error(t('acceptFailed'))
                 setIsLoading(false)

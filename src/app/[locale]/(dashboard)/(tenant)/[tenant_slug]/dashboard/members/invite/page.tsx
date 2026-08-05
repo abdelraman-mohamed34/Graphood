@@ -4,6 +4,8 @@ import DashboardContainer from "@/shared/_components/dashboard-container";
 
 import InviteMemberForm from "./_components/invite-member-form";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 type Props = {
     params: Promise<{
@@ -23,6 +25,13 @@ export default async function InviteMemberPage({
             <SiteHeader title={t("invite.title")} />
 
             <DashboardContainer>
+                <Link
+                    href={`/${tenant_slug}/dashboard/members`}
+                    className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                    {locale === "ar" ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}
+                    {locale === "ar" ? "العودة إلى الأعضاء" : "Back to members"}
+                </Link>
                 <InviteMemberForm
                     locale={locale}
                     tenantSlug={tenant_slug}
