@@ -1,104 +1,53 @@
 import { createAdminClient } from "../../admin";
 
-import { provisionOrder } from "../order/provision-order.service";
-import { applyCoupon } from "../coupons/apply-coupon.service";
-
-async function finalizePayment(
-    orderId: string,
-    transactionRef: string
-) {
-    const supabase = createAdminClient();
-    const { data: order, error: orderError } = await supabase
-        .from("orders")
-        .select("id, status, coupon_id, profile_id, system_id")
-        .eq("id", orderId)
-        .single();
-
-    if (orderError || !order) throw orderError ?? new Error("Order not found.");
-    if (order.status !== "PENDING" && order.status !== "PAID") {
-        throw new Error("Order is not pending.");
-    }
-
-    const now = new Date().toISOString();
-    let paidOrder = order;
-
-    if (order.status === "PENDING") {
-        const { data: payment, error: paymentError } = await supabase
-            .from("payments")
-            .update({
-                status: "SUCCESS",
-                transaction_ref: transactionRef,
-                paid_at: now,
-                updated_at: now,
-            })
-            .eq("order_id", order.id)
-            .select("id")
-            .maybeSingle();
-
-        if (paymentError || !payment) {
-            throw paymentError ?? new Error("Payment not found.");
-        }
-
-        const { data: updatedOrder, error: updateError } = await supabase
-            .from("orders")
-            .update({ status: "PAID", updated_at: now })
-            .eq("id", order.id)
-            .eq("status", "PENDING")
-            .select("id, status, coupon_id, profile_id, system_id")
-            .maybeSingle();
-
-        if (updateError) throw updateError;
-
-        if (updatedOrder) {
-            paidOrder = updatedOrder;
-        } else {
-            const { data: concurrentOrder, error: concurrentOrderError } = await supabase
-                .from("orders")
-                .select("id, status, coupon_id, profile_id, system_id")
-                .eq("id", order.id)
-                .eq("status", "PAID")
-                .single();
-
-            if (concurrentOrderError || !concurrentOrder) {
-                throw concurrentOrderError ?? new Error("Payment finalization failed.");
-            }
-            paidOrder = concurrentOrder;
-        }
-    }
-
-    if (paidOrder.coupon_id) {
-        await applyCoupon({
-            supabase,
-            couponId: paidOrder.coupon_id,
-            orderId: paidOrder.id,
-            profileId: paidOrder.profile_id,
-            systemId: paidOrder.system_id,
-        });
-    }
-
-    return paidOrder;
+export interface ConfirmPaymobPaymentInput {
+    paymobOrderId: number;
+    transactionRef: string;
+    amountCents: number;
+    currency: "EGP";
 }
 
-export async function confirmOrderPayment(
-    orderId: string,
-    transactionRef: string
-) {
-    if (!transactionRef.trim()) {
-        throw new Error("Invalid transaction reference.");
+/**
+ * Payment confirmation and provisioning execute inside the database function.
+ * This keeps duplicate webhook deliveries and partial failures transactional.
+ */
+export async function confirmOrderPayment({
+    paymobOrderId,
+    transactionRef,
+    amountCents,
+    currency,
+}: ConfirmPaymobPaymentInput) {
+    if (
+        !Number.isSafeInteger(paymobOrderId) ||
+        paymobOrderId <= 0 ||
+        !Number.isSafeInteger(amountCents) ||
+        amountCents <= 0 ||
+        !transactionRef.trim()
+    ) {
+        throw new Error("Invalid payment confirmation.");
     }
 
-    const updatedOrder = await finalizePayment(orderId, transactionRef.trim());
-
-    // --------------------------------------------------
-    // 7. Provision
-    // --------------------------------------------------
-
-    const provisioning = await provisionOrder({
-        orderId: updatedOrder.id,
+    const { data, error } = await createAdminClient().rpc("confirm_paymob_payment", {
+        p_paymob_order_id: paymobOrderId,
+        p_transaction_ref: transactionRef.trim(),
+        p_amount_cents: amountCents,
+        p_currency: currency,
     });
 
-    return {
-        order: updatedOrder,
-        ...provisioning,
-    };
+    if (error) throw error;
+    return data;
+}
+
+export async function failOrderPayment({
+    paymobOrderId,
+    amountCents,
+    currency,
+}: Omit<ConfirmPaymobPaymentInput, "transactionRef">) {
+    const { data, error } = await createAdminClient().rpc("fail_paymob_payment", {
+        p_paymob_order_id: paymobOrderId,
+        p_amount_cents: amountCents,
+        p_currency: currency,
+    });
+    if (error) throw error;
+    return data;
 }

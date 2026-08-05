@@ -36,6 +36,7 @@ export const queryKeys = {
     orders: {
         all: ["orders"] as const,
         detail: (orderId?: string) => ["orders", "detail", orderId] as const,
+        paymentStatus: (orderId?: string) => ["orders", "payment-status", orderId] as const,
         pendingForSystem: (systemId?: string) => ["orders", "pending", "system", systemId] as const,
     },
     tags: {

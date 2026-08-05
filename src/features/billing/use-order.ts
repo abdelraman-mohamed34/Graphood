@@ -1,11 +1,18 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 
 import { getOrderAction } from "@/shared/lib/actions/billing/get-order.action";
 import { queryKeys } from "@/shared/lib/query";
 
 export function useOrder(orderId: string) {
+    const pollingStartedAt = useRef<number | null>(null);
+
+    useEffect(() => {
+        pollingStartedAt.current = Date.now();
+    }, [orderId]);
+
     const query = useQuery({
         queryKey: queryKeys.orders.detail(orderId),
 
@@ -24,10 +31,22 @@ export function useOrder(orderId: string) {
         },
 
         enabled: !!orderId,
-        refetchInterval: (query) => {
-            const order = query.state.data;
-            const isPaid = order?.status === "PAID";
-            return isPaid && !order.tenant_slug ? 1500 : false;
+        refetchInterval: (current) => {
+            const status = current.state.data?.status;
+            const terminal = ["PAID", "FAILED", "CANCELED", "REFUNDED", "EXPIRED"].includes(
+                String(status),
+            );
+
+            if (terminal) {
+                return false;
+            }
+
+            if (
+                pollingStartedAt.current !== null &&
+                Date.now() - pollingStartedAt.current >= 60_000
+            ) return false;
+
+            return 2_500;
         },
     });
 

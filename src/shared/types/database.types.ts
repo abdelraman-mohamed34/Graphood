@@ -420,6 +420,7 @@ export type Database = {
           order_id: string
           paid_at: string | null
           provider: Database["public"]["Enums"]["payment_provider"]
+          provider_integration_id: number | null
           provider_reference: string | null
           status: Database["public"]["Enums"]["payment_status"] | null
           transaction_ref: string | null
@@ -433,6 +434,7 @@ export type Database = {
           order_id: string
           paid_at?: string | null
           provider: Database["public"]["Enums"]["payment_provider"]
+          provider_integration_id?: number | null
           provider_reference?: string | null
           status?: Database["public"]["Enums"]["payment_status"] | null
           transaction_ref?: string | null
@@ -446,6 +448,7 @@ export type Database = {
           order_id?: string
           paid_at?: string | null
           provider?: Database["public"]["Enums"]["payment_provider"]
+          provider_integration_id?: number | null
           provider_reference?: string | null
           status?: Database["public"]["Enums"]["payment_status"] | null
           transaction_ref?: string | null
@@ -779,6 +782,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      confirm_paymob_payment: {
+        Args: {
+          p_amount_cents: number
+          p_currency: string
+          p_paymob_order_id: number
+          p_transaction_ref: string
+        }
+        Returns: Json
+      }
+      fail_paymob_payment: {
+        Args: {
+          p_amount_cents: number
+          p_currency: string
+          p_paymob_order_id: number
+        }
+        Returns: Json
+      }
       cleanup_expired_invitations: { Args: never; Returns: undefined }
       is_tenant_member: { Args: { target_tenant_id: string }; Returns: boolean }
       transfer_workspace_ownership: {

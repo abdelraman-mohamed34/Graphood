@@ -1,11 +1,14 @@
 "use client";
 
-import { use, useEffect } from "react";
+import { use, useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useOrder } from "@/features/billing/use-order";
-import { useCompletePayment } from "@/features/billing/use-complete-payment";
+import { useInitiatePayment } from "@/features/billing/use-initiate-payment";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { PaymentMethodSelector } from "./_components/payment-method-selector";
+import { OrderSummaryCard } from "./_components/order-summary-card";
+import { PriceBreakdownCard } from "./_components/price-breakdown-card";
 
 interface PageProps {
     params: Promise<{
@@ -19,7 +22,10 @@ export default function Page({ params }: PageProps) {
     const router = useRouter();
     const { order_id } = use(params);
     const { order, isLoading, error } = useOrder(order_id);
-    const { completePayment, isProcessing } = useCompletePayment();
+
+    const [selectedMethod, setSelectedMethod] = useState<"wallet" | "instapay">("wallet");
+    const { mutate: initiatePayment, isPending: isInitiating } = useInitiatePayment();
+
     const isPaid = order?.status === "PAID";
     const tenantSlug = order?.tenant_slug;
 
@@ -29,27 +35,10 @@ export default function Page({ params }: PageProps) {
         }
     }, [isPaid, router, tenantSlug]);
 
-    if (isLoading) {
-        return (
-            <div className="p-6">
-                {t("loading")}
-            </div>
-        );
-    }
+    if (isLoading) return <div className="p-6">{t("loading")}</div>;
+    if (error || !order) return <div className="p-6"><h1 className="text-xl font-semibold">{t("notFound")}</h1></div>;
 
-    if (error || !order) {
-        return (
-            <div className="p-6">
-                <h1 className="text-xl font-semibold">
-                    {t("notFound")}
-                </h1>
-            </div>
-        );
-    }
-
-    const system = Array.isArray(order.systems)
-        ? order.systems[0]
-        : order.systems;
+    const system = Array.isArray(order.systems) ? order.systems[0] : order.systems;
 
     if (isPaid) {
         return (
@@ -57,9 +46,7 @@ export default function Page({ params }: PageProps) {
                 <Loader2 className="size-8 animate-spin text-primary" aria-hidden="true" />
                 <div className="space-y-1">
                     <p className="font-semibold text-foreground">{t("alreadyPaidRedirecting")}</p>
-                    {!tenantSlug && (
-                        <p className="text-sm text-muted-foreground">{t("preparingDashboard")}</p>
-                    )}
+                    {!tenantSlug && <p className="text-sm text-muted-foreground">{t("preparingDashboard")}</p>}
                 </div>
             </div>
         );
@@ -91,106 +78,42 @@ export default function Page({ params }: PageProps) {
         return t.has(key) ? t(key) : value;
     };
 
-    const handleCompletePayment = async () => {
-        await completePayment(order.id);
+    const handleCompletePayment = () => {
+        initiatePayment({
+            orderId: order.id,
+            paymentMethod: selectedMethod,
+        });
     };
 
     return (
         <div className="mx-auto max-w-4xl space-y-6 p-6">
-            <h1 className="text-3xl font-bold">
-                {t("title")}
-            </h1>
+            <h1 className="text-3xl font-bold">{t("title")}</h1>
 
-            <section className="rounded-lg border p-6">
-                <h2 className="mb-4 text-xl font-semibold">
-                    {t("checkoutSummary")}
-                </h2>
-                <div className="space-y-2">
-                    <p>
-                        <strong>{t("system")}:</strong>{" "}
-                        {system?.name}
-                    </p>
-                    <p>
-                        <strong>{t("plan")}:</strong>{" "}
-                        {translateValue("plans", order.plan)}
-                    </p>
-                    <p>
-                        <strong>{t("license")}:</strong>{" "}
-                        {translateValue("licenses", order.license_type)}
-                    </p>
-                    <p>
-                        <strong>{t("status")}:</strong>{" "}
-                        {translateValue("statuses", order.status)}
-                    </p>
-                    <p>
-                        <strong>{t("currency")}:</strong>{" "}
-                        {order.currency}
-                    </p>
-                    <p>
-                        <strong>{t("amount")}:</strong>{" "}
-                        {formatMoney(order.amount)}
-                    </p>
-                </div>
-            </section>
+            <OrderSummaryCard
+                order={order}
+                system={system}
+                formatMoney={formatMoney}
+                translateValue={translateValue}
+            />
 
-            <section className="rounded-lg border p-6">
-                <h2 className="mb-4 text-xl font-semibold">
-                    {t("orderSummary")}
-                </h2>
-                <div className="space-y-2">
-                    <div className="flex justify-between">
-                        <span>{t("subtotal")}</span>
-                        <span>
-                            {formatMoney(pricing.subtotal)}
-                        </span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span>{t("discount")}</span>
-                        <span>
-                            {formatMoney(pricing.discount)}
-                        </span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span>{t("tax")}</span>
-                        <span>
-                            {formatMoney(pricing.tax)}
-                        </span>
-                    </div>
-                    <hr />
-                    <div className="flex justify-between font-semibold">
-                        <span>{t("total")}</span>
-                        <span>
-                            {formatMoney(pricing.total)}
-                        </span>
-                    </div>
-                </div>
-            </section>
+            <PriceBreakdownCard
+                pricing={pricing}
+                formatMoney={formatMoney}
+            />
 
-            <section className="rounded-lg border p-6">
-                <h2 className="mb-4 text-xl font-semibold">
-                    {t("paymentMethod")}
-                </h2>
-                <label className="flex items-center gap-2">
-                    <input
-                        type="radio"
-                        checked
-                        readOnly
-                    />
-                    <span>
-                        {t("mockPayment")}
-                    </span>
-                </label>
-            </section>
+            <PaymentMethodSelector
+                selectedMethod={selectedMethod}
+                onSelectMethod={setSelectedMethod}
+                disabled={isInitiating}
+            />
 
             <button
                 type="button"
                 onClick={handleCompletePayment}
-                disabled={isProcessing}
-                className="w-full rounded-lg bg-black px-4 py-3 text-white disabled:opacity-50"
+                disabled={isInitiating}
+                className="w-full rounded-lg bg-black px-4 py-3 font-medium text-white transition-opacity disabled:opacity-50 dark:bg-white dark:text-black"
             >
-                {isProcessing
-                    ? t("processing")
-                    : t("completePayment")}
+                {isInitiating ? t("processing") : t("completePayment")}
             </button>
         </div>
     );
