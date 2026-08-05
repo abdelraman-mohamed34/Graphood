@@ -38,7 +38,7 @@ export async function createInvitation({
             token: tokenHash,
             expires_at: expiresAt.toISOString(),
         })
-        .select()
+        .select('id, email, tenant_id, role, permissions, status, expires_at, created_at, message')
         .single()
 
     if (error) {

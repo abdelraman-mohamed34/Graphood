@@ -41,7 +41,7 @@ export async function updateProfile({
             updated_at: new Date().toISOString(),
         })
         .eq("id", profileId)
-        .select()
+        .select("id, first_name, last_name, email, phone, avatar_url, country, city, preferred_language, is_verified, sex, created_at, updated_at")
         .single();
 
     if (error) {

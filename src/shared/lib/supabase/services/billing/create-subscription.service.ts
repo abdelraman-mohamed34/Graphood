@@ -12,7 +12,7 @@ export async function createSubscription({
     // 1. Get order
     const { data: order, error: orderError } = await supabase
         .from("orders")
-        .select("*")
+        .select("id, status, subscription_id, profile_id, system_id, license_type, plan, amount, currency")
         .eq("id", orderId)
         .single();
 
@@ -32,7 +32,7 @@ export async function createSubscription({
         error: existingError,
     } = await supabase
         .from("subscriptions")
-        .select("*")
+        .select("id")
         .eq("order_id", order.id)
         .maybeSingle();
 
@@ -94,7 +94,7 @@ export async function createSubscription({
             auto_renew:
                 order.license_type === "SUBSCRIPTION",
         })
-        .select()
+        .select("id")
         .single();
 
     if (error) {

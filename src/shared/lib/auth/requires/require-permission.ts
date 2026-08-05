@@ -5,7 +5,9 @@ import { Permission } from "../../schemas/public/permissions";
 /**
  * Get final permissions for a user inside a tenant
  */
-export function getUserPermissions(membership: Membership): Permission[] {
+type PermissionMembership = Pick<Membership, "role" | "permissions">;
+
+export function getUserPermissions(membership: PermissionMembership): Permission[] {
     const base = rolePermissions[membership.role] || [];
 
     return Array.from(
@@ -20,7 +22,7 @@ export function getUserPermissions(membership: Membership): Permission[] {
  * Check single permission
  */
 export function hasPermission(
-    membership: Membership,
+    membership: PermissionMembership,
     permission: Permission
 ): boolean {
     return getUserPermissions(membership).includes(permission);
@@ -30,7 +32,7 @@ export function hasPermission(
  * Check multiple permissions (ANY)
  */
 export function hasAnyPermission(
-    membership: Membership,
+    membership: PermissionMembership,
     perms: Permission[]
 ): boolean {
     const userPerms = getUserPermissions(membership);
@@ -41,7 +43,7 @@ export function hasAnyPermission(
  * Check multiple permissions (ALL)
  */
 export function hasAllPermissions(
-    membership: Membership,
+    membership: PermissionMembership,
     perms: Permission[]
 ): boolean {
     const userPerms = getUserPermissions(membership);

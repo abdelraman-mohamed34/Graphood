@@ -1,13 +1,10 @@
-import {
-    DeveloperApiKey,
-    DeveloperApiKeyUpdate,
-} from "@/shared/lib/schemas/developer/api-keys";
+import { DeveloperApiKeyUpdate } from "@/shared/lib/schemas/developer/api-keys";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 
 export async function updateApiKey(
     id: string,
     data: DeveloperApiKeyUpdate
-): Promise<DeveloperApiKey> {
+) {
 
     const payload = {
         name: data.name,
@@ -24,7 +21,7 @@ export async function updateApiKey(
         .from("developer_api_keys")
         .update(payload)
         .eq("id", id)
-        .select()
+        .select("id, system_id, name, is_active, last_used_at, expires_at, created_at, updated_at")
         .single();
 
     if (error) {

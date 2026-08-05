@@ -4,7 +4,7 @@ export async function getInvitationByToken(supabase: SupabaseClient, token: stri
 
     const { data, error } = await supabase
         .from('invitations')
-        .select('*')
+        .select('id, email, tenant_id, role, invited_by, status')
         .eq('token', token)
         .eq('status', "PENDING")
         .gt('expires_at', new Date().toISOString())

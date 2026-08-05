@@ -11,10 +11,10 @@ import {
 import CancelInvitation from "./cancel-invitation";
 import ResendInvitation from "./resend-invitation";
 
-import { Invitation } from "@/shared/lib/schemas/invitations.schema";
+import type { PendingInvitationListItem } from "@/shared/lib/supabase/services/invitations/get-pending-invitations.service";
 
 type Props = {
-    invitation: Invitation;
+    invitation: PendingInvitationListItem;
 
     resendInvitation: (invitationId: string) => void;
 

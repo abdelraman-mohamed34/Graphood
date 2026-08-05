@@ -10,7 +10,7 @@ async function finalizePayment(
     const supabase = createAdminClient();
     const { data: order, error: orderError } = await supabase
         .from("orders")
-        .select("*")
+        .select("id, status, coupon_id, profile_id, system_id")
         .eq("id", orderId)
         .single();
 
@@ -44,7 +44,7 @@ async function finalizePayment(
             .update({ status: "PAID", updated_at: now })
             .eq("id", order.id)
             .eq("status", "PENDING")
-            .select()
+            .select("id, status, coupon_id, profile_id, system_id")
             .maybeSingle();
 
         if (updateError) throw updateError;
@@ -54,7 +54,7 @@ async function finalizePayment(
         } else {
             const { data: concurrentOrder, error: concurrentOrderError } = await supabase
                 .from("orders")
-                .select("*")
+                .select("id, status, coupon_id, profile_id, system_id")
                 .eq("id", order.id)
                 .eq("status", "PAID")
                 .single();

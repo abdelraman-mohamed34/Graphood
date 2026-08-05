@@ -5,11 +5,11 @@ import { BanIcon } from "lucide-react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { ConfirmationDialog } from "@/shared/_components/confirmation-dialog";
 
-import { Invitation } from "@/shared/lib/schemas/invitations.schema";
+import type { PendingInvitationListItem } from "@/shared/lib/supabase/services/invitations/get-pending-invitations.service";
 import { useTranslations } from "next-intl";
 
 type Props = {
-    invitation: Invitation;
+    invitation: PendingInvitationListItem;
 
     cancelInvitation: (invitationId: string) => void;
 

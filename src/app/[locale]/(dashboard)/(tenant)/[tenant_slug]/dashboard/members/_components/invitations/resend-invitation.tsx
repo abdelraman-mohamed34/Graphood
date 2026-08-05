@@ -4,11 +4,11 @@ import { MailIcon } from "lucide-react";
 
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
-import { Invitation } from "@/shared/lib/schemas/invitations.schema";
+import type { PendingInvitationListItem } from "@/shared/lib/supabase/services/invitations/get-pending-invitations.service";
 import { useTranslations } from "next-intl";
 
 type Props = {
-    invitation: Invitation;
+    invitation: PendingInvitationListItem;
 
     resendInvitation: (invitationId: string) => void;
 

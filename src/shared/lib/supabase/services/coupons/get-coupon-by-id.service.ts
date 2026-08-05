@@ -11,7 +11,7 @@ export async function getCouponById({
 }: GetCouponByIdParams) {
     const { data, error } = await supabase
         .from("coupons")
-        .select("*")
+        .select("id, system_id")
         .eq("id", couponId)
         .maybeSingle();
 

@@ -86,7 +86,7 @@ export async function createPendingOrder({
 
             description,
         })
-        .select()
+        .select("id")
         .single();
 
     if (orderError) {
@@ -105,7 +105,7 @@ export async function createPendingOrder({
 
             status: "PENDING",
         })
-        .select()
+        .select("id")
         .single();
 
     if (paymentError) {

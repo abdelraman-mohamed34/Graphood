@@ -1,4 +1,11 @@
 import { SupabaseClient } from '@supabase/supabase-js'
+import type { Tables } from '@/shared/types/database.types'
+
+export type PendingInvitationListItem = Pick<
+    Tables<'invitations'>,
+    'id' | 'email' | 'tenant_id' | 'role' | 'permissions' | 'status' |
+    'expires_at' | 'created_at' | 'message'
+>
 
 type Props = {
     supabase: SupabaseClient
@@ -11,7 +18,7 @@ export async function getPendingInvitations({
 }: Props) {
     const { data, error } = await supabase
         .from('invitations')
-        .select('*')
+        .select('id, email, tenant_id, role, permissions, status, expires_at, created_at, message')
         .eq('tenant_id', tenantId)
         .eq('status', 'PENDING')
         .gt('expires_at', new Date().toISOString())
@@ -21,5 +28,5 @@ export async function getPendingInvitations({
         throw error
     }
 
-    return data
+    return data satisfies PendingInvitationListItem[]
 }

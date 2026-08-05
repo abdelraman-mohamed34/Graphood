@@ -10,7 +10,7 @@ export async function deleteSystem(
         .from("systems")
         .delete()
         .eq("id", id)
-        .select()
+        .select("id")
         .single();
 
     if (error) {

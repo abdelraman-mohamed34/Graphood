@@ -13,7 +13,7 @@ export async function getPendingInvitationByEmail({
 }: Props) {
     const { data, error } = await supabase
         .from('invitations')
-        .select('*')
+        .select('id')
         .eq('tenant_id', tenantId)
         .eq('email', email)
         .eq('status', 'PENDING')

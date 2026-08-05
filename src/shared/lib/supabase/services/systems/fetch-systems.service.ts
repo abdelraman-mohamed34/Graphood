@@ -5,7 +5,7 @@ export async function getPublicSystemsClient(supabase: SupabaseClient): Promise<
 
     const { data, error } = await supabase
         .from("systems")
-        .select("*")
+        .select("id, name, slug, description, currency, status, icon_url, starter_price, pro_price, business_price, reseller_price, exclusive_price, tags")
         .eq("is_public", true)
         .eq("status", "ACTIVE")
         .order("created_at", { ascending: false });

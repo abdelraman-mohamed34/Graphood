@@ -1,11 +1,11 @@
 "use client";
 
-import type { Coupon } from "@/shared/lib/schemas/coupon/coupon.schema";
+import type { CouponListItem } from "@/shared/lib/supabase/services/coupons/get-coupons.service";
 
 import CouponCard from "./coupon-card";
 
 interface CouponsListProps {
-    coupons: Coupon[];
+    coupons: CouponListItem[];
     onDelete: (couponId: string) => void | Promise<void>;
     isDeleting?: boolean;
 }

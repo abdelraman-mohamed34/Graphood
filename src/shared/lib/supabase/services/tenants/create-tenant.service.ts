@@ -40,7 +40,7 @@ export async function createTenant({
                 timezone: "Africa/Cairo"
             }
         ])
-        .select()
+        .select("id, system_id, owner_id, subscription_id, name, slug, status, email, timezone")
         .single();
 
     if (tenantError) {

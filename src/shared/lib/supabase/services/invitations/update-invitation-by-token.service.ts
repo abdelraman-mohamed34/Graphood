@@ -13,7 +13,7 @@ export async function updateInvitationByToken(
             updated_at: new Date().toISOString()
         })
         .eq('token', token)
-        .select();
+        .select("id, status");
 
     if (error) {
         return { data: null, error };

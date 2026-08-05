@@ -10,7 +10,7 @@ export async function createMembershipFromTenant({
     // 1. Get tenant
     const { data: tenant, error: tenantError } = await supabase
         .from("tenants")
-        .select("*")
+        .select("id, subscription_id")
         .eq("id", tenantId)
         .single();
 
@@ -40,7 +40,7 @@ export async function createMembershipFromTenant({
     const { data: existingMembership, error: membershipCheckError } =
         await supabase
             .from("memberships")
-            .select("*")
+            .select("id")
             .eq("tenant_id", tenant.id)
             .eq("profile_id", profileId)
             .maybeSingle();
@@ -66,7 +66,7 @@ export async function createMembershipFromTenant({
                 status: "ACTIVE",
 
             })
-            .select()
+            .select("id")
             .single();
 
     if (membershipError) {

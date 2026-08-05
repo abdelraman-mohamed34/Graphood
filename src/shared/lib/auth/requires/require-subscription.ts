@@ -13,7 +13,7 @@ const ACTIVE_STATUSES = new Set([
 ]);
 
 export function requireSubscription(
-    subscription: Subscription | null | undefined
+    subscription: Pick<Subscription, "plan_name" | "license_type" | "status"> | null | undefined
 ) {
     const planName =
         subscription?.plan_name ?? "STARTER";

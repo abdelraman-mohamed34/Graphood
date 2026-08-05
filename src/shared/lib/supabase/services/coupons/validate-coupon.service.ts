@@ -20,7 +20,7 @@ interface ValidateCouponParams {
 }
 
 export interface ValidatedCouponResult {
-    coupon: Awaited<ReturnType<typeof getCouponByCode>>;
+    coupon: NonNullable<Awaited<ReturnType<typeof getCouponByCode>>>;
 
     originalAmount: number;
     discountAmount: number;
@@ -151,7 +151,7 @@ export async function validateCoupon({
     const { count: userUsageCount, error: usageError } =
         await supabase
             .from("coupon_usages")
-            .select("*", {
+            .select("id", {
                 head: true,
                 count: "exact",
             })

@@ -14,7 +14,7 @@ export async function getCouponByCode(
 
     const { data, error } = await supabase
         .from("coupons")
-        .select("*")
+        .select("id, code, system_id, discount_type, discount_value, max_discount, license_type, plan, min_order_amount, max_uses, max_uses_per_user, used_count, one_use_per_system, starts_at, expires_at, is_active")
         .eq("code", normalizedCode)
         .maybeSingle();
 

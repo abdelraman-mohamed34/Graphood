@@ -2,11 +2,11 @@
 
 import InvitationActions from "./invitation-actions";
 
-import { Invitation } from "@/shared/lib/schemas/invitations.schema";
+import type { PendingInvitationListItem } from "@/shared/lib/supabase/services/invitations/get-pending-invitations.service";
 import { useLocale, useTranslations } from "next-intl";
 
 type Props = {
-    invitation: Invitation;
+    invitation: PendingInvitationListItem;
 
     resendInvitation: (invitationId: string) => void;
 

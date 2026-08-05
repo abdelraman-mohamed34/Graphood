@@ -225,7 +225,7 @@ export async function createCoupon({
         await supabase
             .from("coupons")
             .insert(insert)
-            .select()
+            .select("id")
             .single();
 
     if (error) {

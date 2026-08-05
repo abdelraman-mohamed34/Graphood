@@ -11,11 +11,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import type { Coupon } from "@/shared/lib/schemas/coupon/coupon.schema";
+import type { CouponListItem } from "@/shared/lib/supabase/services/coupons/get-coupons.service";
 import { useTranslations } from "next-intl";
 
 interface CouponCardProps {
-    coupon: Coupon;
+    coupon: CouponListItem;
     onDelete: (id: string) => void | Promise<void>;
     isDeleting?: boolean;
 }

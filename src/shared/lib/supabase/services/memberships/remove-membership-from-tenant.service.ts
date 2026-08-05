@@ -18,7 +18,7 @@ export async function removeMemberFromTenant(
 
     const { data: targetMembership, error: targetError } = await supabase
         .from("memberships")
-        .select("*")
+        .select("id, profile_id, tenant_id, role, permissions")
         .eq("id", membershipId)
         .single();
 
@@ -33,7 +33,7 @@ export async function removeMemberFromTenant(
         const { data: currentMembership, error: currentError } =
             await supabase
                 .from("memberships")
-                .select("*")
+                .select("id, profile_id, tenant_id, role, permissions")
                 .eq("profile_id", user.id)
                 .eq("tenant_id", targetMembership.tenant_id)
                 .single();

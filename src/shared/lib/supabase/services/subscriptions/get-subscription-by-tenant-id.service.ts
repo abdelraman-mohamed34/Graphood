@@ -26,7 +26,7 @@ export async function getSubscriptionByTenantID<T = Subscription>(
     const { data: subscription, error: subscriptionError } =
         await supabase
             .from("subscriptions")
-            .select("*")
+            .select("id, plan_name, license_type, billing_interval, status")
             .eq("id", tenant.subscription_id)
             .maybeSingle();
 

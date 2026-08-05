@@ -13,7 +13,7 @@ export async function createApiKey(
     data: DeveloperApiKeyInsert
 ): Promise<{
     apiKey: string;
-    record: DeveloperApiKey;
+    record: Pick<DeveloperApiKey, "id" | "system_id" | "name" | "is_active" | "expires_at" | "created_at">;
 }> {
     const apiKey = generateApiKey();
     const key_hash = hashApiKey(apiKey);
@@ -31,7 +31,7 @@ export async function createApiKey(
     const { data: record, error } = await supabase
         .from("developer_api_keys")
         .insert([payload])
-        .select()
+        .select("id, system_id, name, is_active, expires_at, created_at")
         .single();
 
     if (error) {

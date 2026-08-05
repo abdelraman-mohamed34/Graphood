@@ -6,7 +6,7 @@ export async function getInvitationById(
 ) {
     const { data, error } = await supabase
         .from('invitations')
-        .select('*')
+        .select('id, tenant_id, email, token, message')
         .eq('id', id)
         .eq('status', 'PENDING')
         .gt('expires_at', new Date().toISOString())

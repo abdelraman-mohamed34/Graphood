@@ -9,7 +9,7 @@ export async function createTenantFromSubscription({
 
     const { data: subscription, error: subscriptionError } = await supabase
         .from("subscriptions")
-        .select("*")
+        .select("id, profile_id, system_id")
         .eq("id", subscriptionId)
         .single();
 
@@ -26,7 +26,7 @@ export async function createTenantFromSubscription({
         error: existingTenantError,
     } = await supabase
         .from("tenants")
-        .select("*")
+        .select("id")
         .eq("subscription_id", subscription.id)
         .maybeSingle();
 
@@ -61,7 +61,7 @@ export async function createTenantFromSubscription({
             email: profile.email,
             status: "ACTIVE",
         })
-        .select()
+        .select("id")
         .single();
 
     if (tenantError) {

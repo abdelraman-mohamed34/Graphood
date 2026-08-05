@@ -14,7 +14,7 @@ export async function updateInvitationById(
         })
         .eq("id", id)
         .eq("tenant_id", tenantId)
-        .select()
+        .select("id, status")
         .single();
 
     if (error) {

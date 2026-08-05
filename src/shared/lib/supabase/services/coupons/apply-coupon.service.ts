@@ -68,7 +68,7 @@ export async function applyCoupon({
                 profile_id: profileId,
                 system_id: systemId,
             })
-            .select()
+            .select("id")
             .single();
 
     if (usageError) {
