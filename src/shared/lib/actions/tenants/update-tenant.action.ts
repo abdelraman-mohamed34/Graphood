@@ -11,6 +11,9 @@ import {
     UpdateTenant,
     updateTenantSchema,
 } from "../../schemas/tenants.schema";
+import { z } from "zod";
+
+const tenantContextSchema = z.object({ tenantSlug: z.string().min(1).max(100), locale: z.enum(["ar", "en"]) }).strict();
 
 type UpdateTenantActionProps = {
     tenantSlug: string;
@@ -24,6 +27,7 @@ export async function updateTenantAction({
     data,
 }: UpdateTenantActionProps) {
     try {
+        const context = tenantContextSchema.parse({ tenantSlug, locale });
         const parsed = updateTenantSchema.safeParse(data);
 
         if (!parsed.success) {
@@ -34,9 +38,9 @@ export async function updateTenantAction({
             };
         }
 
-        const { user, supabase } = await requireUser(locale);
+        const { user, supabase } = await requireUser(context.locale);
 
-        const tenant = await getTenantBySlug(tenantSlug);
+        const tenant = await getTenantBySlug(context.tenantSlug);
 
         if (!tenant) {
             return {
@@ -47,7 +51,7 @@ export async function updateTenantAction({
 
         const membership = await requireMembership({
             supabase,
-            tenantSlug,
+            tenantSlug: context.tenantSlug,
             userId: user.id,
             redirectTo: `/${locale}/workspaces`,
         });

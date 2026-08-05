@@ -4,6 +4,9 @@ import { hasPermission } from "@/shared/lib/auth/requires/require-permission";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
 import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
 import { removeMemberFromTenant } from "@/shared/lib/supabase/services/memberships/remove-membership-from-tenant.service";
+import { z } from "zod";
+
+const removeMemberSchema = z.object({ locale: z.enum(["ar", "en"]), tenantSlug: z.string().min(1).max(100), membershipId: z.string().uuid() }).strict();
 
 export async function removeMemberAction(
     locale: string,
@@ -11,16 +14,17 @@ export async function removeMemberAction(
     membershipId: string
 ) {
     try {
-        const { supabase, user } = await requireUser(locale);
+        const input = removeMemberSchema.parse({ locale, tenantSlug, membershipId });
+        const { supabase, user } = await requireUser(input.locale);
 
         const currentMembership = await requireMembership({
-            tenantSlug,
+            tenantSlug: input.tenantSlug,
             userId: user.id,
             supabase,
         });
 
         const isSelfRemoval =
-            currentMembership.id === membershipId;
+            currentMembership.id === input.membershipId;
 
         // OWNER cannot remove himself
         if (
@@ -47,7 +51,7 @@ export async function removeMemberAction(
 
         await removeMemberFromTenant(
             supabase,
-            membershipId
+            input.membershipId
         );
 
         return {

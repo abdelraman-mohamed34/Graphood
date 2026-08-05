@@ -24,9 +24,19 @@
                 "title": "Create New System",
                 "subtitle": "Create your system to start integrating with Graphood.",
                 "fields": {
-                    "name": { "label": "System Name", "placeholder": "My Awesome CRM" },
-                    "slug": { "label": "Slug", "placeholder": "awesome-crm", "description": "Used in public URLs." },
-                    "description": { "label": "Description", "placeholder": "Describe your system capabilities and features..." },
+                    "name": {
+                        "label": "System Name",
+                        "placeholder": "My Awesome CRM"
+                    },
+                    "slug": {
+                        "label": "Slug",
+                        "placeholder": "awesome-crm",
+                        "description": "Used in public URLs."
+                    },
+                    "description": {
+                        "label": "Description",
+                        "placeholder": "Describe your system capabilities and features..."
+                    },
                     "category": {
                         "label": "Tags and categories",
                         "searchPlaceholder": "Search tags and categories...",
@@ -34,11 +44,21 @@
                         "empty": "No tags found.",
                         "remove": "Remove {category}"
                     },
-                    "starterPrice": { "label": "Starter Price (EGP)" },
-                    "proPrice": { "label": "Pro Price (EGP)" },
-                    "businessPrice": { "label": "Business Price (EGP)" },
-                    "resellerPrice": { "label": "Reseller Price (EGP)" },
-                    "exclusivePrice": { "label": "Exclusive Price (EGP)" }
+                    "starterPrice": {
+                        "label": "Starter Price (EGP)"
+                    },
+                    "proPrice": {
+                        "label": "Pro Price (EGP)"
+                    },
+                    "businessPrice": {
+                        "label": "Business Price (EGP)"
+                    },
+                    "resellerPrice": {
+                        "label": "Reseller Price (EGP)"
+                    },
+                    "exclusivePrice": {
+                        "label": "Exclusive Price (EGP)"
+                    }
                 },
                 "pricing": {
                     "subscriptionTitle": "Subscription Pricing",
@@ -46,7 +66,10 @@
                     "licenseTitle": "License Pricing",
                     "licenseSubtitle": "Set one-time purchase or special license fees."
                 },
-                "notifications": { "success": "System created successfully.", "error": "Failed to create system." },
+                "notifications": {
+                    "success": "System created successfully.",
+                    "error": "Failed to create system."
+                },
                 "validation": {
                     "nameMin": "System name must be at least 3 characters.",
                     "slugMin": "Slug must be at least 5 characters.",
@@ -114,14 +137,38 @@
             "processing": "Processing order...",
             "continueToCheckout": "Continue to checkout ({price} {currency})",
             "plans": {
-                "starter": { "name": "Starter", "tagline": "Perfect for individuals", "description": "Ideal for freelancers and personal projects. Includes essential features to get started quickly." },
-                "pro": { "name": "Pro", "tagline": "Best for growing businesses", "description": "Designed for startups and growing teams with advanced features, reports, and API access." },
-                "business": { "name": "Business", "tagline": "Built for organizations", "description": "A complete solution for companies that need maximum scalability, collaboration, and enterprise capabilities." }
+                "starter": {
+                    "name": "Starter",
+                    "tagline": "Perfect for individuals",
+                    "description": "Ideal for freelancers and personal projects. Includes essential features to get started quickly."
+                },
+                "pro": {
+                    "name": "Pro",
+                    "tagline": "Best for growing businesses",
+                    "description": "Designed for startups and growing teams with advanced features, reports, and API access."
+                },
+                "business": {
+                    "name": "Business",
+                    "tagline": "Built for organizations",
+                    "description": "A complete solution for companies that need maximum scalability, collaboration, and enterprise capabilities."
+                }
             },
             "licenses": {
-                "subscription": { "label": "Subscription", "shortDescription": "Recurring monthly subscription", "description": "Pay a recurring subscription fee and choose the plan that best fits your business. Includes continuous updates and support while your subscription is active." },
-                "reseller": { "label": "Reseller asset", "shortDescription": "One-time purchase with resale rights", "description": "Purchase the system once and gain the right to resell it to your own customers. No recurring subscription is required." },
-                "exclusive": { "label": "Exclusive buyout", "shortDescription": "Exclusive ownership", "description": "Acquire exclusive ownership of the system. After purchase, it will no longer be available for sale to other customers." }
+                "subscription": {
+                    "label": "Subscription",
+                    "shortDescription": "Recurring monthly subscription",
+                    "description": "Pay a recurring subscription fee and choose the plan that best fits your business. Includes continuous updates and support while your subscription is active."
+                },
+                "reseller": {
+                    "label": "Reseller asset",
+                    "shortDescription": "One-time purchase with resale rights",
+                    "description": "Purchase the system once and gain the right to resell it to your own customers. No recurring subscription is required."
+                },
+                "exclusive": {
+                    "label": "Exclusive buyout",
+                    "shortDescription": "Exclusive ownership",
+                    "description": "Acquire exclusive ownership of the system. After purchase, it will no longer be available for sale to other customers."
+                }
             },
             "features": {
                 "admins": "Up to {count, plural, one {# admin} other {# admins}}",
@@ -132,7 +179,10 @@
                 "fullApiAccess": "Full API access",
                 "noApiAccess": "No API access"
             },
-            "coupon": { "label": "Coupon code", "apply": "Apply" },
+            "coupon": {
+                "label": "Coupon code",
+                "apply": "Apply"
+            },
             "summary": {
                 "licenseMode": "License mode",
                 "selectedTier": "Selected tier",
@@ -165,6 +215,23 @@
             "description": "Enable seamless integration and tools with {name} workspace features.",
             "viewDetails": "View Details"
         }
+    },
+    "help": {
+        "title": "Help Center",
+        "subtitle": "Find answers, FAQs, and support contact options.",
+        "searchPlaceholder": "Search help articles...",
+        "faqTitle": "Frequently Asked Questions",
+        "faqs": {
+            "q1": "How do I install a system?",
+            "a1": "Find the system you need, then click View Details to install and configure it for your workspace.",
+            "q2": "Can I manage subscriptions from here?",
+            "a2": "Billing and subscription management are handled in the workspace settings, not the help center.",
+            "q3": "How do I contact support?",
+            "a3": "Use the email button below or send your request to support@graphood.com."
+        },
+        "contactSupport": "Contact support",
+        "contactDescription": "Need help? Our team is ready to assist with setup, billing, and troubleshooting.",
+        "sendEmail": "Send email"
     },
     "developerOverview": {
         "systemNotFound": "System not found or could not be loaded.",
@@ -295,9 +362,19 @@
             "title": "Create New System",
             "subtitle": "Create your system to start integrating with Graphood.",
             "fields": {
-                "name": { "label": "System Name", "placeholder": "My Awesome CRM" },
-                "slug": { "label": "Slug", "placeholder": "awesome-crm", "description": "Used in public URLs." },
-                "description": { "label": "Description", "placeholder": "Describe your system capabilities and features..." },
+                "name": {
+                    "label": "System Name",
+                    "placeholder": "My Awesome CRM"
+                },
+                "slug": {
+                    "label": "Slug",
+                    "placeholder": "awesome-crm",
+                    "description": "Used in public URLs."
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Describe your system capabilities and features..."
+                },
                 "category": {
                     "label": "Categories",
                     "placeholder": "Select categories",
@@ -307,12 +384,26 @@
                     "selectedCount": "{count, plural, one {# selected} other {# selected}}",
                     "remove": "Remove {category}"
                 },
-                "tags": { "label": "Tags", "placeholder": "crm, sales, business", "description": "Separate tags with commas." },
-                "starterPrice": { "label": "Starter Price (EGP)" },
-                "proPrice": { "label": "Pro Price (EGP)" },
-                "businessPrice": { "label": "Business Price (EGP)" },
-                "resellerPrice": { "label": "Reseller Price (EGP)" },
-                "exclusivePrice": { "label": "Exclusive Price (EGP)" }
+                "tags": {
+                    "label": "Tags",
+                    "placeholder": "crm, sales, business",
+                    "description": "Separate tags with commas."
+                },
+                "starterPrice": {
+                    "label": "Starter Price (EGP)"
+                },
+                "proPrice": {
+                    "label": "Pro Price (EGP)"
+                },
+                "businessPrice": {
+                    "label": "Business Price (EGP)"
+                },
+                "resellerPrice": {
+                    "label": "Reseller Price (EGP)"
+                },
+                "exclusivePrice": {
+                    "label": "Exclusive Price (EGP)"
+                }
             },
             "pricing": {
                 "subscriptionTitle": "Subscription Pricing",
@@ -320,7 +411,10 @@
                 "licenseTitle": "License Pricing",
                 "licenseSubtitle": "Set one-time purchase or special license fees."
             },
-            "notifications": { "success": "System created successfully.", "error": "Failed to create system." },
+            "notifications": {
+                "success": "System created successfully.",
+                "error": "Failed to create system."
+            },
             "submit": "Create System",
             "submitLoading": "Creating..."
         }
@@ -367,9 +461,23 @@
         "paymentFailed": "Payment could not be completed. Please try again.",
         "paymentSetupError": "Payment processing is temporarily unavailable. Please contact support.",
         "notApplicable": "Not applicable",
-        "plans": { "starter": "Starter", "pro": "Pro", "business": "Business" },
-        "licenses": { "subscription": "Subscription", "reseller": "Reseller", "exclusive": "Exclusive" },
-        "statuses": { "pending": "Pending", "paid": "Paid", "failed": "Failed", "cancelled": "Cancelled", "refunded": "Refunded" }
+        "plans": {
+            "starter": "Starter",
+            "pro": "Pro",
+            "business": "Business"
+        },
+        "licenses": {
+            "subscription": "Subscription",
+            "reseller": "Reseller",
+            "exclusive": "Exclusive"
+        },
+        "statuses": {
+            "pending": "Pending",
+            "paid": "Paid",
+            "failed": "Failed",
+            "cancelled": "Cancelled",
+            "refunded": "Refunded"
+        }
     },
     "developerCoupons": {
         "header": {
@@ -404,14 +512,23 @@
             "activeDescription": "Coupon can be redeemed immediately."
         },
         "feedback": {
-            "created": "Coupon created.", "createFailed": "Failed to create coupon.",
-            "deleted": "Coupon deleted.", "deleteFailed": "Failed to delete coupon."
+            "created": "Coupon created.",
+            "createFailed": "Failed to create coupon.",
+            "deleted": "Coupon deleted.",
+            "deleteFailed": "Failed to delete coupon."
         },
         "card": {
-            "percentOff": "{value}% off", "fixedOff": "{value} fixed discount",
-            "active": "Active", "inactive": "Inactive", "license": "License",
-            "plan": "Plan", "all": "All", "uses": "Uses", "expires": "Expires",
-            "never": "Never", "delete": "Delete"
+            "percentOff": "{value}% off",
+            "fixedOff": "{value} fixed discount",
+            "active": "Active",
+            "inactive": "Inactive",
+            "license": "License",
+            "plan": "Plan",
+            "all": "All",
+            "uses": "Uses",
+            "expires": "Expires",
+            "never": "Never",
+            "delete": "Delete"
         }
     },
     "footer": {
@@ -498,67 +615,278 @@
             "unauthorizedAccess": "Sorry, you do not have permission to access this workspace."
         },
         "sidebar": {
-            "quickCreate": "Quick Create", "inbox": "Inbox",
-            "documents": "Documents", "more": "More", "open": "Open", "share": "Share", "delete": "Delete",
-            "guestUser": "Guest User", "noEmail": "No email", "guestInitials": "GU", "account": "Account",
-            "billing": "Billing", "notifications": "Notifications", "logout": "Log out",
-            "quickview": "Quick view", "subscription": "Subscription", "members": "Members", "settings": "Settings",
-            "dataLibrary": "Data Library", "reports": "Reports", "wordAssistant": "Word Assistant", "getHelp": "Get Help"
+            "quickCreate": "Quick Create",
+            "inbox": "Inbox",
+            "documents": "Documents",
+            "more": "More",
+            "open": "Open",
+            "share": "Share",
+            "delete": "Delete",
+            "guestUser": "Guest User",
+            "noEmail": "No email",
+            "guestInitials": "GU",
+            "account": "Account",
+            "billing": "Billing",
+            "notifications": "Notifications",
+            "logout": "Log out",
+            "quickview": "Quick view",
+            "subscription": "Subscription",
+            "members": "Members",
+            "settings": "Settings",
+            "dataLibrary": "Data Library",
+            "reports": "Reports",
+            "wordAssistant": "Word Assistant",
+            "getHelp": "Get Help"
         },
         "subscription": {
-            "intervals": { "monthly": "Monthly", "yearly": "Yearly", "one_time": "One time" },
-            "features": { "title": "Feature Availability", "description": "Features currently available for your workspace.", "reports": "Reports", "aiAssistant": "AI Assistant", "apiAccess": "API Access", "multiMembers": "Multiple Members", "whiteLabel": "White Label", "enabled": "Enabled", "unavailable": "Unavailable" },
-            "title": "Subscription", "unlimited": "Unlimited",
-            "plans": { "starter": "Starter", "pro": "Pro", "business": "Business" },
-            "licenses": { "subscription": "Subscription", "reseller": "Reseller", "exclusive": "Exclusive" },
-            "statuses": { "active": "Active", "trial": "Trial", "past_due": "Past due", "canceled": "Canceled", "expired": "Expired", "unknown": "Unknown" },
-            "overview": { "title": "Subscription Overview", "description": "Manage your current workspace subscription.", "currentPlan": "Current Plan", "licenseType": "License Type", "status": "Status", "renewalDate": "Renewal Date", "billingInterval": "Billing Interval" },
-            "usage": { "title": "Usage", "description": "Monitor your current workspace limits.", "administrators": "Administrators", "unlimitedAdministrators": "Your license has unlimited administrator accounts.", "remainingAdministrators": "{count, plural, one {# administrator remaining.} other {# administrators remaining.}}" },
-            "limits": { "title": "Plan Limits", "description": "Current limits included with your subscription.", "administrators": "Administrators", "members": "Members", "storage": "Storage", "storageValue": "{value, number} GB" },
-            "billing": { "title": "Billing Summary", "description": "Overview of your current billing information.", "currentPrice": "Current Price", "currency": "Currency", "billingCycle": "Billing Cycle", "nextPayment": "Next Payment" }
+            "intervals": {
+                "monthly": "Monthly",
+                "yearly": "Yearly",
+                "one_time": "One time"
+            },
+            "features": {
+                "title": "Feature Availability",
+                "description": "Features currently available for your workspace.",
+                "reports": "Reports",
+                "aiAssistant": "AI Assistant",
+                "apiAccess": "API Access",
+                "multiMembers": "Multiple Members",
+                "whiteLabel": "White Label",
+                "enabled": "Enabled",
+                "unavailable": "Unavailable"
+            },
+            "title": "Subscription",
+            "unlimited": "Unlimited",
+            "plans": {
+                "starter": "Starter",
+                "pro": "Pro",
+                "business": "Business"
+            },
+            "licenses": {
+                "subscription": "Subscription",
+                "reseller": "Reseller",
+                "exclusive": "Exclusive"
+            },
+            "statuses": {
+                "active": "Active",
+                "trial": "Trial",
+                "past_due": "Past due",
+                "canceled": "Canceled",
+                "expired": "Expired",
+                "unknown": "Unknown"
+            },
+            "overview": {
+                "title": "Subscription Overview",
+                "description": "Manage your current workspace subscription.",
+                "currentPlan": "Current Plan",
+                "licenseType": "License Type",
+                "status": "Status",
+                "renewalDate": "Renewal Date",
+                "billingInterval": "Billing Interval"
+            },
+            "usage": {
+                "title": "Usage",
+                "description": "Monitor your current workspace limits.",
+                "administrators": "Administrators",
+                "unlimitedAdministrators": "Your license has unlimited administrator accounts.",
+                "remainingAdministrators": "{count, plural, one {# administrator remaining.} other {# administrators remaining.}}"
+            },
+            "limits": {
+                "title": "Plan Limits",
+                "description": "Current limits included with your subscription.",
+                "administrators": "Administrators",
+                "members": "Members",
+                "storage": "Storage",
+                "storageValue": "{value, number} GB"
+            },
+            "billing": {
+                "title": "Billing Summary",
+                "description": "Overview of your current billing information.",
+                "currentPrice": "Current Price",
+                "currency": "Currency",
+                "billingCycle": "Billing Cycle",
+                "nextPayment": "Next Payment"
+            }
         },
         "members": {
-            "actions": { "transfer": "Transfer Ownership", "transferDescription": "Transfer workspace ownership to {name}? You will become an Admin.", "transferConfirm": "Transfer", "leave": "Leave Workspace", "remove": "Remove Member" },
-            "invitations": { "title": "Pending Invitations", "description": "Manage invitations waiting to be accepted.", "expires": "Expires", "loadError": "Failed to load invitations.", "emptyTitle": "No pending invitations", "emptyDescription": "All invitations have been accepted or expired.", "cancel": "Cancel Invitation", "cancelDescription": "Are you sure you want to cancel the invitation sent to <strong>{email}</strong>? This user will no longer be able to accept it.", "resend": "Resend Invitation", "resending": "Resending..." },
-            "title": "Members", "system": "System",
-            "table": { "member": "Member", "name": "Name", "email": "Email", "role": "Role", "status": "Status", "invitedBy": "Invited By", "actions": "Actions" },
-            "roles": { "owner": "Owner", "admin": "Admin", "member": "Member" },
-            "statuses": { "active": "Active", "pending": "Pending", "suspended": "Suspended", "inactive": "Inactive" },
-            "empty": { "title": "No members found.", "description": "Invite your first member to collaborate on this workspace." },
-            "permissions": { "read": "Read", "write": "Write", "delete": "Delete", "manage": "Manage" },
-            "invite": { "title": "Invite Member", "action": "Invite", "description": "Invite a new collaborator to join your workspace and assign their role.", "email": "Email Address", "emailPlaceholder": "colleague@example.com", "role": "Workspace Role", "selectRole": "Select a role", "roleDescription": "Roles define the level of access and permissions this member will have.", "message": "Personal Invitation Message", "messagePlaceholder": "Write a welcome message or describe their work (optional)...", "sending": "Sending...", "send": "Send Invitation", "feedback": { "sent": "Invitation sent successfully!", "alreadyMember": "This email is already a member of this workspace.", "invalid": "The provided input or role is invalid.", "unauthorized": "You do not have permission to send invitations.", "overLimit": "You have reached the administrator limit for your current plan.", "exists": "An active invitation has already been sent to this email.", "failed": "Failed to send invitation. Please try again.", "connectionError": "A server connection error occurred. Please try again later." } }
+            "actions": {
+                "transfer": "Transfer Ownership",
+                "transferDescription": "Transfer workspace ownership to {name}? You will become an Admin.",
+                "transferConfirm": "Transfer",
+                "leave": "Leave Workspace",
+                "remove": "Remove Member"
+            },
+            "invitations": {
+                "title": "Pending Invitations",
+                "description": "Manage invitations waiting to be accepted.",
+                "expires": "Expires",
+                "loadError": "Failed to load invitations.",
+                "emptyTitle": "No pending invitations",
+                "emptyDescription": "All invitations have been accepted or expired.",
+                "cancel": "Cancel Invitation",
+                "cancelDescription": "Are you sure you want to cancel the invitation sent to <strong>{email}</strong>? This user will no longer be able to accept it.",
+                "resend": "Resend Invitation",
+                "resending": "Resending..."
+            },
+            "title": "Members",
+            "system": "System",
+            "table": {
+                "member": "Member",
+                "name": "Name",
+                "email": "Email",
+                "role": "Role",
+                "status": "Status",
+                "invitedBy": "Invited By",
+                "actions": "Actions"
+            },
+            "roles": {
+                "owner": "Owner",
+                "admin": "Admin",
+                "member": "Member"
+            },
+            "statuses": {
+                "active": "Active",
+                "pending": "Pending",
+                "suspended": "Suspended",
+                "inactive": "Inactive"
+            },
+            "empty": {
+                "title": "No members found.",
+                "description": "Invite your first member to collaborate on this workspace."
+            },
+            "permissions": {
+                "read": "Read",
+                "write": "Write",
+                "delete": "Delete",
+                "manage": "Manage"
+            },
+            "invite": {
+                "title": "Invite Member",
+                "action": "Invite",
+                "description": "Invite a new collaborator to join your workspace and assign their role.",
+                "email": "Email Address",
+                "emailPlaceholder": "colleague@example.com",
+                "role": "Workspace Role",
+                "selectRole": "Select a role",
+                "roleDescription": "Roles define the level of access and permissions this member will have.",
+                "message": "Personal Invitation Message",
+                "messagePlaceholder": "Write a welcome message or describe their work (optional)...",
+                "sending": "Sending...",
+                "send": "Send Invitation",
+                "feedback": {
+                    "sent": "Invitation sent successfully!",
+                    "alreadyMember": "This email is already a member of this workspace.",
+                    "invalid": "The provided input or role is invalid.",
+                    "unauthorized": "You do not have permission to send invitations.",
+                    "overLimit": "You have reached the administrator limit for your current plan.",
+                    "exists": "An active invitation has already been sent to this email.",
+                    "failed": "Failed to send invitation. Please try again.",
+                    "connectionError": "A server connection error occurred. Please try again later."
+                }
+            }
         },
         "settings": {
-            "cancel": "Cancel", "continue": "Continue",
-            "localization": { "title": "Localization Settings", "selectTimezone": "Select timezone", "save": "Save Location" },
-            "danger": {
-                "title": "Danger Zone", "description": "These actions are permanent and should be used carefully.",
-                "delete": { "title": "Delete Workspace", "description": "Permanently delete this workspace and all of its data. This action cannot be undone.", "action": "Delete Workspace", "confirmTitle": "Delete Workspace?", "notImplemented": "Workspace deletion is not implemented yet." },
-                "leave": { "title": "Leave Workspace", "description": "Leave this workspace. You can be invited again later.", "action": "Leave Workspace", "confirmTitle": "Leave Workspace?", "notImplemented": "This feature is not implemented yet." }
+            "cancel": "Cancel",
+            "continue": "Continue",
+            "localization": {
+                "title": "Localization Settings",
+                "selectTimezone": "Select timezone",
+                "save": "Save Location"
             },
-            "title": "Settings", "save": "Save Changes", "saving": "Saving...",
-            "fields": { "name": "Workspace Name", "slug": "Slug", "email": "Email", "phone": "Phone", "country": "Country", "city": "City", "address": "Address", "timezone": "Timezone", "primaryColor": "Primary Color" },
-            "logo": { "title": "Workspace Logo", "alt": "Workspace Logo", "none": "No Logo", "choose": "Click to choose a logo", "requirements": "PNG, JPG, WEBP • Max 2 MB", "selected": "New image selected" },
-            "feedback": { "invalidImageType": "Only PNG, JPG, JPEG and WEBP images are allowed.", "imageTooLarge": "Image size must not exceed 2 MB.", "forbidden": "You don't have permission to manage this workspace.", "notFound": "Workspace not found." }
+            "danger": {
+                "title": "Danger Zone",
+                "description": "These actions are permanent and should be used carefully.",
+                "delete": {
+                    "title": "Delete Workspace",
+                    "description": "Permanently delete this workspace and all of its data. This action cannot be undone.",
+                    "action": "Delete Workspace",
+                    "confirmTitle": "Delete Workspace?",
+                    "notImplemented": "Workspace deletion is not implemented yet."
+                },
+                "leave": {
+                    "title": "Leave Workspace",
+                    "description": "Leave this workspace. You can be invited again later.",
+                    "action": "Leave Workspace",
+                    "confirmTitle": "Leave Workspace?",
+                    "notImplemented": "This feature is not implemented yet."
+                }
+            },
+            "title": "Settings",
+            "save": "Save Changes",
+            "saving": "Saving...",
+            "fields": {
+                "name": "Workspace Name",
+                "slug": "Slug",
+                "email": "Email",
+                "phone": "Phone",
+                "country": "Country",
+                "city": "City",
+                "address": "Address",
+                "timezone": "Timezone",
+                "primaryColor": "Primary Color"
+            },
+            "logo": {
+                "title": "Workspace Logo",
+                "alt": "Workspace Logo",
+                "none": "No Logo",
+                "choose": "Click to choose a logo",
+                "requirements": "PNG, JPG, WEBP • Max 2 MB",
+                "selected": "New image selected"
+            },
+            "feedback": {
+                "invalidImageType": "Only PNG, JPG, JPEG and WEBP images are allowed.",
+                "imageTooLarge": "Image size must not exceed 2 MB.",
+                "forbidden": "You don't have permission to manage this workspace.",
+                "notFound": "Workspace not found."
+            }
         },
         "quickview": {
-            "title": "Quick view", "loading": "Loading workspace...", "active": "Active", "enabled": "Enabled", "disabled": "Disabled", "unlimited": "Unlimited",
-            "launch": { "title": "Launch Your Workspace", "action": "Go Live" },
-            "plans": { "starter": "Starter", "pro": "Pro", "business": "Business" },
-            "licenses": { "subscription": "Subscription", "reseller": "Reseller", "exclusive": "Exclusive" },
-            "plan": { "title": "Workspace Plan", "type": "Type: {type}", "unlimitedTerms": "Unlimited workspace license.", "standardTerms": "Standard subscription terms." },
+            "title": "Quick view",
+            "loading": "Loading workspace...",
+            "active": "Active",
+            "enabled": "Enabled",
+            "disabled": "Disabled",
+            "unlimited": "Unlimited",
+            "launch": {
+                "title": "Launch Your Workspace",
+                "action": "Go Live"
+            },
+            "plans": {
+                "starter": "Starter",
+                "pro": "Pro",
+                "business": "Business"
+            },
+            "licenses": {
+                "subscription": "Subscription",
+                "reseller": "Reseller",
+                "exclusive": "Exclusive"
+            },
+            "plan": {
+                "title": "Workspace Plan",
+                "type": "Type: {type}",
+                "unlimitedTerms": "Unlimited workspace license.",
+                "standardTerms": "Standard subscription terms."
+            },
             "administrators": {
-                "title": "Administrators", "usage": "{current, number}/{limit, number} Users", "seats": "Seats",
-                "accessControl": "Access Control Enabled", "unlimitedSeats": "Unlimited administrator seats.",
+                "title": "Administrators",
+                "usage": "{current, number}/{limit, number} Users",
+                "seats": "Seats",
+                "accessControl": "Access Control Enabled",
+                "unlimitedSeats": "Unlimited administrator seats.",
                 "remaining": "{count, plural, one {# seat remaining.} other {# seats remaining.}}"
             },
             "ai": {
-                "title": "AI Word Assistant", "tools": "AI Tools", "smartEditing": "Smart Editing Active",
-                "upgradeRequired": "Upgrade Required", "description": "AI-powered document writing and context enhancement."
+                "title": "AI Word Assistant",
+                "tools": "AI Tools",
+                "smartEditing": "Smart Editing Active",
+                "upgradeRequired": "Upgrade Required",
+                "description": "AI-powered document writing and context enhancement."
             },
             "details": {
-                "title": "License & Subscription Details", "description": "Manage your workspace limits and active plan capabilities.",
-                "maxAdministrators": "Max Administrators", "administratorLimit": "{count, plural, one {# Administrator} other {# Administrators}}",
+                "title": "License & Subscription Details",
+                "description": "Manage your workspace limits and active plan capabilities.",
+                "maxAdministrators": "Max Administrators",
+                "administratorLimit": "{count, plural, one {# Administrator} other {# Administrators}}",
                 "activeFeatures": "Active Workspace Features",
                 "features": {
                     "reports": "Advanced reporting and interactive performance dashboards",

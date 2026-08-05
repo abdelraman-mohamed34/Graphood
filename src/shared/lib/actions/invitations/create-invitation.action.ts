@@ -18,6 +18,9 @@ import { getWhatByFrom } from '@/shared/lib/supabase/services/get-what-by-from.s
 import { sendInvitationEmail } from '@/shared/lib/supabase/services/invitations/send-invitation-email.service'
 import { createAdminClient } from '@/shared/lib/supabase/admin'
 import { checkTenantLimit } from '@/shared/lib/auth/guards/tenant-limit'
+import { z } from 'zod'
+
+const invitationContextSchema = z.object({ locale: z.enum(['ar', 'en']), tenantSlug: z.string().min(1).max(100) }).strict()
 
 type CreateInvitationResult =
     | {
@@ -46,6 +49,7 @@ export async function createInvitationAction(
     input: CreateInvitationInput
 ): Promise<CreateInvitationResult> {
     try {
+        const context = invitationContextSchema.parse({ locale, tenantSlug })
         const parsed = createInvitationSchema.safeParse(input)
 
         if (!parsed.success) {
@@ -59,11 +63,11 @@ export async function createInvitationAction(
         const {
             user,
             supabase,
-        } = await requireUser(locale)
+        } = await requireUser(context.locale)
 
         const membership = await requireMembership({
             supabase,
-            tenantSlug,
+            tenantSlug: context.tenantSlug,
             userId: user.id,
             redirectTo: `/${locale}/workspaces`,
         })
@@ -157,14 +161,14 @@ export async function createInvitationAction(
         await sendInvitationEmail({
             email: parsed.data.email,
             token,
-            locale,
-            tenantSlug,
+            locale: context.locale,
+            tenantSlug: context.tenantSlug,
             inviterName: `${user.user_metadata.first_name} ${user.user_metadata.last_name}`,
             message: parsed.data.message,
         })
 
         revalidatePath(
-            `/${locale}/${tenantSlug}/dashboard/members`
+            `/${context.locale}/${context.tenantSlug}/dashboard/members`
         )
 
         return {

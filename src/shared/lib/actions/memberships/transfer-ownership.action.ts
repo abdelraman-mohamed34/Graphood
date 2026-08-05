@@ -5,6 +5,8 @@ import { requireMembership } from "@/shared/lib/auth/requires/require-membership
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
 
 import { transferOwnership } from "../../supabase/services/memberships/update-membership-role.service";
+import { getMembershipById } from "@/shared/lib/supabase/services/memberships";
+import { z } from "zod";
 
 export async function transferOwnershipAction(
     locale: string,
@@ -12,10 +14,12 @@ export async function transferOwnershipAction(
     newOwnerMembershipId: string
 ) {
     try {
-        const { supabase, user } = await requireUser(locale);
+        const context = z.object({ locale: z.enum(["ar", "en"]), tenantSlug: z.string().min(1).max(100) }).parse({ locale, tenantSlug });
+        const targetMembershipId = z.string().uuid().parse(newOwnerMembershipId);
+        const { supabase, user } = await requireUser(context.locale);
 
         const currentMembership = await requireMembership({
-            tenantSlug,
+            tenantSlug: context.tenantSlug,
             userId: user.id,
             supabase,
         });
@@ -40,7 +44,7 @@ export async function transferOwnershipAction(
             };
         }
 
-        if (currentMembership.id === newOwnerMembershipId) {
+        if (currentMembership.id === targetMembershipId) {
             return {
                 success: false,
                 message:
@@ -48,15 +52,7 @@ export async function transferOwnershipAction(
             };
         }
 
-        const { data: targetMembership, error } = await supabase
-            .from("memberships")
-            .select("id, tenant_id, role")
-            .eq("id", newOwnerMembershipId)
-            .maybeSingle();
-
-        if (error) {
-            throw error;
-        }
+        const targetMembership = await getMembershipById(supabase, targetMembershipId);
 
         if (!targetMembership) {
             return {
@@ -86,7 +82,7 @@ export async function transferOwnershipAction(
 
         await transferOwnership({
             currentOwnerMembershipId: currentMembership.id,
-            newOwnerMembershipId,
+            newOwnerMembershipId: targetMembershipId,
         });
 
         return {

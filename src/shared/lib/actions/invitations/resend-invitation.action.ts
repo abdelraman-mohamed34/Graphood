@@ -10,6 +10,9 @@ import { createAdminClient } from "@/shared/lib/supabase/admin";
 
 import { getInvitationById } from "@/shared/lib/supabase/services/invitations/get-invitation-by-id.service";
 import { sendInvitationEmail } from "@/shared/lib/supabase/services/invitations/send-invitation-email.service";
+import { z } from "zod";
+
+const resendInvitationSchema = z.object({ locale: z.enum(["ar", "en"]), tenantSlug: z.string().min(1).max(100), id: z.string().uuid() }).strict();
 
 type ResendInvitationResult =
     | { success: true }
@@ -27,13 +30,14 @@ export async function resendInvitationAction(
     id: string
 ): Promise<ResendInvitationResult> {
     try {
-        const { user } = await requireUser(locale);
+        const input = resendInvitationSchema.parse({ locale, tenantSlug, id });
+        const { user } = await requireUser(input.locale);
 
         const supabase = await createAdminClient();
 
         const membership = await requireMembership({
             supabase,
-            tenantSlug,
+            tenantSlug: input.tenantSlug,
             userId: user.id,
             redirectTo: `/${locale}/workspaces`,
         });
@@ -52,7 +56,7 @@ export async function resendInvitationAction(
 
         const invitation = await getInvitationById(
             supabase,
-            id
+            input.id
         );
 
         if (!invitation) {
@@ -72,14 +76,14 @@ export async function resendInvitationAction(
         await sendInvitationEmail({
             email: invitation.email,
             token: invitation.token,
-            locale,
-            tenantSlug,
+            locale: input.locale,
+            tenantSlug: input.tenantSlug,
             inviterName: `${user.user_metadata.first_name} ${user.user_metadata.last_name}`,
             message: invitation.message,
         });
 
         revalidatePath(
-            `/${locale}/${tenantSlug}/dashboard/members`
+            `/${input.locale}/${input.tenantSlug}/dashboard/members`
         );
 
         return {

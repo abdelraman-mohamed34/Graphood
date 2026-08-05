@@ -9,6 +9,9 @@ import { requireUser } from '@/shared/lib/auth/requires/require-user'
 import { createAdminClient } from '@/shared/lib/supabase/admin'
 import { updateInvitationById } from '@/shared/lib/supabase/services/invitations/update-invitation-by-id.service'
 import { getInvitationById } from '../../supabase/services/invitations/get-invitation-by-id.service'
+import { z } from 'zod'
+
+const cancelInvitationSchema = z.object({ locale: z.enum(['ar', 'en']), tenantSlug: z.string().min(1).max(100), id: z.string().uuid() }).strict()
 
 type CancelInvitationResult =
     | { success: true }
@@ -26,19 +29,20 @@ export async function cancelInvitationAction(
     id: string
 ): Promise<CancelInvitationResult> {
     try {
-        const { user } = await requireUser(locale)
+        const input = cancelInvitationSchema.parse({ locale, tenantSlug, id })
+        const { user } = await requireUser(input.locale)
         const supabase = await createAdminClient()
 
         const membership = await requireMembership({
             supabase,
-            tenantSlug,
+            tenantSlug: input.tenantSlug,
             userId: user.id,
             redirectTo: `/${locale}/workspaces`,
         })
 
         const invitation = await getInvitationById(
             supabase,
-            id
+            input.id
         );
 
         if (!invitation) {
@@ -64,12 +68,12 @@ export async function cancelInvitationAction(
 
         await updateInvitationById(
             supabase,
-            id,
+            input.id,
             membership.tenant_id,
             "CANCELLED"
         );
 
-        revalidatePath(`/${locale}/${tenantSlug}/dashboard/members`)
+        revalidatePath(`/${input.locale}/${input.tenantSlug}/dashboard/members`)
 
         return {
             success: true,

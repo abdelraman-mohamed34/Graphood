@@ -1,10 +1,10 @@
-import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
+import { createAdminClient } from "@/shared/lib/supabase/admin";
 
 export async function updateApiKeyLastUsed(
     id: string
 ): Promise<void> {
 
-    const supabase = await createSupabaseServerClient();
+    const supabase = createAdminClient();
 
     const { error } = await supabase
         .from("developer_api_keys")

@@ -21,3 +21,4 @@ export function encryptApiKey(
 
     return `${iv.toString("hex")}:${encrypted.toString("hex")}`;
 }
+import "server-only";

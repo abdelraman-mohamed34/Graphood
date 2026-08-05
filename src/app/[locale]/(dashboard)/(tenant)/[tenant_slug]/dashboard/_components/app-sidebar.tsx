@@ -2,18 +2,14 @@
 
 import * as React from "react"
 import {
-    IconDatabase,
-    IconFileWord,
     IconHelp,
     IconInnerShadowTop,
     IconListDetails,
     IconPill,
-    IconReport,
     IconSettings,
     IconUsers,
 } from "@tabler/icons-react"
 
-import { NavDocuments } from "./nav-documents"
 import { NavSecondary } from "./nav-secondary"
 import { NavUser } from "./nav-user"
 import {
@@ -45,13 +41,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     ]
     const navSecondary = [
         { title: t("settings"), url: "/settings/profile", icon: IconSettings },
-        { title: t("getHelp"), url: "#", icon: IconHelp },
-    ]
-
-    const documents = [
-        { name: t("dataLibrary"), url: "#", icon: IconDatabase },
-        { name: t("reports"), url: "#", icon: IconReport },
-        { name: t("wordAssistant"), url: "#", icon: IconFileWord },
+        { title: t("getHelp"), url: `/${tenantSlug}/dashboard/help`, icon: IconHelp },
     ]
 
     return (
@@ -73,7 +63,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarHeader>
             <SidebarContent>
                 <NavMain items={navMain} />
-                {/* <NavDocuments items={documents} /> */}
                 <NavSecondary items={navSecondary} className="mt-auto" />
             </SidebarContent>
             <SidebarFooter>

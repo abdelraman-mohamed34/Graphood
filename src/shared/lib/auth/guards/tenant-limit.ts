@@ -2,7 +2,7 @@
 
 import { SupabaseClient } from '@supabase/supabase-js'
 import { getPlanLimits, FeatureKey } from '@/shared/config/plans'
-import { getSubscriptionByTenantID } from '../../supabase/services/subscriptions'
+import { getSubscriptionByTenantID } from '../../supabase/services/subscriptions/get-subscription-by-tenant-id.service'
 
 export type LimitCheckResult = {
     allowed: boolean

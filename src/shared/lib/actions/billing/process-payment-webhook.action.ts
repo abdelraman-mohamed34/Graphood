@@ -51,14 +51,13 @@ export async function processPaymentWebhookAction(
             return { success: false, error: "Unauthorized." };
         }
 
-        const result = await confirmOrderPayment(
-            orderId,
-            transactionRef
-        );
-
+        // Payment state is authoritative only when a payment provider calls a
+        // signature-verified Route Handler. A browser must never be able to
+        // promote its own order to PAID.
+        void transactionRef;
         return {
-            success: true,
-            data: result,
+            success: false,
+            error: "Payment confirmation is pending provider verification.",
         };
     } catch (error) {
         return {

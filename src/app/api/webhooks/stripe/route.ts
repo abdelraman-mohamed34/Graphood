@@ -2,9 +2,8 @@
 
 export async function POST(req: Request) {
     await req.text();
-
-
     return Response.json({
-        received: true,
-    });
+        received: false,
+        error: "Stripe webhook processing is not configured.",
+    }, { status: 503 });
 }

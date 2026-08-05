@@ -26,10 +26,8 @@ export async function GET() {
         {
             status: isHealthy ? "ok" : "error",
             version: "v1",
-            environment: process.env.NODE_ENV,
             timestamp: new Date().toISOString(),
-            uptime: Math.floor(process.uptime()),
-            latency: `${Date.now() - startedAt}ms`,
+            latencyMs: Date.now() - startedAt,
             checks: {
                 api: "ok",
                 database: databaseStatus,

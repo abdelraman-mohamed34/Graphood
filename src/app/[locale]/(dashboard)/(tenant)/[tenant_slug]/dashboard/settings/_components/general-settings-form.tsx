@@ -11,11 +11,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createClient } from "@/shared/lib/supabase/client";
 import Image from "next/image";
 import { toast } from "sonner";
-import { uploadTenantLogoService } from "@/shared/lib/supabase/services/storage";
-import { useTranslations } from "next-intl";
+import { uploadTenantLogoAction } from "@/shared/lib/actions/tenants/upload-tenant-logo.action";
+import { useLocale, useTranslations } from "next-intl";
 
 type FormValues = {
     name: string;
@@ -30,21 +29,9 @@ type FormValues = {
     primary_color: string;
 };
 
-export async function uploadTenantLogo(
-    tenantId: string,
-    file: File
-) {
-    const supabase = createClient();
-
-    return uploadTenantLogoService({
-        supabase,
-        tenantId,
-        file,
-    });
-}
-
 export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
     const t = useTranslations("dashboard.settings");
+    const locale = useLocale();
     const { updateTenant, isUpdating } = useTenant();
     const [preview, setPreview] = useState<string | null>(
         tenant.logo_url || null
@@ -123,10 +110,12 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
                 return;
             }
 
-            logo_url = await uploadTenantLogo(
-                tenant.id,
-                file
-            );
+            const upload = await uploadTenantLogoAction(locale, tenant.slug, file);
+            if (!upload.success) {
+                toast.error(t("feedback.invalidImageType"));
+                return;
+            }
+            logo_url = upload.logoUrl;
         }
 
         updateTenant({

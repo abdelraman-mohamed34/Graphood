@@ -4,14 +4,16 @@ import { getSystemAction } from "@/shared/lib/actions/developer/systems";
 import { getApiKeyBySystemId } from "@/shared/lib/supabase/services/developer/api-keys";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { decryptApiKey } from "@/lib/utils/developer/decrypt-api-key";
+import { z } from "zod";
 
 export async function listApiKeysAction(
     systemId: string
 ) {
+    const validatedSystemId = z.string().uuid().parse(systemId);
     const supabase = await createSupabaseServerClient();
 
-    await getSystemAction(systemId, supabase);
-    const apiKeys = await getApiKeyBySystemId(systemId);
+    await getSystemAction(validatedSystemId, supabase);
+    const apiKeys = await getApiKeyBySystemId(validatedSystemId);
 
     return apiKeys.map((apiKey) => {
         if (!apiKey.encrypted_key) {

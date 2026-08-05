@@ -12,11 +12,18 @@ import { getInvitationByToken } from "../../supabase/services/invitations/get-In
 import { updateInvitationByToken } from "../../supabase/services/invitations/update-invitation-by-token.service";
 import { insertMembership } from "../../supabase/services/memberships/insert-membership.service";
 import { getWhatByFrom } from "../../supabase/services/get-what-by-from.service";
+import { z } from "zod";
+
+const acceptInvitationSchema = z.object({
+    token: z.string().min(32).max(512),
+    tenant: z.string().trim().min(1).max(100),
+}).strict();
 
 export async function acceptInvitationAction(
     token: string,
     tenant: string
 ) {
+    const input = acceptInvitationSchema.parse({ token, tenant });
     let shouldRedirect = false;
 
     const supabase = await createSupabaseServerClient();
@@ -32,7 +39,7 @@ export async function acceptInvitationAction(
         const supabaseAdmin = await createAdminClient();
 
         const tokenHash = createHash("sha256")
-            .update(token)
+            .update(input.token)
             .digest("hex");
 
         const invitation = await getInvitationByToken(
@@ -79,7 +86,7 @@ export async function acceptInvitationAction(
         }
 
         // Prevent tampering with the tenant slug in the URL.
-        if (tenantSlug !== tenant) {
+        if (tenantSlug !== input.tenant) {
             return {
                 success: false,
                 message: "Invalid invitation link.",
@@ -136,6 +143,6 @@ export async function acceptInvitationAction(
     }
 
     if (shouldRedirect) {
-        redirect(`/login?token=${token}&tenant=${tenant}`);
+        redirect(`/login?token=${encodeURIComponent(input.token)}&tenant=${encodeURIComponent(input.tenant)}`);
     }
 }

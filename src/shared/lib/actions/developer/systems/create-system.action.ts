@@ -32,7 +32,7 @@ export async function createSystemAction(
     });
 
     return {
-        system,
-        apiKey,
+        system: { id: system.id },
+        apiKey: apiKey.apiKey,
     };
 }

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Roboto, Roboto_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -14,20 +13,6 @@ import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.s
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { fetchProfile } from "@/shared/lib/supabase/services/profile";
 import type { MembershipWithTenant } from "@/shared/lib/supabase/services/auth/membership/get-memberships-by-profile-id.service";
-
-const robotoSans = Roboto({
-    variable: "--font-roboto-sans",
-    subsets: ["latin"],
-    weight: ["400", "500", "700"],
-    display: "swap",
-});
-
-const robotoMono = Roboto_Mono({
-    variable: "--font-roboto-mono",
-    subsets: ["latin"],
-    weight: ["400", "500", "700"],
-    display: "swap",
-});
 
 export const metadata: Metadata = {
     title: "Graphood",
@@ -80,7 +65,7 @@ export default async function LocaleLayout({
         <div
             lang={locale}
             dir={dir}
-            className={`${robotoSans.variable} ${robotoMono.variable} font-sans`}
+            className="font-sans"
         >
             <NextIntlClientProvider messages={messages}>
                 <AppProvider

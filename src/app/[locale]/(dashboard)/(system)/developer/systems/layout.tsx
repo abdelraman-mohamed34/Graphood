@@ -4,7 +4,6 @@ import { requireUser } from "@/shared/lib/auth/requires/require-user";
 import { getCurrentSystems } from "@/shared/lib/supabase/services/systems/get-current-systems.service";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
-import SystemSidebar from "./[system_id]/_components/system-sidebar";
 
 interface SystemLayoutProps {
     children: React.ReactNode;

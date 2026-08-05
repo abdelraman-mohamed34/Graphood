@@ -12,19 +12,21 @@ import {
     deleteApiKey,
     getApiKey,
 } from "@/shared/lib/supabase/services/developer/api-keys";
+import { z } from "zod";
 
 
 export async function regenerateApiKeyAction(
     id: string
 ): Promise<{
     apiKey: string;
-    record: DeveloperApiKey;
+    record: Pick<DeveloperApiKey, "id" | "system_id" | "name" | "is_active" | "expires_at" | "created_at">;
 }> {
+    const keyId = z.string().uuid().parse(id);
     const supabase =
         await createSupabaseServerClient();
 
     const currentApiKey =
-        await getApiKey(id);
+        await getApiKey(keyId);
 
     if (!currentApiKey) {
         throw new Error(
@@ -52,5 +54,9 @@ export async function regenerateApiKeyAction(
         currentApiKey.id
     );
 
-    return result;
+    const { id: recordId, system_id, name, is_active, expires_at, created_at } = result.record;
+    return {
+        apiKey: result.apiKey,
+        record: { id: recordId, system_id, name, is_active, expires_at, created_at },
+    };
 }

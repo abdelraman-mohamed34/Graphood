@@ -216,6 +216,23 @@
             "viewDetails": "عرض التفاصيل"
         }
     },
+    "help": {
+        "title": "مركز المساعدة",
+        "subtitle": "اعثر على الإجابات والأسئلة الشائعة وخيارات الاتصال بالدعم.",
+        "searchPlaceholder": "ابحث في مقالات المساعدة...",
+        "faqTitle": "الأسئلة الشائعة",
+        "faqs": {
+            "q1": "كيف أقوم بتثبيت نظام؟",
+            "a1": "ابحث عن النظام الذي تحتاجه، ثم انقر فوق عرض التفاصيل لتثبيته وتكوينه لمساحة العمل الخاصة بك.",
+            "q2": "هل يمكنني إدارة الاشتراكات من هنا؟",
+            "a2": "يتم التعامل مع الفوترة وإدارة الاشتراكات في إعدادات مساحة العمل، وليس في مركز المساعدة.",
+            "q3": "كيف يمكنني الاتصال بالدعم؟",
+            "a3": "استخدم زر البريد الإلكتروني أدناه أو أرسل طلبك إلى support@graphood.com."
+        },
+        "contactSupport": "اتصل بالدعم",
+        "contactDescription": "هل تحتاج إلى مساعدة؟ فريقنا جاهز لمساعدتك في الإعداد والفوترة وحل المشاكل.",
+        "sendEmail": "إرسال بريد إلكتروني"
+    },
     "developerOverview": {
         "systemNotFound": "لم يتم العثور على النظام أو تعذر تحميله.",
         "statusLabel": "الحالة",
@@ -598,10 +615,20 @@
             "unauthorizedAccess": "عذراً، لا تملك الصلاحية لدخول هذه المساحة."
         },
         "sidebar": {
-            "quickCreate": "إنشاء سريع", "inbox": "صندوق الوارد",
-            "documents": "المستندات", "more": "المزيد", "open": "فتح", "share": "مشاركة", "delete": "حذف",
-            "guestUser": "مستخدم زائر", "noEmail": "لا يوجد بريد إلكتروني", "guestInitials": "ز", "account": "الحساب",
-            "billing": "الفوترة", "notifications": "الإشعارات", "logout": "تسجيل الخروج",
+            "quickCreate": "إنشاء سريع",
+            "inbox": "صندوق الوارد",
+            "documents": "المستندات",
+            "more": "المزيد",
+            "open": "فتح",
+            "share": "مشاركة",
+            "delete": "حذف",
+            "guestUser": "مستخدم زائر",
+            "noEmail": "لا يوجد بريد إلكتروني",
+            "guestInitials": "ز",
+            "account": "الحساب",
+            "billing": "الفوترة",
+            "notifications": "الإشعارات",
+            "logout": "تسجيل الخروج",
             "quickview": "نظرة سريعة",
             "subscription": "الاشتراك",
             "members": "الأعضاء",
@@ -612,40 +639,206 @@
             "getHelp": "الحصول على مساعدة"
         },
         "subscription": {
-            "intervals": { "monthly": "شهري", "yearly": "سنوي", "one_time": "مرة واحدة" },
-            "features": { "title": "توفر الميزات", "description": "الميزات المتاحة حاليًا لمساحة عملك.", "reports": "التقارير", "aiAssistant": "مساعد الذكاء الاصطناعي", "apiAccess": "الوصول إلى API", "multiMembers": "أعضاء متعددون", "whiteLabel": "العلامة البيضاء", "enabled": "متاحة", "unavailable": "غير متاحة" },
-            "title": "الاشتراك", "unlimited": "غير محدود",
-            "plans": { "starter": "المبدئية", "pro": "الاحترافية", "business": "الأعمال" },
-            "licenses": { "subscription": "اشتراك", "reseller": "إعادة البيع", "exclusive": "حصري" },
-            "statuses": { "active": "نشط", "trial": "تجريبي", "past_due": "متأخر الدفع", "canceled": "ملغي", "expired": "منتهي", "unknown": "غير معروف" },
-            "overview": { "title": "نظرة عامة على الاشتراك", "description": "إدارة اشتراك مساحة العمل الحالي.", "currentPlan": "الخطة الحالية", "licenseType": "نوع الترخيص", "status": "الحالة", "renewalDate": "تاريخ التجديد", "billingInterval": "دورة الفوترة" },
-            "usage": { "title": "الاستخدام", "description": "راقب حدود مساحة العمل الحالية.", "administrators": "المشرفون", "unlimitedAdministrators": "يتضمن ترخيصك عددًا غير محدود من حسابات المشرفين.", "remainingAdministrators": "{count, plural, zero {لا يوجد مشرفون متبقون.} one {مشرف واحد متبقٍ.} two {مشرفان متبقيان.} few {# مشرفين متبقين.} many {# مشرفًا متبقيًا.} other {# مشرف متبقٍ.}}" },
-            "limits": { "title": "حدود الخطة", "description": "الحدود الحالية المشمولة في اشتراكك.", "administrators": "المشرفون", "members": "الأعضاء", "storage": "التخزين", "storageValue": "{value, number} جيجابايت" },
-            "billing": { "title": "ملخص الفوترة", "description": "نظرة عامة على معلومات الفوترة الحالية.", "currentPrice": "السعر الحالي", "currency": "العملة", "billingCycle": "دورة الفوترة", "nextPayment": "الدفعة التالية" }
+            "intervals": {
+                "monthly": "شهري",
+                "yearly": "سنوي",
+                "one_time": "مرة واحدة"
+            },
+            "features": {
+                "title": "توفر الميزات",
+                "description": "الميزات المتاحة حاليًا لمساحة عملك.",
+                "reports": "التقارير",
+                "aiAssistant": "مساعد الذكاء الاصطناعي",
+                "apiAccess": "الوصول إلى API",
+                "multiMembers": "أعضاء متعددون",
+                "whiteLabel": "العلامة البيضاء",
+                "enabled": "متاحة",
+                "unavailable": "غير متاحة"
+            },
+            "title": "الاشتراك",
+            "unlimited": "غير محدود",
+            "plans": {
+                "starter": "المبدئية",
+                "pro": "الاحترافية",
+                "business": "الأعمال"
+            },
+            "licenses": {
+                "subscription": "اشتراك",
+                "reseller": "إعادة البيع",
+                "exclusive": "حصري"
+            },
+            "statuses": {
+                "active": "نشط",
+                "trial": "تجريبي",
+                "past_due": "متأخر الدفع",
+                "canceled": "ملغي",
+                "expired": "منتهي",
+                "unknown": "غير معروف"
+            },
+            "overview": {
+                "title": "نظرة عامة على الاشتراك",
+                "description": "إدارة اشتراك مساحة العمل الحالي.",
+                "currentPlan": "الخطة الحالية",
+                "licenseType": "نوع الترخيص",
+                "status": "الحالة",
+                "renewalDate": "تاريخ التجديد",
+                "billingInterval": "دورة الفوترة"
+            },
+            "usage": {
+                "title": "الاستخدام",
+                "description": "راقب حدود مساحة العمل الحالية.",
+                "administrators": "المشرفون",
+                "unlimitedAdministrators": "يتضمن ترخيصك عددًا غير محدود من حسابات المشرفين.",
+                "remainingAdministrators": "{count, plural, zero {لا يوجد مشرفون متبقون.} one {مشرف واحد متبقٍ.} two {مشرفان متبقيان.} few {# مشرفين متبقين.} many {# مشرفًا متبقيًا.} other {# مشرف متبقٍ.}}"
+            },
+            "limits": {
+                "title": "حدود الخطة",
+                "description": "الحدود الحالية المشمولة في اشتراكك.",
+                "administrators": "المشرفون",
+                "members": "الأعضاء",
+                "storage": "التخزين",
+                "storageValue": "{value, number} جيجابايت"
+            },
+            "billing": {
+                "title": "ملخص الفوترة",
+                "description": "نظرة عامة على معلومات الفوترة الحالية.",
+                "currentPrice": "السعر الحالي",
+                "currency": "العملة",
+                "billingCycle": "دورة الفوترة",
+                "nextPayment": "الدفعة التالية"
+            }
         },
         "members": {
-            "actions": { "transfer": "نقل الملكية", "transferDescription": "هل تريد نقل ملكية مساحة العمل إلى {name}؟ سيصبح دورك مشرفًا.", "transferConfirm": "نقل", "leave": "مغادرة مساحة العمل", "remove": "إزالة العضو" },
-            "invitations": { "title": "الدعوات المعلقة", "description": "إدارة الدعوات التي تنتظر القبول.", "expires": "تنتهي", "loadError": "تعذر تحميل الدعوات.", "emptyTitle": "لا توجد دعوات معلقة", "emptyDescription": "تم قبول جميع الدعوات أو انتهت صلاحيتها.", "cancel": "إلغاء الدعوة", "cancelDescription": "هل أنت متأكد من إلغاء الدعوة المرسلة إلى <strong>{email}</strong>؟ لن يتمكن هذا المستخدم من قبولها بعد ذلك.", "resend": "إعادة إرسال الدعوة", "resending": "جارٍ إعادة الإرسال..." },
-            "title": "الأعضاء", "system": "النظام",
-            "table": { "member": "العضو", "name": "الاسم", "email": "البريد الإلكتروني", "role": "الدور", "status": "الحالة", "invitedBy": "تمت الدعوة بواسطة", "actions": "الإجراءات" },
-            "roles": { "owner": "المالك", "admin": "مشرف", "member": "عضو" },
-            "statuses": { "active": "نشط", "pending": "قيد الانتظار", "suspended": "موقوف", "inactive": "غير نشط" },
-            "empty": { "title": "لم يتم العثور على أعضاء.", "description": "ادعُ أول عضو للتعاون في مساحة العمل هذه." },
-            "permissions": { "read": "قراءة", "write": "كتابة", "delete": "حذف", "manage": "إدارة" },
-            "invite": { "title": "دعوة عضو", "action": "دعوة", "description": "ادعُ متعاونًا جديدًا للانضمام إلى مساحة عملك وحدد دوره.", "email": "البريد الإلكتروني", "emailPlaceholder": "colleague@example.com", "role": "دور مساحة العمل", "selectRole": "اختر دورًا", "roleDescription": "تحدد الأدوار مستوى الوصول والصلاحيات المتاحة للعضو.", "message": "رسالة دعوة شخصية", "messagePlaceholder": "اكتب رسالة ترحيب أو وضّح المهام (اختياري)...", "sending": "جارٍ الإرسال...", "send": "إرسال الدعوة", "feedback": { "sent": "تم إرسال الدعوة بنجاح!", "alreadyMember": "هذا البريد عضو بالفعل في مساحة العمل.", "invalid": "البيانات أو الدور المقدم غير صالح.", "unauthorized": "ليس لديك صلاحية إرسال الدعوات.", "overLimit": "لقد بلغت الحد الأقصى للمشرفين في خطتك الحالية.", "exists": "تم إرسال دعوة نشطة بالفعل إلى هذا البريد.", "failed": "تعذر إرسال الدعوة. يرجى المحاولة مرة أخرى.", "connectionError": "حدث خطأ في الاتصال بالخادم. يرجى المحاولة لاحقًا." } }
+            "actions": {
+                "transfer": "نقل الملكية",
+                "transferDescription": "هل تريد نقل ملكية مساحة العمل إلى {name}؟ سيصبح دورك مشرفًا.",
+                "transferConfirm": "نقل",
+                "leave": "مغادرة مساحة العمل",
+                "remove": "إزالة العضو"
+            },
+            "invitations": {
+                "title": "الدعوات المعلقة",
+                "description": "إدارة الدعوات التي تنتظر القبول.",
+                "expires": "تنتهي",
+                "loadError": "تعذر تحميل الدعوات.",
+                "emptyTitle": "لا توجد دعوات معلقة",
+                "emptyDescription": "تم قبول جميع الدعوات أو انتهت صلاحيتها.",
+                "cancel": "إلغاء الدعوة",
+                "cancelDescription": "هل أنت متأكد من إلغاء الدعوة المرسلة إلى <strong>{email}</strong>؟ لن يتمكن هذا المستخدم من قبولها بعد ذلك.",
+                "resend": "إعادة إرسال الدعوة",
+                "resending": "جارٍ إعادة الإرسال..."
+            },
+            "title": "الأعضاء",
+            "system": "النظام",
+            "table": {
+                "member": "العضو",
+                "name": "الاسم",
+                "email": "البريد الإلكتروني",
+                "role": "الدور",
+                "status": "الحالة",
+                "invitedBy": "تمت الدعوة بواسطة",
+                "actions": "الإجراءات"
+            },
+            "roles": {
+                "owner": "المالك",
+                "admin": "مشرف",
+                "member": "عضو"
+            },
+            "statuses": {
+                "active": "نشط",
+                "pending": "قيد الانتظار",
+                "suspended": "موقوف",
+                "inactive": "غير نشط"
+            },
+            "empty": {
+                "title": "لم يتم العثور على أعضاء.",
+                "description": "ادعُ أول عضو للتعاون في مساحة العمل هذه."
+            },
+            "permissions": {
+                "read": "قراءة",
+                "write": "كتابة",
+                "delete": "حذف",
+                "manage": "إدارة"
+            },
+            "invite": {
+                "title": "دعوة عضو",
+                "action": "دعوة",
+                "description": "ادعُ متعاونًا جديدًا للانضمام إلى مساحة عملك وحدد دوره.",
+                "email": "البريد الإلكتروني",
+                "emailPlaceholder": "colleague@example.com",
+                "role": "دور مساحة العمل",
+                "selectRole": "اختر دورًا",
+                "roleDescription": "تحدد الأدوار مستوى الوصول والصلاحيات المتاحة للعضو.",
+                "message": "رسالة دعوة شخصية",
+                "messagePlaceholder": "اكتب رسالة ترحيب أو وضّح المهام (اختياري)...",
+                "sending": "جارٍ الإرسال...",
+                "send": "إرسال الدعوة",
+                "feedback": {
+                    "sent": "تم إرسال الدعوة بنجاح!",
+                    "alreadyMember": "هذا البريد عضو بالفعل في مساحة العمل.",
+                    "invalid": "البيانات أو الدور المقدم غير صالح.",
+                    "unauthorized": "ليس لديك صلاحية إرسال الدعوات.",
+                    "overLimit": "لقد بلغت الحد الأقصى للمشرفين في خطتك الحالية.",
+                    "exists": "تم إرسال دعوة نشطة بالفعل إلى هذا البريد.",
+                    "failed": "تعذر إرسال الدعوة. يرجى المحاولة مرة أخرى.",
+                    "connectionError": "حدث خطأ في الاتصال بالخادم. يرجى المحاولة لاحقًا."
+                }
+            }
         },
         "settings": {
-            "cancel": "إلغاء", "continue": "متابعة",
-            "localization": { "title": "إعدادات التوطين", "selectTimezone": "اختر المنطقة الزمنية", "save": "حفظ الموقع" },
-            "danger": {
-                "title": "منطقة الخطر", "description": "هذه الإجراءات دائمة ويجب استخدامها بحذر.",
-                "delete": { "title": "حذف مساحة العمل", "description": "حذف مساحة العمل وجميع بياناتها نهائيًا. لا يمكن التراجع عن هذا الإجراء.", "action": "حذف مساحة العمل", "confirmTitle": "حذف مساحة العمل؟", "notImplemented": "حذف مساحة العمل غير متاح حاليًا." },
-                "leave": { "title": "مغادرة مساحة العمل", "description": "غادر مساحة العمل. يمكن دعوتك مرة أخرى لاحقًا.", "action": "مغادرة مساحة العمل", "confirmTitle": "مغادرة مساحة العمل؟", "notImplemented": "هذه الميزة غير متاحة حاليًا." }
+            "cancel": "إلغاء",
+            "continue": "متابعة",
+            "localization": {
+                "title": "إعدادات التوطين",
+                "selectTimezone": "اختر المنطقة الزمنية",
+                "save": "حفظ الموقع"
             },
-            "title": "الإعدادات", "save": "حفظ التغييرات", "saving": "جارٍ الحفظ...",
-            "fields": { "name": "اسم مساحة العمل", "slug": "الرابط المختصر", "email": "البريد الإلكتروني", "phone": "الهاتف", "country": "الدولة", "city": "المدينة", "address": "العنوان", "timezone": "المنطقة الزمنية", "primaryColor": "اللون الأساسي" },
-            "logo": { "title": "شعار مساحة العمل", "alt": "شعار مساحة العمل", "none": "لا يوجد شعار", "choose": "انقر لاختيار شعار", "requirements": "PNG أو JPG أو WEBP • بحد أقصى 2 ميجابايت", "selected": "تم اختيار صورة جديدة" },
-            "feedback": { "invalidImageType": "يُسمح فقط بصور PNG وJPG وJPEG وWEBP.", "imageTooLarge": "يجب ألا يتجاوز حجم الصورة 2 ميجابايت.", "forbidden": "ليست لديك صلاحية إدارة مساحة العمل هذه.", "notFound": "لم يتم العثور على مساحة العمل." }
+            "danger": {
+                "title": "منطقة الخطر",
+                "description": "هذه الإجراءات دائمة ويجب استخدامها بحذر.",
+                "delete": {
+                    "title": "حذف مساحة العمل",
+                    "description": "حذف مساحة العمل وجميع بياناتها نهائيًا. لا يمكن التراجع عن هذا الإجراء.",
+                    "action": "حذف مساحة العمل",
+                    "confirmTitle": "حذف مساحة العمل؟",
+                    "notImplemented": "حذف مساحة العمل غير متاح حاليًا."
+                },
+                "leave": {
+                    "title": "مغادرة مساحة العمل",
+                    "description": "غادر مساحة العمل. يمكن دعوتك مرة أخرى لاحقًا.",
+                    "action": "مغادرة مساحة العمل",
+                    "confirmTitle": "مغادرة مساحة العمل؟",
+                    "notImplemented": "هذه الميزة غير متاحة حاليًا."
+                }
+            },
+            "title": "الإعدادات",
+            "save": "حفظ التغييرات",
+            "saving": "جارٍ الحفظ...",
+            "fields": {
+                "name": "اسم مساحة العمل",
+                "slug": "الرابط المختصر",
+                "email": "البريد الإلكتروني",
+                "phone": "الهاتف",
+                "country": "الدولة",
+                "city": "المدينة",
+                "address": "العنوان",
+                "timezone": "المنطقة الزمنية",
+                "primaryColor": "اللون الأساسي"
+            },
+            "logo": {
+                "title": "شعار مساحة العمل",
+                "alt": "شعار مساحة العمل",
+                "none": "لا يوجد شعار",
+                "choose": "انقر لاختيار شعار",
+                "requirements": "PNG أو JPG أو WEBP • بحد أقصى 2 ميجابايت",
+                "selected": "تم اختيار صورة جديدة"
+            },
+            "feedback": {
+                "invalidImageType": "يُسمح فقط بصور PNG وJPG وJPEG وWEBP.",
+                "imageTooLarge": "يجب ألا يتجاوز حجم الصورة 2 ميجابايت.",
+                "forbidden": "ليست لديك صلاحية إدارة مساحة العمل هذه.",
+                "notFound": "لم يتم العثور على مساحة العمل."
+            }
         },
         "quickview": {
             "title": "نظرة سريعة",

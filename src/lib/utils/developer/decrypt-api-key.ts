@@ -35,3 +35,4 @@ export function decryptApiKey(
 
     return decrypted.toString("utf8");
 }
+import "server-only";

@@ -7,14 +7,16 @@ import {
     getApiKey,
     deleteApiKey,
 } from "@/shared/lib/supabase/services/developer/api-keys";
+import { z } from "zod";
 
 export async function deleteApiKeyAction(
     id: string
 ): Promise<void> {
 
+    const keyId = z.string().uuid().parse(id);
     const supabase = await createSupabaseServerClient();
 
-    const currentApiKey = await getApiKey(id);
+    const currentApiKey = await getApiKey(keyId);
 
     if (!currentApiKey) {
         throw new Error("API_KEY_NOT_FOUND");
@@ -25,5 +27,5 @@ export async function deleteApiKeyAction(
         supabase
     );
 
-    await deleteApiKey(id);
+    await deleteApiKey(keyId);
 }
