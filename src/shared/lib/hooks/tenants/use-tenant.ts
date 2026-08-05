@@ -15,6 +15,7 @@ import { getMembershipBySlug } from "@/shared/lib/supabase/services/memberships/
 import { updateTenantAction } from "@/shared/lib/actions/tenants/update-tenant.action";
 import type { UpdateTenant } from "@/shared/lib/schemas/tenants.schema";
 import { useTranslations } from "next-intl";
+import { mutationKeys, queryKeys } from "@/shared/lib/query";
 
 export function useTenant() {
     const router = useRouter();
@@ -35,9 +36,8 @@ export function useTenant() {
         error,
         refetch,
     } = useQuery({
-        queryKey: ["membership", tenant_slug, user?.id],
+        queryKey: queryKeys.tenants.membership(tenant_slug, user?.id),
         enabled: !!user && !!tenant_slug,
-        staleTime: 1000 * 60 * 5,
         queryFn: async () => {
             const supabase = createClient();
 
@@ -54,7 +54,7 @@ export function useTenant() {
         mutateAsync: updateTenantAsync,
         isPending: isUpdating,
     } = useMutation({
-        mutationKey: ["tenant", tenant_slug, "update"],
+        mutationKey: mutationKeys.tenants.update(tenant_slug),
 
         mutationFn: (data: UpdateTenant) =>
             updateTenantAction({
@@ -75,7 +75,7 @@ export function useTenant() {
 
             if (newSlug && newSlug !== tenant_slug) {
                 queryClient.removeQueries({
-                    queryKey: ["membership", tenant_slug, user?.id],
+                    queryKey: queryKeys.tenants.detail(tenant_slug),
                 });
 
                 router.replace(
@@ -86,7 +86,7 @@ export function useTenant() {
             }
 
             await queryClient.invalidateQueries({
-                queryKey: ["membership", tenant_slug, user?.id],
+                queryKey: queryKeys.tenants.detail(tenant_slug),
             });
 
             router.refresh();

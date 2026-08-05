@@ -12,6 +12,8 @@ import { getPendingInvitations } from "@/shared/lib/supabase/services/invitation
 import { cancelInvitationAction } from "@/shared/lib/actions/invitations/cancel-invitation.action";
 import { resendInvitationAction } from "@/shared/lib/actions/invitations/resend-invitation.action";
 import { useTenant } from "@/shared/lib/hooks";
+import { queryKeys } from "@/shared/lib/query";
+import type { PendingInvitationListItem } from "@/shared/lib/supabase/services/invitations/get-pending-invitations.service";
 
 export function useInvitations() {
     const { locale, tenant_slug } = useParams<{
@@ -26,7 +28,7 @@ export function useInvitations() {
 
     const invalidateInvitations = () =>
         queryClient.invalidateQueries({
-            queryKey: ["pending-invitations", tenant_slug],
+            queryKey: queryKeys.tenants.invitations(tenant_slug),
         });
 
     // Read pending invitations
@@ -36,7 +38,7 @@ export function useInvitations() {
         error,
         refetch,
     } = useQuery({
-        queryKey: ["pending-invitations", tenant_slug],
+        queryKey: queryKeys.tenants.invitations(tenant_slug),
 
         queryFn: async () => {
             const tenantId = membership?.tenant_id;
@@ -70,7 +72,21 @@ export function useInvitations() {
             return result;
         },
 
-        onSuccess: async () => {
+        onMutate: async (invitationId) => {
+            const key = queryKeys.tenants.invitations(tenant_slug);
+            await queryClient.cancelQueries({ queryKey: key });
+            const previous = queryClient.getQueryData<PendingInvitationListItem[]>(key);
+            queryClient.setQueryData<PendingInvitationListItem[]>(key, (current = []) =>
+                current.filter((invitation) => invitation.id !== invitationId)
+            );
+            return { previous };
+        },
+        onError: (_error, _invitationId, context) => {
+            if (context?.previous) {
+                queryClient.setQueryData(queryKeys.tenants.invitations(tenant_slug), context.previous);
+            }
+        },
+        onSettled: async () => {
             await invalidateInvitations();
         },
     });

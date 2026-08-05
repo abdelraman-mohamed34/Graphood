@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { processPaymentWebhookAction } from "@/shared/lib/actions/billing/process-payment-webhook.action";
 import { useTranslations } from "next-intl";
+import { queryKeys } from "@/shared/lib/query";
 
 export function useCompletePayment() {
     const queryClient = useQueryClient();
@@ -27,7 +28,7 @@ export function useCompletePayment() {
 
         onSuccess: async (_, orderId) => {
             await queryClient.invalidateQueries({
-                queryKey: ["order", orderId],
+                queryKey: queryKeys.orders.detail(orderId),
             });
 
             toast.success(t("paymentSuccess"));

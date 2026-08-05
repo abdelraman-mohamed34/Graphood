@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createClient } from "../../supabase/client";
 import { fetchUser } from "../../supabase/services/auth/user/fetch-user.service";
 import { fetchProfile } from "../../supabase/services/profile";
+import { queryKeys } from "@/shared/lib/query";
 
 export function useUser() {
     const supabase = createClient();
@@ -11,9 +12,8 @@ export function useUser() {
         error: userError,
         isLoading: isUserLoading,
     } = useQuery({
-        queryKey: ["user"],
+        queryKey: queryKeys.auth.user(),
         queryFn: () => fetchUser(supabase),
-        staleTime: Infinity,
     });
 
     const {
@@ -21,10 +21,9 @@ export function useUser() {
         error: profileError,
         isLoading: isProfileLoading,
     } = useQuery({
-        queryKey: ["profile", user?.id],
+        queryKey: queryKeys.profiles.detail(user?.id),
         queryFn: () => fetchProfile(supabase, user!.id),
         enabled: !!user?.id,
-        staleTime: Infinity,
     });
 
     return {

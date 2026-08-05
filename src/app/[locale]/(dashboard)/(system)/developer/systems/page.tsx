@@ -4,12 +4,12 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
-import { useSystem } from "@/shared/lib/hooks";
+import { useOwnedSystems } from "@/shared/lib/hooks";
 import { ArrowUpRight, Plus, Terminal } from "lucide-react";
 
 export default function Page() {
     const t = useTranslations("developerSystems");
-    const { isLoading, currentSystems } = useSystem();
+    const { isLoading, data: currentSystems = [] } = useOwnedSystems();
 
     return (
         <div className="p-6 space-y-8">

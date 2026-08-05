@@ -2,8 +2,9 @@
 'use server'
 
 import { requireUser } from '@/shared/lib/auth/requires/require-user';
-import { QueryClient, HydrationBoundary, dehydrate } from '@tanstack/react-query';
+import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import React from 'react';
+import { createQueryClient } from '@/shared/lib/query';
 
 interface GetSystemLayoutProps {
     children: React.ReactNode;
@@ -18,7 +19,7 @@ export default async function GetSystemLayout({
     params,
 }: GetSystemLayoutProps) {
     const { system_id, locale } = await params;
-    const queryClient = new QueryClient();
+    const queryClient = createQueryClient();
     await requireUser(locale)
 
     if (!system_id) {

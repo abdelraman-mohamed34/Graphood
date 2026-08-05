@@ -8,14 +8,12 @@ import {
 
 import type { Tag } from "@/shared/lib/schemas/tags.schema";
 import { getTags } from "@/shared/lib/supabase/services/tags/get-tags.service";
-
-export const tagsQueryKey = ["tags"] as const;
+import { queryCachePolicy, queryKeys } from "@/shared/lib/query";
 
 export const tagsQueryOptions = queryOptions({
-    queryKey: tagsQueryKey,
+    queryKey: queryKeys.tags.all,
     queryFn: getTags,
-    staleTime: 1000 * 60 * 60, // 1 hour
-    gcTime: 1000 * 60 * 60 * 24, // 24 hours
+    ...queryCachePolicy.longLived,
 });
 
 export function useTags(): UseQueryResult<Tag[], Error> {

@@ -3,10 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { getOrderAction } from "@/shared/lib/actions/billing/get-order.action";
+import { queryKeys } from "@/shared/lib/query";
 
 export function useOrder(orderId: string) {
     const query = useQuery({
-        queryKey: ["order", orderId],
+        queryKey: queryKeys.orders.detail(orderId),
 
         queryFn: async () => {
             const result = await getOrderAction({ orderId });
@@ -23,7 +24,6 @@ export function useOrder(orderId: string) {
         },
 
         enabled: !!orderId,
-        staleTime: 1000 * 60 * 5,
         refetchInterval: (query) => {
             const order = query.state.data;
             const isPaid = order?.status === "PAID";

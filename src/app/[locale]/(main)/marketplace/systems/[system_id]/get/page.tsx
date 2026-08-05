@@ -17,6 +17,7 @@ import { useSystem } from "@/shared/lib/hooks";
 import { useValidateCoupon } from "@/shared/lib/hooks/billings/use-validate-coupon";
 import { getPendingOrderAction } from "@/shared/lib/actions/billing/pending-order.action";
 import { useRouter } from "@/i18n/navigation";
+import { queryKeys } from "@/shared/lib/query";
 
 export default function Page() {
     const params = useParams<{ system_id: string }>();
@@ -40,7 +41,7 @@ export default function Page() {
     const { system, isLoading, error } = useSystem(systemId);
     const { createOrder, isCreating, cancelOrder, isCancellingOrder } = useCreateOrder();
     const pendingOrderQuery = useQuery({
-        queryKey: ["orders", "pending", systemId],
+        queryKey: queryKeys.orders.pendingForSystem(systemId),
         queryFn: () => getPendingOrderAction(systemId),
         enabled: Boolean(systemId),
     });

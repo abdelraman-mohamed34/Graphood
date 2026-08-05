@@ -11,6 +11,8 @@ import { ConfirmationDialog } from "@/shared/_components/confirmation-dialog";
 import { Membership } from "@/shared/lib/schemas/memberships.schema";
 import { transferOwnershipAction } from "@/shared/lib/actions/memberships/transfer-ownership.action";
 import { useTranslations } from "next-intl";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/shared/lib/query";
 
 type Props = {
     member: Membership;
@@ -22,6 +24,7 @@ export default function TransferOwnership({
     const t = useTranslations("dashboard.members");
     const errorT = useTranslations("global.errors");
     const params = useParams();
+    const queryClient = useQueryClient();
 
     const locale =
         params.locale as string;
@@ -29,13 +32,18 @@ export default function TransferOwnership({
     const tenantSlug =
         params.tenant_slug as string;
 
+    const transferMutation = useMutation({
+        mutationFn: () => transferOwnershipAction(locale, tenantSlug, member.id),
+        onSuccess: async (result) => {
+            if (!result.success) return;
+            await queryClient.invalidateQueries({
+                queryKey: queryKeys.tenants.detail(tenantSlug),
+            });
+        },
+    });
+
     async function onTransfer() {
-        const result =
-                await transferOwnershipAction(
-                    locale,
-                    tenantSlug,
-                    member.id
-                );
+        const result = await transferMutation.mutateAsync();
 
         if (!result.success) {
             toast.error(errorT("ownershipTransfer"));

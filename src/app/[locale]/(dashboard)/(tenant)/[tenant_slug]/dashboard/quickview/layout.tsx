@@ -1,6 +1,5 @@
 import { ReactNode, cache } from "react";
 import {
-  QueryClient,
   dehydrate,
   HydrationBoundary,
 } from "@tanstack/react-query";
@@ -8,6 +7,7 @@ import {
 import { getSubscriptionByTenantID } from "@/shared/lib/supabase/services/subscriptions";
 import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
+import { createQueryClient, queryKeys } from "@/shared/lib/query";
 
 type QuickViewLayoutProps = {
   children: ReactNode;
@@ -25,7 +25,7 @@ export default async function QuickViewLayout({
 }: QuickViewLayoutProps) {
   const { locale, tenant_slug } = await params;
 
-  const queryClient = new QueryClient();
+  const queryClient = createQueryClient();
 
   const { user, supabase } = await requireUser(locale);
 
@@ -37,7 +37,7 @@ export default async function QuickViewLayout({
   });
 
   await queryClient.prefetchQuery({
-    queryKey: ["subscriptions", membership.tenant_id],
+    queryKey: queryKeys.tenants.subscription(membership.tenant_id),
     queryFn: () =>
       getSubscriptionByTenantID(
         supabase,

@@ -17,12 +17,7 @@ import {
     fetchProfile,
     getAvatarUrl,
 } from "../../supabase/services/profile";
-
-const PROFILE_STALE_TIME = 10 * 60 * 1000;
-
-export const PROFILE_QUERY_KEYS = {
-    current: ["profile"] as const,
-};
+import { queryKeys } from "@/shared/lib/query";
 
 export function useProfile(locale: string) {
     const supabase = createClient();
@@ -30,12 +25,12 @@ export function useProfile(locale: string) {
 
     const invalidateProfile = async () => {
         await queryClient.invalidateQueries({
-            queryKey: PROFILE_QUERY_KEYS.current,
+            queryKey: queryKeys.profiles.currentWithAvatar(),
         });
     };
 
     const profileQuery = useQuery({
-        queryKey: PROFILE_QUERY_KEYS.current,
+        queryKey: queryKeys.profiles.currentWithAvatar(),
         queryFn: async () => {
             const {
                 data: { user },
@@ -67,7 +62,6 @@ export function useProfile(locale: string) {
                 avatarUrl,
             };
         },
-        staleTime: PROFILE_STALE_TIME,
     });
 
     const uploadMutation = useMutation({

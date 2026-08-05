@@ -14,17 +14,13 @@ import {
     DeveloperApiKeyInsert,
     DeveloperApiKeyUpdate,
 } from "../../schemas/developer/api-keys";
-
-export const API_KEY_QUERY_KEYS = {
-    list: (systemId?: string) =>
-        ["developer", "api-keys", systemId] as const,
-};
+import { queryKeys } from "@/shared/lib/query";
 
 export function useApiKey(systemId?: string) {
     const queryClient = useQueryClient();
 
     const apiKeysQuery = useQuery({
-        queryKey: API_KEY_QUERY_KEYS.list(systemId),
+        queryKey: queryKeys.systems.apiKeys(systemId),
         queryFn: () => {
             if (!systemId) {
                 throw new Error("System ID is required.");
@@ -33,7 +29,6 @@ export function useApiKey(systemId?: string) {
             return listApiKeysAction(systemId);
         },
         enabled: !!systemId,
-        staleTime: 1000 * 60 * 10,
     });
 
     const createMutation = useMutation({
@@ -42,7 +37,7 @@ export function useApiKey(systemId?: string) {
 
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: API_KEY_QUERY_KEYS.list(systemId),
+                queryKey: queryKeys.systems.apiKeys(systemId),
             });
         },
     });
@@ -58,7 +53,7 @@ export function useApiKey(systemId?: string) {
 
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: API_KEY_QUERY_KEYS.list(systemId),
+                queryKey: queryKeys.systems.apiKeys(systemId),
             });
         },
     });
@@ -69,7 +64,7 @@ export function useApiKey(systemId?: string) {
 
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: API_KEY_QUERY_KEYS.list(systemId),
+                queryKey: queryKeys.systems.apiKeys(systemId),
             });
         },
     });
@@ -80,7 +75,7 @@ export function useApiKey(systemId?: string) {
 
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: API_KEY_QUERY_KEYS.list(systemId),
+                queryKey: queryKeys.systems.apiKeys(systemId),
             });
         },
     });

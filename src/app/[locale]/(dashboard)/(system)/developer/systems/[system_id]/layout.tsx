@@ -2,8 +2,8 @@ import React from "react";
 import { redirect, notFound } from "next/navigation";
 import { getSystemAction } from "@/shared/lib/actions/developer/systems";
 import { System } from "@/shared/lib/schemas/systems.schema";
-import { QueryClient, HydrationBoundary, dehydrate } from "@tanstack/react-query";
-import { SYSTEM_QUERY_KEYS } from "@/shared/lib/hooks/systems/use-system";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import { createQueryClient, queryKeys } from "@/shared/lib/query";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
 import { fetchProfile } from "@/shared/lib/supabase/services/profile";
 import SystemSidebar from "./_components/system-sidebar";
@@ -43,10 +43,10 @@ export default async function SystemDetailLayout({
         redirect(`/${locale}/developer?error=unauthorized`);
     }
 
-    const queryClient = new QueryClient();
+    const queryClient = createQueryClient();
 
     await queryClient.fetchQuery({
-        queryKey: SYSTEM_QUERY_KEYS.single(system_id),
+        queryKey: queryKeys.systems.detail(system_id),
         queryFn: async () => system,
     });
 

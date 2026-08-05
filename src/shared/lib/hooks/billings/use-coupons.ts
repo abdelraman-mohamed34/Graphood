@@ -14,12 +14,14 @@ import {
 } from "../../actions/coupon";
 import type { CreateCouponInput } from "@/shared/lib/schemas/coupon/coupon.schema";
 import { useTranslations } from "next-intl";
+import { queryKeys } from "@/shared/lib/query";
+import type { CouponListItem } from "@/shared/lib/supabase/services/coupons/get-coupons.service";
 
 export function useCoupons(systemId: string) {
     const t = useTranslations("developerCoupons.feedback");
     const queryClient = useQueryClient();
 
-    const queryKey = ["coupons", systemId] as const;
+    const queryKey = queryKeys.systems.coupons(systemId);
 
     const invalidate = () =>
         queryClient.invalidateQueries({
@@ -46,7 +48,6 @@ export function useCoupons(systemId: string) {
         },
 
         enabled: !!systemId,
-        staleTime: 1000 * 60 * 5,
     });
 
     const createMutation = useMutation({
@@ -89,14 +90,27 @@ export function useCoupons(systemId: string) {
             return result;
         },
 
-        onSuccess() {
-            toast.success(t("deleted"));
-            invalidate();
+        onMutate: async (couponId) => {
+            await queryClient.cancelQueries({ queryKey });
+            const previous = queryClient.getQueryData<CouponListItem[]>(queryKey);
+            queryClient.setQueryData<CouponListItem[]>(queryKey, (current = []) =>
+                current.filter((coupon) => coupon.id !== couponId)
+            );
+            return { previous };
         },
 
-        onError() {
+        onSuccess() {
+            toast.success(t("deleted"));
+        },
+
+        onError(_error, _couponId, context) {
+            if (context?.previous) {
+                queryClient.setQueryData(queryKey, context.previous);
+            }
             toast.error(t("deleteFailed"));
         },
+
+        onSettled: invalidate,
     });
 
     return {

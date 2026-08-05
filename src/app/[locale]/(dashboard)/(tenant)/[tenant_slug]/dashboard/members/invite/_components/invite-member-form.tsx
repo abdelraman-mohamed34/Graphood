@@ -19,6 +19,8 @@ import {
 import { Loader2, Send } from 'lucide-react'
 import { RoleSelect } from './role-select'
 import { useTranslations } from 'next-intl'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from '@/shared/lib/query'
 
 type Props = {
     locale: string
@@ -30,6 +32,18 @@ export default function InviteMemberForm({
     tenantSlug,
 }: Props) {
     const t = useTranslations('dashboard.members')
+    const queryClient = useQueryClient()
+    const invitationMutation = useMutation({
+        mutationFn: (data: CreateInvitationInput) =>
+            createInvitationAction(locale, tenantSlug, data),
+        onSuccess: async (result) => {
+            if (result.success) {
+                await queryClient.invalidateQueries({
+                    queryKey: queryKeys.tenants.invitations(tenantSlug),
+                })
+            }
+        },
+    })
 
     const {
         handleSubmit,
@@ -48,11 +62,7 @@ export default function InviteMemberForm({
 
     const onSubmit = async (data: CreateInvitationInput) => {
         try {
-            const result = await createInvitationAction(
-                locale,
-                tenantSlug,
-                data
-            )
+            const result = await invitationMutation.mutateAsync(data)
 
             if (result && result.success) {
                 toast.success(t('invite.feedback.sent'))

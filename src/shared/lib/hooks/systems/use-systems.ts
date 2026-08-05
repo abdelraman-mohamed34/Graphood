@@ -10,14 +10,12 @@ import {
     getMarketplaceSystems,
     type MarketplaceSystem,
 } from "@/shared/lib/supabase/services/systems/get-marketplace-systems.service";
-
-export const systemsQueryKey = ["marketplace-systems"] as const;
+import { queryCachePolicy, queryKeys } from "@/shared/lib/query";
 
 export const systemsQueryOptions = queryOptions({
-    queryKey: systemsQueryKey,
+    queryKey: queryKeys.systems.marketplace(),
     queryFn: () => getMarketplaceSystems(),
-    staleTime: 1000 * 60 * 60, // 1 hour
-    gcTime: 1000 * 60 * 60 * 24, // 24 hours
+    ...queryCachePolicy.longLived,
 });
 
 export function useSystems(): UseQueryResult<MarketplaceSystem[], Error> {

@@ -4,7 +4,6 @@ import React from "react";
 import { redirect, notFound } from "next/navigation";
 import {
     HydrationBoundary,
-    QueryClient,
     dehydrate,
 } from "@tanstack/react-query";
 import { SupabaseClient } from "@supabase/supabase-js";
@@ -12,6 +11,7 @@ import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
 import { getOrderById } from "@/shared/lib/supabase/services/billing";
 import { Dir } from "@/shared/_components/dirs";
+import { createQueryClient, queryKeys } from "@/shared/lib/query";
 
 interface CheckoutLayoutProps {
     children: React.ReactNode;
@@ -52,10 +52,10 @@ export default async function CheckoutLayout({
         notFound();
     }
 
-    const queryClient = new QueryClient();
+    const queryClient = createQueryClient();
 
     queryClient.setQueryData(
-        ["order", order_id],
+        queryKeys.orders.detail(order_id),
         order
     );
 

@@ -13,6 +13,7 @@ import { createClient } from '@/shared/lib/supabase/client'
 import { getSystemById } from '@/shared/lib/supabase/services/systems'
 
 import CheckoutButton from './_components/check-out-btn'
+import { queryKeys } from '@/shared/lib/query'
 
 export default function Page() {
     const params = useParams<{ system_id: string }>()
@@ -25,7 +26,7 @@ export default function Page() {
     const supabase = useMemo(() => createClient(), [])
 
     const { data: system, isLoading, error } = useQuery({
-        queryKey: ['systems', 'details', systemId],
+        queryKey: queryKeys.systems.detail(systemId),
         queryFn: () => getSystemById(systemId, supabase),
         enabled: Boolean(systemId),
     })

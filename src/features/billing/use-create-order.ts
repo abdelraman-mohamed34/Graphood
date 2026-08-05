@@ -8,6 +8,7 @@ import { cancelOrderAction } from "@/shared/lib/actions/billing/pending-order.ac
 
 import { LicenseType } from "@/shared/config/licensing";
 import { PlanType } from "@/shared/config/plans";
+import { queryKeys } from "@/shared/lib/query";
 
 type CreateOrderInput = {
     systemId: string;
@@ -32,6 +33,14 @@ export function useCreateOrder() {
 
             return result;
         },
+        onSuccess: async (result, variables) => {
+            await queryClient.invalidateQueries({
+                queryKey: queryKeys.orders.pendingForSystem(variables.systemId),
+            });
+            await queryClient.invalidateQueries({
+                queryKey: queryKeys.orders.detail(result.orderId),
+            });
+        },
     });
 
     const cancelMutation = useMutation({
@@ -42,7 +51,7 @@ export function useCreateOrder() {
         },
         onSuccess: async (_, { systemId }) => {
             await queryClient.invalidateQueries({
-                queryKey: ["orders", "pending", systemId],
+                queryKey: queryKeys.orders.pendingForSystem(systemId),
             });
         },
     });

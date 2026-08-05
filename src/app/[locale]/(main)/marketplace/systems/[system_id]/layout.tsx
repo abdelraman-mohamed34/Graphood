@@ -4,10 +4,11 @@
 import { requireUser } from '@/shared/lib/auth/requires/require-user';
 import { createAdminClient } from '@/shared/lib/supabase/admin';
 import { getSystemById } from '@/shared/lib/supabase/services/systems';
-import { QueryClient, HydrationBoundary, dehydrate } from '@tanstack/react-query';
+import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { redirect } from '@/i18n/navigation';
 import React from 'react';
 import { Dir } from '@/shared/_components/dirs';
+import { createQueryClient, queryKeys } from '@/shared/lib/query';
 
 interface SystemDetailsLayoutProps {
     children: React.ReactNode;
@@ -22,13 +23,13 @@ export default async function SystemDetailsLayout({
     params,
 }: SystemDetailsLayoutProps) {
     const { system_id, locale } = await params;
-    const queryClient = new QueryClient();
+    const queryClient = createQueryClient();
     const supabase = await createAdminClient();
 
     const [{ user }, system] = await Promise.all([
         requireUser(locale),
         queryClient.fetchQuery({
-            queryKey: ['systems', 'details', system_id],
+            queryKey: queryKeys.systems.detail(system_id),
             queryFn: () => getSystemById(system_id, supabase),
         }),
     ]);

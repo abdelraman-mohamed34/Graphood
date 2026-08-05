@@ -3,7 +3,6 @@
 import { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import {
-    QueryClient,
     dehydrate,
     HydrationBoundary,
 } from "@tanstack/react-query";
@@ -13,6 +12,7 @@ import { requireUser } from "@/shared/lib/auth/requires/require-user";
 import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
 import { hasPermission } from "@/shared/lib/auth/requires/require-permission";
 import { getMembershipsByTenantSlug } from "@/shared/lib/supabase/services/memberships/get-memberships-by-slug.service";
+import { createQueryClient, queryKeys } from "@/shared/lib/query";
 
 interface TenantLayoutProps {
     children: ReactNode;
@@ -28,7 +28,7 @@ export default async function TenantLayout({
 }: TenantLayoutProps) {
     const { locale, tenant_slug } = await params;
 
-    const queryClient = new QueryClient();
+    const queryClient = createQueryClient();
 
     const { user, supabase } = await requireUser(locale);
 
@@ -44,12 +44,12 @@ export default async function TenantLayout({
     }
 
     queryClient.setQueryData(
-        ["membership", tenant_slug, user.id],
+        queryKeys.tenants.membership(tenant_slug, user.id),
         membership
     );
 
     await queryClient.prefetchQuery({
-        queryKey: ["memberships", tenant_slug],
+        queryKey: queryKeys.tenants.memberships(tenant_slug),
         queryFn: () =>
             getMembershipsByTenantSlug({
                 supabase,

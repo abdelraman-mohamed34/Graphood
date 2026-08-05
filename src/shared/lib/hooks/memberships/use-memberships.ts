@@ -16,6 +16,7 @@ import { getMembershipsByTenantSlug } from "../../supabase/services/memberships/
 import { removeMemberAction } from "../../actions/memberships/remove-member.action";
 
 import { useUser } from "../auth";
+import { mutationKeys, queryKeys } from "@/shared/lib/query";
 
 export function useMemberships() {
     const router = useRouter();
@@ -30,9 +31,8 @@ export function useMemberships() {
     const locale = params.locale as string;
 
     const membershipsQuery = useQuery({
-        queryKey: ["memberships", tenantSlug],
+        queryKey: queryKeys.tenants.memberships(tenantSlug),
         enabled: !!tenantSlug,
-        staleTime: 1000 * 60 * 5,
         queryFn: () =>
             getMembershipsByTenantSlug({
                 supabase,
@@ -41,9 +41,8 @@ export function useMemberships() {
     });
 
     const currentMembershipQuery = useQuery({
-        queryKey: ["current-membership", tenantSlug, profile?.id],
+        queryKey: queryKeys.tenants.membership(tenantSlug, profile?.id),
         enabled: !!tenantSlug && !!profile?.id,
-        staleTime: 1000 * 60 * 5,
         queryFn: () =>
             getMembershipBySlug({
                 supabase,
@@ -53,7 +52,7 @@ export function useMemberships() {
     });
 
     const removeMemberMutation = useMutation({
-        mutationKey: ["memberships", tenantSlug, "remove"],
+        mutationKey: mutationKeys.tenants.removeMember(tenantSlug),
 
         mutationFn: async (membershipId: string) => {
             const result = await removeMemberAction(
@@ -76,7 +75,7 @@ export function useMemberships() {
             }
 
             await queryClient.invalidateQueries({
-                queryKey: ["memberships", tenantSlug],
+                queryKey: queryKeys.tenants.memberships(tenantSlug),
             });
         },
     });
