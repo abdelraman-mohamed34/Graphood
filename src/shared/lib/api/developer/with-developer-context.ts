@@ -81,7 +81,6 @@ export function withDeveloperContext(
                 request
             );
         } catch (error) {
-            console.error("[Developer API]", error);
 
             const code =
                 error instanceof Error &&

@@ -12,8 +12,9 @@ export async function proxy(req: NextRequest) {
     let response = handleI18nRouting(req);
 
     const locales = routing.locales;
+    type Locale = (typeof locales)[number];
     const pathLocale = pathname.split("/")[1];
-    const isLocaleInPath = locales.includes(pathLocale as any);
+    const isLocaleInPath = locales.includes(pathLocale as Locale);
 
     const cleanPath = pathname.replace(new RegExp(`^/(${locales.join("|")})`), "") || "/";
 
@@ -61,8 +62,8 @@ export async function proxy(req: NextRequest) {
             .eq("id", user.id)
             .single();
 
-        if (profile?.preferred_language && locales.includes(profile.preferred_language as any)) {
-            effectiveLocale = profile.preferred_language;
+        if (profile?.preferred_language && locales.includes(profile.preferred_language as Locale)) {
+            effectiveLocale = profile.preferred_language as Locale;
 
             if (!isLocaleInPath || pathLocale !== effectiveLocale) {
                 const redirectPath = cleanPath === "/" ? "/home" : cleanPath;

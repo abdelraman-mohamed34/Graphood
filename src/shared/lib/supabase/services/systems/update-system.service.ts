@@ -42,10 +42,6 @@ export async function updateSystem(
         .single();
 
     if (error) {
-        console.error(
-            "Error updating system:",
-            error
-        );
 
         throw error;
     }

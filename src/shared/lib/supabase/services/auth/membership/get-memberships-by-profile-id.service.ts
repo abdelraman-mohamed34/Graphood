@@ -23,10 +23,6 @@ export async function getMembershipsByProfileId<T = MembershipWithTenant>(
         .eq("profile_id", profileId);
 
     if (error) {
-        console.error(
-            "[Supabase Error] Error fetching memberships:",
-            JSON.stringify(error, null, 2)
-        );
         throw error;
     }
 

@@ -97,10 +97,6 @@ export async function acceptInvitationAction(
         );
 
         if (memberError) {
-            console.error(
-                "[Supabase Error] Adding member to tenant failed:",
-                memberError
-            );
 
             return {
                 success: false,
@@ -116,10 +112,6 @@ export async function acceptInvitationAction(
         );
 
         if (updateError) {
-            console.error(
-                "[Supabase Error] Updating invitation status failed:",
-                updateError
-            );
         }
 
         revalidatePath("/invitations/accept");
@@ -135,10 +127,6 @@ export async function acceptInvitationAction(
         };
     } catch (error: unknown) {
         if (!(error instanceof Error) || error.message !== "AUTH_REQUIRED") {
-            console.error(
-                "[Server Action Error] acceptInvitationAction:",
-                error
-            );
 
             return {
                 success: false,

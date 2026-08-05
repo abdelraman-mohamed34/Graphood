@@ -14,7 +14,6 @@ export async function getApiKey(
         .single();
 
     if (error) {
-        console.error("Error fetching API key:", error);
         throw error;
     }
 

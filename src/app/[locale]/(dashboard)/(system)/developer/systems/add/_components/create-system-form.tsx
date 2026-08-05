@@ -122,8 +122,7 @@ export default function CreateSystemForm() {
             if (systemId) {
                 router.push(`/developer/systems/${systemId}/api-keys`);
             }
-        } catch (error) {
-            console.error(error);
+        } catch {
             toast.error(t("notifications.error"));
         }
     };

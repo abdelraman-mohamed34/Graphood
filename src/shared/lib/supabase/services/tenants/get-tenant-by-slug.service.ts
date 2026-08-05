@@ -16,7 +16,6 @@ export async function getTenantBySlug(
             return null;
         }
 
-        console.error("Error fetching tenant by slug:", error);
         throw error;
     }
 

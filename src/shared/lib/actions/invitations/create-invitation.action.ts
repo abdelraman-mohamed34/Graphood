@@ -170,8 +170,7 @@ export async function createInvitationAction(
         return {
             success: true,
         }
-    } catch (error) {
-        console.error(error)
+    } catch {
 
         return {
             success: false,

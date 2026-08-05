@@ -58,8 +58,7 @@ export async function removeMemberAction(
                 : "Member removed successfully.",
         };
 
-    } catch (error) {
-        console.error("[Remove Member Action Error]:", error);
+    } catch {
 
         return {
             success: false,

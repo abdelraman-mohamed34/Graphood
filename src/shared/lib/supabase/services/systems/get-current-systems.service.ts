@@ -10,7 +10,6 @@ export async function getCurrentSystems(userID: string, supabase: SupabaseClient
         .order("created_at", { ascending: false });
 
     if (error) {
-        console.error("Error fetching systems on client service:", error);
         throw error;
     }
 

@@ -4,6 +4,7 @@ import React, { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { rejectInvitationAction } from '@/shared/lib/actions/invitations/reject-invitation.action'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 
 interface RejectButtonProps {
     token: string
@@ -14,6 +15,7 @@ interface RejectButtonProps {
 export default function RejectInvitationButton({ token, tenant, locale }: RejectButtonProps) {
     const [isPending, startTransition] = useTransition()
     const router = useRouter()
+    const t = useTranslations('invitationResponse')
 
     const handleReject = () => {
         startTransition(async () => {
@@ -21,15 +23,14 @@ export default function RejectInvitationButton({ token, tenant, locale }: Reject
                 const result = await rejectInvitationAction(token, tenant)
 
                 if (result && result.success) {
-                    toast.success('Invitation rejected successfully.')
+                    toast.success(t('rejected'))
                     await new Promise((resolve) => setTimeout(resolve, 800))
                     router.push(`/${locale}/invitations/rejected`)
                 } else {
-                    toast.error(result?.message || 'Something went wrong.')
+                    toast.error(t('rejectFailed'))
                 }
-            } catch (err) {
-                console.error(err)
-                toast.error('Failed to reject the invitation. Please try again.')
+            } catch {
+                toast.error(t('rejectFailed'))
             }
         })
     }
@@ -46,7 +47,7 @@ export default function RejectInvitationButton({ token, tenant, locale }: Reject
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
             )}
-            {isPending ? 'Rejecting...' : 'Reject Invitation'}
+            {isPending ? t('rejecting') : t('reject')}
         </button>
     )
 }

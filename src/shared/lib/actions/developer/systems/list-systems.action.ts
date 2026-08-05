@@ -16,8 +16,6 @@ export async function listApiKeysAction(
     }
 
     const apiKeys = await getApiKeyBySystemId(systemId);
-    console.log("user:", user)
-    console.log("apiKeys", apiKeys)
     return apiKeys.map((apiKey) => ({
         id: apiKey.id,
         name: apiKey.name,

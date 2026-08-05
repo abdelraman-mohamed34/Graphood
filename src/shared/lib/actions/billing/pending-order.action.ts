@@ -45,8 +45,7 @@ export async function cancelOrderAction(orderId: string) {
         }
 
         return { success: true as const };
-    } catch (error) {
-        console.error("Cancel pending order failed:", error);
+    } catch {
         return { success: false as const, error: "CANCEL_FAILED" };
     }
 }

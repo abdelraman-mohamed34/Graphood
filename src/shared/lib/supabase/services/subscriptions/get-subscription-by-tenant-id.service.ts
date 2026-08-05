@@ -15,10 +15,6 @@ export async function getSubscriptionByTenantID<T = Subscription>(
         .maybeSingle();
 
     if (tenantError) {
-        console.error(
-            "[Supabase Error] Error fetching tenant:",
-            JSON.stringify(tenantError, null, 2)
-        );
         throw tenantError;
     }
 
@@ -35,10 +31,6 @@ export async function getSubscriptionByTenantID<T = Subscription>(
             .maybeSingle();
 
     if (subscriptionError) {
-        console.error(
-            "[Supabase Error] Error fetching subscription:",
-            JSON.stringify(subscriptionError, null, 2)
-        );
         throw subscriptionError;
     }
 

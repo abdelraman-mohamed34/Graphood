@@ -51,8 +51,7 @@ export async function updateProfileAction(
         return {
             success: true,
         };
-    } catch (error) {
-        console.error(error);
+    } catch {
 
         return {
             success: false,

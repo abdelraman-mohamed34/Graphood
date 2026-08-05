@@ -35,7 +35,6 @@ export async function createApiKey(
         .single();
 
     if (error) {
-        console.error("Error creating API key:", error);
         throw error;
     }
 

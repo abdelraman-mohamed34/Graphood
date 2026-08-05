@@ -44,7 +44,6 @@ export async function createTenant({
         .single();
 
     if (tenantError) {
-        console.error("Error creating tenant after payment:", tenantError);
         throw tenantError;
     }
 

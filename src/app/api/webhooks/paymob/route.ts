@@ -18,8 +18,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json(result);
 
-    } catch (error) {
-        console.error("Paymob webhook error:", error);
+    } catch {
 
         return NextResponse.json(
             {

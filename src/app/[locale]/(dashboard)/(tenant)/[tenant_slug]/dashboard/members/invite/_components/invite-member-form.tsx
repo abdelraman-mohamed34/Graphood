@@ -53,7 +53,6 @@ export default function InviteMemberForm({
                 tenantSlug,
                 data
             )
-            console.log("INVITATION RESULT:", result);
 
             if (result && result.success) {
                 toast.success(t('invite.feedback.sent'))
@@ -81,8 +80,7 @@ export default function InviteMemberForm({
                     toast.error(t('invite.feedback.failed'))
                     break
             }
-        } catch (error) {
-            console.error('An unexpected error occurred:', error)
+        } catch {
             toast.error(t('invite.feedback.connectionError'))
         }
     }

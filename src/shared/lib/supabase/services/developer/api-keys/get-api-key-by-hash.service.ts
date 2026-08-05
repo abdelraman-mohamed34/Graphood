@@ -18,7 +18,6 @@ export async function getApiKeyByHash(
             return null;
         }
 
-        console.error("Error fetching API key by hash:", error);
         throw error;
     }
 

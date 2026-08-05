@@ -104,7 +104,6 @@ export async function createCouponAction(input: CreateCouponInput) {
             data: coupon,
         };
     } catch (error) {
-        console.error("Supabase Create Coupon Critical Error:", error);
 
         return {
             success: false,

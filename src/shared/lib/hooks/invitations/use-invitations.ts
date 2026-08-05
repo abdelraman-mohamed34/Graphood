@@ -70,10 +70,6 @@ export function useInvitations() {
             return result;
         },
 
-        onError: (error) => {
-            console.error("Cancel invitation error:", error);
-        },
-
         onSuccess: async () => {
             await invalidateInvitations();
         },
@@ -93,10 +89,6 @@ export function useInvitations() {
             }
 
             return result;
-        },
-
-        onError: (error) => {
-            console.error("Resend invitation error:", error);
         },
 
         onSuccess: async () => {

@@ -11,10 +11,6 @@ export async function getTenantById(
         .maybeSingle();
 
     if (error) {
-        console.error(
-            "Error fetching tenant by id:",
-            error
-        );
 
         throw error;
     }

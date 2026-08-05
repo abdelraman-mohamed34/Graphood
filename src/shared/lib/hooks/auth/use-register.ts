@@ -62,7 +62,7 @@ export function useRegister() {
                         router.replace(`/${tenant}/dashboard`);
                         router.refresh();
                     } catch {
-                        toast.error("Failed to auto-accept invitation. Redirecting...");
+                        toast.error(t("errors.invitation_auto_accept_error"));
                         router.replace(`/invitations/accept?token=${token}&tenant=${tenant}`);
                     }
                 } else {
@@ -75,9 +75,8 @@ export function useRegister() {
             }
         },
 
-        onError: (error: Error) => {
-            const message = error.message || t("errors.generic_register_error")
-            toast.error(message)
+        onError: () => {
+            toast.error(t("errors.generic_register_error"))
         },
     })
 

@@ -287,7 +287,6 @@ export async function createOrderAction(
             licenseType,
         };
     } catch (error) {
-        console.error("Create order failed:", error);
 
         // A concurrent request may have created the pending order after the
         // preflight lookup. Resume it instead of surfacing a uniqueness error.

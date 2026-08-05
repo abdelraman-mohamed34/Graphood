@@ -12,10 +12,6 @@ export async function getSubscriptionById(
         .maybeSingle();
 
     if (error) {
-        console.error(
-            "Error fetching subscription:",
-            error
-        );
         throw error;
     }
 

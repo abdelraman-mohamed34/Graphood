@@ -51,7 +51,6 @@ import nodemailer from 'nodemailer'
 //         `,
 //     })
 
-//     console.log('RESEND RESPONSE:', { data, error })
 
 //     if (error) {
 //         throw new Error(error.message)
@@ -91,9 +90,8 @@ export async function sendInvitationEmail({
         `${process.env.NEXT_PUBLIC_APP_URL}` +
         `/${locale}/invitations/accept?token=${token}&tenant=${tenantSlug}`
 
-    console.log('MAILPIT SENDING TO:', email)
 
-    const info = await transporter.sendMail({
+    await transporter.sendMail({
         from: 'Graphood <no-reply@graphhood.local>',
         to: email,
         subject: `You're invited to join ${tenantName}`,
@@ -280,5 +278,4 @@ export async function sendInvitationEmail({
 `
     })
 
-    console.log('MAILPIT RESPONSE:', info)
 }

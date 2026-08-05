@@ -22,10 +22,6 @@ export async function getWhatByFrom<T = unknown>(
     const { data, error } = await query.maybeSingle();
 
     if (error) {
-        console.error(
-            `[Supabase Error] Error fetching from ${from}:`,
-            JSON.stringify(error, null, 2)
-        );
         throw error;
     }
 

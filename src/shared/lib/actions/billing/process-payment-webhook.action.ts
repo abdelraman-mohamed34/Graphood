@@ -61,7 +61,6 @@ export async function processPaymentWebhookAction(
             data: result,
         };
     } catch (error) {
-        console.error("Failed to confirm payment:", error);
         return {
             success: false,
             error:

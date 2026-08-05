@@ -14,9 +14,11 @@ import { hasPermission } from "@/shared/lib/auth/requires/require-permission";
 import { getMembershipBySlug } from "@/shared/lib/supabase/services/memberships/get-membership.service";
 import { updateTenantAction } from "@/shared/lib/actions/tenants/update-tenant.action";
 import type { UpdateTenant } from "@/shared/lib/schemas/tenants.schema";
+import { useTranslations } from "next-intl";
 
 export function useTenant() {
     const router = useRouter();
+    const t = useTranslations("global.errors");
 
     const { tenant_slug, locale } = useParams<{
         tenant_slug: string;
@@ -63,7 +65,7 @@ export function useTenant() {
 
         onSuccess: async (result) => {
             if (!result.success) {
-                toast.error(result.message);
+                toast.error(t("tenantUpdate"));
                 return;
             }
 
@@ -90,9 +92,8 @@ export function useTenant() {
             router.refresh();
         },
 
-        onError: (error) => {
-            console.error(error);
-            toast.error("Failed to update tenant.");
+        onError: () => {
+            toast.error(t("tenantUpdate"));
         },
     });
 

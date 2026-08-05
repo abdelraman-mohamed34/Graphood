@@ -41,7 +41,6 @@ export async function getMembershipsByTenantSlug({
         .eq("tenants.slug", tenantSlug);
 
     if (error) {
-        console.error(`[Supabase Error] Error fetching memberships for slug (${tenantSlug}):`, JSON.stringify(error, null, 2));
         throw error;
     }
 

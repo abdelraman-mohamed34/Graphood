@@ -74,8 +74,7 @@ export async function cancelInvitationAction(
         return {
             success: true,
         }
-    } catch (error) {
-        console.error("CANCEL INVITATION ERROR:", error);
+    } catch {
 
         return {
             success: false,

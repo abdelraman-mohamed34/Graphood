@@ -27,7 +27,6 @@ export default async function Page({ params, searchParams }: PageProps) {
         .digest('hex')
 
     const invitation = await getInvitationByToken(supabase, tokenHash)
-    console.log(invitation)
 
     if (!invitation) {
         return (
@@ -56,7 +55,6 @@ export default async function Page({ params, searchParams }: PageProps) {
         "profiles"
     )
 
-    console.log(inviter)
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">

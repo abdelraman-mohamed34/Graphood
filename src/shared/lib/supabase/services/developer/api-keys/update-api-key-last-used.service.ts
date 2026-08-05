@@ -14,7 +14,6 @@ export async function updateApiKeyLastUsed(
         .eq("id", id);
 
     if (error) {
-        console.error("Error updating API key last used:", error);
         throw error;
     }
 }

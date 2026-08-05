@@ -68,8 +68,7 @@ export async function uploadAvatarAction(
             success: true,
             path,
         };
-    } catch (error) {
-        console.error(error);
+    } catch {
 
         return {
             success: false,

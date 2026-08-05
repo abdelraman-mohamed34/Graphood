@@ -69,12 +69,8 @@ export function useCoupons(systemId: string) {
             invalidate();
         },
 
-        onError(error) {
-            toast.error(
-                error instanceof Error
-                    ? error.message
-                    : t("createFailed")
-            );
+        onError() {
+            toast.error(t("createFailed"));
         },
     });
 
@@ -98,12 +94,8 @@ export function useCoupons(systemId: string) {
             invalidate();
         },
 
-        onError(error) {
-            toast.error(
-                error instanceof Error
-                    ? error.message
-                    : t("deleteFailed")
-            );
+        onError() {
+            toast.error(t("deleteFailed"));
         },
     });
 

@@ -11,7 +11,6 @@ export async function deleteApiKey(
         .eq("id", id);
 
     if (error) {
-        console.error("Error deleting API key:", error);
         throw error;
     }
 }

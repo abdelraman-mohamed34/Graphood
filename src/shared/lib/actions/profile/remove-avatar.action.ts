@@ -62,8 +62,7 @@ export async function removeAvatarAction(
         return {
             success: true,
         };
-    } catch (error) {
-        console.error(error);
+    } catch {
 
         return {
             success: false,

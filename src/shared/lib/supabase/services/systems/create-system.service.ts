@@ -27,16 +27,6 @@ export async function createSystem(
 
     if (error) {
 
-        console.error(
-            "CREATE SYSTEM ERROR:",
-            {
-                code: error.code,
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                payload: data,
-            }
-        );
 
         throw error;
     }

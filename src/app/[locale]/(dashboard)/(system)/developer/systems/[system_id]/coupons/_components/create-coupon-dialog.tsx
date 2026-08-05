@@ -134,8 +134,7 @@ export function CreateCouponDialog({
 
             form.reset();
             onOpenChange(false);
-        } catch (err) {
-            console.error("Creation failed:", err);
+        } catch {
         }
     };
 

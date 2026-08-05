@@ -13,8 +13,7 @@ export function useLogin() {
     const searchParams = useSearchParams()
     const t = useTranslations("auth")
 
-    const signInWithProvider = (provider: string = 'google') => {
-        console.log(`Redirecting to ${provider} Auth...`);
+    const signInWithProvider = () => {
     }
 
     const signInWithPassword = useMutation({
@@ -44,8 +43,8 @@ export function useLogin() {
             router.refresh();
         },
 
-        onError: (error: Error) => {
-            toast.error(error.message || t("errors.generic_login_error"))
+        onError: () => {
+            toast.error(t("errors.generic_login_error"))
         },
     })
 
@@ -62,8 +61,8 @@ export function useLogin() {
             router.refresh()
         },
 
-        onError: (error: Error) => {
-            toast.error(error.message || t("errors.generic_logout_error"))
+        onError: () => {
+            toast.error(t("errors.generic_logout_error"))
         },
     })
 

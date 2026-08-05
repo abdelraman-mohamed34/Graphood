@@ -76,8 +76,6 @@ export async function updateTenantAction({
             tenant: updatedTenant,
         };
     } catch (error) {
-        console.error("UPDATE TENANT ACTION ERROR");
-        console.error(error);
 
         return {
             success: false,

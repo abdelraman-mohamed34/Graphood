@@ -73,7 +73,6 @@ export default async function LocaleLayout({
                 getMembershipsByProfileId(supabase, user.id),
             ]);
         } catch {
-            console.error("Failed to load user profile or memberships");
         }
     }
 

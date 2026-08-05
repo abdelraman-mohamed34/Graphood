@@ -93,11 +93,7 @@ export async function transferOwnershipAction(
             success: true,
             message: "Ownership transferred successfully.",
         };
-    } catch (error) {
-        console.error(
-            "[Transfer Ownership Action Error]:",
-            error
-        );
+    } catch {
 
         return {
             success: false,

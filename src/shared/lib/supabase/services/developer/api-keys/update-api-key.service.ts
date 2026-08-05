@@ -28,7 +28,6 @@ export async function updateApiKey(
         .single();
 
     if (error) {
-        console.error("Error updating API key:", error);
         throw error;
     }
 

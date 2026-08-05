@@ -45,15 +45,10 @@ export async function getMembershipBySlug({
         .maybeSingle();
 
     if (error) {
-        console.error("[Membership] Supabase Error:", error);
         throw error;
     }
 
     if (!data) {
-        console.warn("[Membership] Membership not found.", {
-            userId,
-            tenantSlug,
-        });
 
         return null;
     }
@@ -70,14 +65,7 @@ export async function getMembershipBySlug({
         membershipWithTenantSchema.safeParse(sanitizedData);
 
     if (!parsed.success) {
-        console.error(
-            "[Membership] Zod validation failed."
-        );
 
-        console.error(
-            "Validation Errors:",
-            parsed.error.flatten()
-        );
 
         throw new Error(
             "Membership validation failed. Check server logs for details."

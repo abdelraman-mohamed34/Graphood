@@ -26,10 +26,6 @@ export async function getMembershipsByTenantId(
         .eq("tenant_id", tenantId);
 
     if (error) {
-        console.error(
-            "Error fetching memberships by tenant id:",
-            error
-        );
 
         throw error;
     }

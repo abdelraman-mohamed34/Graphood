@@ -45,8 +45,7 @@ export function useLocaleSwitcher() {
 
             router.replace(href, { locale: newLocale });
             return true;
-        } catch (error) {
-            console.error("Failed to change locale:", error);
+        } catch {
             return false;
         } finally {
             changingRef.current = false;

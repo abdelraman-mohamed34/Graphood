@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { acceptInvitationAction } from '@/shared/lib/actions/invitations/accept-invitation.action'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 
 type AcceptInvitationButtonProps = {
     token: string
@@ -13,6 +14,7 @@ type AcceptInvitationButtonProps = {
 
 export default function AcceptInvitationButton({ token, tenant, locale }: AcceptInvitationButtonProps) {
     const router = useRouter()
+    const t = useTranslations('invitationResponse')
     const [isLoading, setIsLoading] = useState(false)
 
     const handleAccept = async () => {
@@ -22,17 +24,16 @@ export default function AcceptInvitationButton({ token, tenant, locale }: Accept
             const result = await acceptInvitationAction(token, tenant)
 
             if (result && result.success) {
-                toast.success('Joined workspace successfully! Redirecting...')
+                toast.success(t('accepted'))
 
                 await new Promise((resolve) => setTimeout(resolve, 1000))
                 router.push(`/${locale}/${tenant}/dashboard`)
             } else {
-                toast.error(result?.message || 'Failed to accept invitation.')
+                toast.error(t('acceptFailed'))
                 setIsLoading(false)
             }
-        } catch (err) {
-            console.error(err)
-            toast.error('An unexpected error occurred. Please try again.')
+        } catch {
+            toast.error(t('acceptFailed'))
             setIsLoading(false)
         }
     }
@@ -49,10 +50,10 @@ export default function AcceptInvitationButton({ token, tenant, locale }: Accept
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    Joining Workspace...
+                    {t('accepting')}
                 </>
             ) : (
-                'Accept & Join Workspace'
+                t('accept')
             )}
         </button>
     )

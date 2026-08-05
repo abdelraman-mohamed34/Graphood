@@ -20,6 +20,7 @@ export default function TransferOwnership({
     member,
 }: Props) {
     const t = useTranslations("dashboard.members");
+    const errorT = useTranslations("global.errors");
     const params = useParams();
 
     const locale =
@@ -37,7 +38,7 @@ export default function TransferOwnership({
                 );
 
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(errorT("ownershipTransfer"));
             return;
         }
 

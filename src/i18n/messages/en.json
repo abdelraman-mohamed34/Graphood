@@ -1,7 +1,22 @@
 {
     "global": {
         "name_error": "Name must be at least 3 characters",
-        "phone_error": "Phone number is too short"
+        "phone_error": "Phone number is too short",
+        "errors": {
+            "generic": "Something went wrong. Please try again.",
+            "tenantUpdate": "Failed to update the workspace.",
+            "ownershipTransfer": "Failed to transfer workspace ownership."
+        }
+    },
+    "invitationResponse": {
+        "accept": "Accept & Join Workspace",
+        "accepting": "Joining Workspace...",
+        "accepted": "Joined workspace successfully! Redirecting...",
+        "acceptFailed": "Failed to accept the invitation. Please try again.",
+        "reject": "Reject Invitation",
+        "rejecting": "Rejecting...",
+        "rejected": "Invitation rejected successfully.",
+        "rejectFailed": "Failed to reject the invitation. Please try again."
     },
     "developer": {
         "systems": {
@@ -219,6 +234,7 @@
             "generic_login_error": "Invalid email or password. Please try again.",
             "generic_logout_error": "Something went wrong. Please try again.",
             "generic_register_error": "An error occurred during registration. Please try again.",
+            "invitation_auto_accept_error": "We couldn't accept the invitation automatically. Redirecting so you can try again.",
             "confirm_email": "Please check your email to confirm your account."
         },
         "login": {

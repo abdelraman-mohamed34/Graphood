@@ -139,11 +139,7 @@ export default function Page() {
             const result = await createOrder(payload);
 
             if (!result?.success) {
-                toast.error(
-                    typeof result?.error === "string"
-                        ? result.error
-                        : t("feedback.orderFailed")
-                );
+                toast.error(t("feedback.orderFailed"));
                 return;
             }
 
@@ -153,11 +149,8 @@ export default function Page() {
                 toast.success(t("feedback.orderCreated"));
             }
             router.push(`/marketplace/checkout/${result.orderId}`);
-        } catch (err) {
-            console.error(err);
-            toast.error(
-                err instanceof Error ? err.message : t("feedback.genericError")
-            );
+        } catch {
+            toast.error(t("feedback.genericError"));
         }
     };
 
@@ -165,8 +158,7 @@ export default function Page() {
         try {
             await cancelOrder({ orderId, systemId });
             toast.success(t("pendingOrder.cancelled"));
-        } catch (cancelError) {
-            console.error(cancelError);
+        } catch {
             toast.error(t("pendingOrder.cancelFailed"));
         }
     };
@@ -397,11 +389,7 @@ export default function Page() {
                                 });
 
                                 if (!result.success) {
-                                    toast.error(
-                                        typeof result.error === "string"
-                                            ? result.error
-                                            : t("feedback.invalidCoupon")
-                                    );
+                                    toast.error(t("feedback.invalidCoupon"));
                                     setPreview(null);
                                     return;
                                 }

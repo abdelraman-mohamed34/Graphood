@@ -16,7 +16,6 @@ export async function rejectInvitationAction(token: string, tenant: string) {
         const { data, error } = await updateInvitationByToken(supabase, tokenHash, 'REJECTED')
 
         if (error) {
-            console.error('[Supabase Error] Rejecting invitation failed:', error)
             return {
                 success: false,
                 message: 'Could not reject the invitation.'
@@ -31,8 +30,7 @@ export async function rejectInvitationAction(token: string, tenant: string) {
             data
         }
 
-    } catch (error) {
-        console.error('[Server Action Error]:', error)
+    } catch {
         return {
             success: false,
             message: 'An unexpected error occurred.'

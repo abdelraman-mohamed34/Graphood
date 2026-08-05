@@ -85,8 +85,7 @@ export async function resendInvitationAction(
         return {
             success: true,
         };
-    } catch (error) {
-        console.error("RESEND INVITATION ERROR:", error);
+    } catch {
 
         return {
             success: false,
