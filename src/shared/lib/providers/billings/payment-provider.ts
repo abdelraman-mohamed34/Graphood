@@ -4,7 +4,8 @@ export type PaymentProvider =
     | "STRIPE"
     | "PAYMOB"
     | "CASH"
-    | "MANUAL";
+    | "MANUAL"
+    | "KASHIER";
 
 
 export interface PaymentProviderAdapter {

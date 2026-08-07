@@ -2,10 +2,7 @@
 
 import { z } from "zod";
 
-import {
-    createPaymobPaymentIntent,
-    PaymobError,
-} from "@/shared/lib/paymob";
+import { createKashierCheckoutUrl, KashierError } from "@/shared/lib/kashier";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
 
@@ -36,13 +33,11 @@ export async function initiatePaymentAction(
             return { success: false, error: "Unauthorized." };
         }
 
-        // Treat the action as a public endpoint: constrain the query itself to
-        // the signed-in owner instead of fetching by ID and checking afterward.
         const [{ data: order, error: orderError }, { data: profile, error: profileError }] =
             await Promise.all([
                 supabase
                     .from("orders")
-                    .select("id, amount, currency, status, payments(id, provider, provider_reference, provider_integration_id, status)")
+                    .select("id, amount, currency, status, payments(id, provider, provider_reference, status)")
                     .eq("id", parsed.data.orderId)
                     .eq("profile_id", user.id)
                     .maybeSingle(),
@@ -56,7 +51,6 @@ export async function initiatePaymentAction(
         if (orderError) throw orderError;
         if (profileError) throw profileError;
 
-        // Do not reveal whether an ID belonging to another user exists.
         if (!order) {
             return { success: false, error: "Order not found." };
         }
@@ -66,7 +60,7 @@ export async function initiatePaymentAction(
         }
 
         if (order.currency !== "EGP") {
-            return { success: false, error: "Paymob only supports EGP orders." };
+            return { success: false, error: "Kashier only supports EGP orders." };
         }
 
         if (!profile) {
@@ -78,53 +72,22 @@ export async function initiatePaymentAction(
             return { success: false, error: "A billing email is required." };
         }
 
-        const existingPayment = Array.isArray(order.payments)
-            ? order.payments.find((payment) => payment.status === "PENDING")
-            : null;
-        const existingPaymobOrderId = existingPayment?.provider === "PAYMOB"
-            && existingPayment.provider_reference
-            ? Number(existingPayment.provider_reference)
-            : undefined;
-
-        if (existingPaymobOrderId !== undefined && !Number.isSafeInteger(existingPaymobOrderId)) {
-            return { success: false, error: "Payment session is invalid." };
-        }
-
-        const requestedIntegrationId = parsed.data.paymentMethod === "wallet"
-            ? Number(process.env.PAYMOB_WALLET_INTEGRATION_ID)
-            : Number(process.env.PAYMOB_INSTAPAY_INTEGRATION_ID);
-        if (
-            existingPayment?.provider === "PAYMOB" &&
-            existingPayment.provider_integration_id !== requestedIntegrationId
-        ) {
-            return { success: false, error: "A payment session already exists for another payment method." };
-        }
-
-        const paymentIntent = await createPaymobPaymentIntent({
+        const { checkoutUrl } = await createKashierCheckoutUrl({
             orderId: order.id,
             amount: order.amount,
             currency: "EGP",
-            paymentMethod: parsed.data.paymentMethod,
             customer: {
                 firstName: profile.first_name,
                 lastName: profile.last_name,
                 email,
-                phoneNumber: profile.phone?.trim() || "NA",
-                city: profile.city?.trim() || "NA",
-                country: profile.country?.trim() || "EG",
             },
-        }, { paymobOrderId: existingPaymobOrderId });
-
-        if (paymentIntent.integrationId !== requestedIntegrationId) {
-            return { success: false, error: "A payment session already exists for another payment method." };
-        }
+        });
 
         const { error: paymentUpdateError } = await supabase
             .from("payments")
             .update({
-                provider: "PAYMOB",
-                provider_reference: String(paymentIntent.paymobOrderId),
-                provider_integration_id: paymentIntent.integrationId,
+                provider: "KASHIER",
+                provider_reference: order.id,
                 updated_at: new Date().toISOString(),
             })
             .eq("order_id", order.id)
@@ -132,16 +95,14 @@ export async function initiatePaymentAction(
 
         if (paymentUpdateError) throw paymentUpdateError;
 
-        return { success: true, iframeUrl: paymentIntent.iframeUrl };
+        return { success: true, iframeUrl: checkoutUrl };
     } catch (error) {
-        // Paymob/configuration details stay in server logs and are not exposed
-        // through the serialized Server Action result.
-        console.error("Failed to initiate Paymob payment", error);
+        console.error("Failed to initiate Kashier payment", error);
 
         return {
             success: false,
             error:
-                error instanceof PaymobError
+                error instanceof KashierError
                     ? "Unable to create the payment session. Please try again."
                     : "Failed to initiate payment.",
         };

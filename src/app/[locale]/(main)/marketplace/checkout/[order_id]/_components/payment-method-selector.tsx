@@ -67,8 +67,8 @@ export function PaymentMethodSelector({
 
                     <div
                         className={`flex h-5 w-5 items-center justify-center rounded-full border transition-all ${selectedMethod === "wallet"
-                                ? "border-primary bg-primary text-primary-foreground"
-                                : "border-muted-foreground/30"
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-muted-foreground/30"
                             }`}
                     >
                         {selectedMethod === "wallet" && (
@@ -115,8 +115,8 @@ export function PaymentMethodSelector({
 
                     <div
                         className={`flex h-5 w-5 items-center justify-center rounded-full border transition-all ${selectedMethod === "instapay"
-                                ? "border-primary bg-primary text-primary-foreground"
-                                : "border-muted-foreground/30"
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-muted-foreground/30"
                             }`}
                     >
                         {selectedMethod === "instapay" && (

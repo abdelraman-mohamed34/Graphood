@@ -45,11 +45,6 @@ export default function QuickStartPage() {
 
                 <CodeBlock language="text" code="https://api.graphood.com/api/developer/v1" />
 
-                <p className="text-xs text-muted-foreground sm:text-sm">
-                    {t("baseUrl.localDev")}
-                </p>
-
-                <CodeBlock language="text" code="http://localhost:3000/api/developer/v1" />
             </section>
 
             {/* Authentication */}

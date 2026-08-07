@@ -202,7 +202,7 @@ export default function Page() {
                 </h2>
 
                 {pendingOrder && (
-                    <div className="mb-8 flex flex-col gap-4 rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 text-start sm:flex-row sm:items-center sm:justify-between">
+                    <div className="mb-8 flex flex-col gap-4 rounded-lg border border-amber-500/25 bg-amber-500/10 p-4 text-start sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex min-w-0 items-start gap-3">
                             <AlertCircle className="mt-0.5 size-5 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
                             <div className="min-w-0">

@@ -3,6 +3,7 @@ import { z } from "zod";
 export const paymentProvider = [
     "STRIPE",
     "PAYMOB",
+    "KASHIER",
     "CASH",
     "MANUAL",
 ] as const;
