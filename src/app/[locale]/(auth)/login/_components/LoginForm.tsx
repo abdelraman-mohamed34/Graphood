@@ -31,7 +31,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { signInWithPassword, signInWithProvider, isLoading } = useLogin();
+  const { signInWithPassword, signInWithProvider, isPasswordLoading, isOAuthLoading } = useLogin();
   const t = useTranslations("auth.login");
 
   const {
@@ -43,7 +43,9 @@ export function LoginForm({
   });
 
   const onSubmit = async (data: LoginInputType) => {
-    await signInWithPassword(data);
+    try {
+      await signInWithPassword(data);
+    } catch { }
   };
 
   const params = useSearchParams();
@@ -124,10 +126,13 @@ export function LoginForm({
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={isLoading}
+                  disabled={isPasswordLoading}
                 >
-                  {isLoading ? t("loggingIn") : t("submit")}
+                  {isPasswordLoading
+                    ? t("loggingIn")
+                    : t("submit")}
                 </Button>
+
               </Field>
 
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
@@ -135,7 +140,10 @@ export function LoginForm({
               </FieldSeparator>
 
               <Field className="flex">
-                <GoogleBtn onClick={signInWithProvider} />
+                <GoogleBtn
+                  disabled={isOAuthLoading}
+                  onClick={() => signInWithProvider("google")}
+                />
               </Field>
 
               <FieldDescription className="text-center text-sm">

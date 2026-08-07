@@ -1,22 +1,28 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { OAuthProvider } from "@/shared/types/auth.types";
 
 interface GoogleBtnProps {
-    onClick?: (provider?: string) => void;
+    onClick?: (provider: OAuthProvider) => Promise<void> | void;
     label?: string;
+    isLoading?: boolean;
+    disabled?: boolean;
 }
 
-export default function GoogleBtn({ onClick, label = "Continue with Google" }: GoogleBtnProps) {
+export default function GoogleBtn({
+    onClick,
+    label = "Google",
+    isLoading = false,
+    disabled = false,
+}: GoogleBtnProps) {
     return (
         <Button
             type="button"
             variant="outline"
-            className="w-full flex items-center justify-center gap-2 font-medium transition-colors hover:bg-accent"
-            onClick={(e) => {
-                e.preventDefault();
-                onClick?.("google");
-            }}
+            disabled={disabled || isLoading}
+            className="w-full flex items-center justify-center gap-2 font-medium transition-colors hover:bg-accent py-5"
+            onClick={() => onClick?.("google")}
         >
             <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
                 <path

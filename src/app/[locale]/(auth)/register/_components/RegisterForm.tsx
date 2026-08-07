@@ -17,7 +17,13 @@ import Or from "../../login/_components/Or";
 import { useRegister } from "@/shared/lib/supabase";
 
 function RegisterForm() {
-    const { signUpWithPassword, isLoading } = useRegister();
+    const {
+        signUpWithPassword,
+        signInWithProvider,
+        isRegisterLoading,
+        isOAuthLoading,
+
+    } = useRegister();
 
     const {
         register,
@@ -115,17 +121,23 @@ function RegisterForm() {
 
                 <Button
                     type="submit"
-                    disabled={isLoading}
+                    disabled={isRegisterLoading}
                     className="rounded-md py-5 bg-primary-foreground font-medium"
                 >
-                    {isLoading
-                        ? "Creating account..."
-                        : "Create Graphood account"}
+                    {
+                        isRegisterLoading
+                            ? "Creating account..."
+                            : "Create Graphood account"
+                    }
                 </Button>
             </form>
 
             <Or />
-            <GoogleBtn />
+            <GoogleBtn
+                disabled={isOAuthLoading}
+                onClick={() => signInWithProvider("google")}
+            />
+
         </div>
     );
 }

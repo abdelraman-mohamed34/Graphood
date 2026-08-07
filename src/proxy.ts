@@ -1,136 +1,176 @@
 import createMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
-
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 const handleI18nRouting = createMiddleware(routing);
 
+const PUBLIC_ROUTES = [
+  "/",
+  "/home",
+  "/login",
+  "/register",
+  "/marketplace",
+  "/workspaces",
+  "/select-workspace",
+  "/invitations/accept",
+  "/auth/callback",
+];
+
 export async function proxy(req: NextRequest) {
-    const pathname = req.nextUrl.pathname;
+  const pathname = req.nextUrl.pathname;
 
-    let response = handleI18nRouting(req);
+  let response = handleI18nRouting(req);
 
-    const locales = routing.locales;
-    type Locale = (typeof locales)[number];
-    const pathLocale = pathname.split("/")[1];
-    const isLocaleInPath = locales.includes(pathLocale as Locale);
+  const locales = routing.locales;
+  type Locale = (typeof locales)[number];
 
-    const cleanPath = pathname.replace(new RegExp(`^/(${locales.join("|")})`), "") || "/";
+  const pathLocale = pathname.split("/")[1] as Locale;
 
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                getAll() {
-                    return req.cookies.getAll();
-                },
+  const isLocaleInPath = locales.includes(pathLocale);
 
-                setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value }) =>
-                        req.cookies.set(name, value)
-                    );
+  const cleanPath =
+    pathname.replace(new RegExp(`^/(${locales.join("|")})`), "") || "/";
 
-                    response = NextResponse.next({
-                        request: req,
-                    });
+  const locale = isLocaleInPath
+    ? pathLocale
+    : routing.defaultLocale;
 
-                    cookiesToSet.forEach(
-                        ({ name, value, options }) =>
-                            response.cookies.set(
-                                name,
-                                value,
-                                options
-                            )
-                    );
-                },
-            },
-        }
+  if (cleanPath === "/") {
+    return createRedirect(
+      new URL(`/${locale}/home`, req.url),
+      response
     );
+  }
 
+  const isPublic = PUBLIC_ROUTES.some((route) =>
+    cleanPath.startsWith(route)
+  );
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return req.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            req.cookies.set(name, value)
+          );
+
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
+
+  let user = null;
+
+  try {
     const {
-        data: { user },
+      data: { user: authUser },
     } = await supabase.auth.getUser();
 
-    let effectiveLocale = isLocaleInPath ? pathLocale : routing.defaultLocale;
+    user = authUser;
+  } catch {
+    user = null;
+  }
 
-    if (user) {
-        const { data: profile } = await supabase
-            .from("profiles")
-            .select("preferred_language")
-            .eq("id", user.id)
-            .single();
+  if (!isPublic && !user) {
+    return createRedirect(
+      new URL(`/${locale}/login`, req.url),
+      response
+    );
+  }
 
-        if (profile?.preferred_language && locales.includes(profile.preferred_language as Locale)) {
-            effectiveLocale = profile.preferred_language as Locale;
+  if (
+    user &&
+    (cleanPath.startsWith("/login") ||
+      cleanPath.startsWith("/register"))
+  ) {
+    return createRedirect(
+      new URL(`/${locale}/workspaces`, req.url),
+      response
+    );
+  }
 
-            if (!isLocaleInPath || pathLocale !== effectiveLocale) {
-                const redirectPath = cleanPath === "/" ? "/home" : cleanPath;
-                return NextResponse.redirect(
-                    new URL(`/${effectiveLocale}${redirectPath.startsWith("/") ? redirectPath : `/${redirectPath}`}`, req.url)
-                );
-            }
-        }
-    }
+  if (user) {
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("preferred_language")
+        .eq("id", user.id)
+        .single();
 
-    const locale = effectiveLocale;
-
-    if (cleanPath === "/") {
-        return NextResponse.redirect(
-            new URL(`/${locale}/home`, req.url)
+      if (
+        profile?.preferred_language &&
+        locales.includes(profile.preferred_language as Locale) &&
+        profile.preferred_language !== locale
+      ) {
+        return createRedirect(
+          new URL(
+            `/${profile.preferred_language}${cleanPath}`,
+            req.url
+          ),
+          response
         );
+      }
+    } catch {
+      // ignore profile errors
     }
+  }
 
-    const isAuth =
-        cleanPath.startsWith("/login") ||
-        cleanPath.startsWith("/register");
+  const systemMatch =
+    cleanPath.match(/^\/marketplace\/systems\/([^/]+)$/);
 
-    const isPublic =
-        cleanPath.startsWith("/home") ||
-        isAuth ||
-        cleanPath.startsWith("/workspaces") ||
-        cleanPath.startsWith("/invitations/accept") ||
-        cleanPath.startsWith("/select-workspace") ||
-        cleanPath.startsWith("/marketplace");
+  if (systemMatch && user) {
+    try {
+      const systemId = systemMatch[1];
 
-    if (!isPublic && !user) {
-        return NextResponse.redirect(
-            new URL(`/${locale}/login`, req.url)
+      const { data: system } = await supabase
+        .from("systems")
+        .select("owner_id")
+        .eq("id", systemId)
+        .single();
+
+      if (system?.owner_id === user.id) {
+        return createRedirect(
+          new URL(
+            `/${locale}/developer/systems/${systemId}`,
+            req.url
+          ),
+          response
         );
+      }
+    } catch {
+      // ignore
     }
+  }
 
-    if (isAuth && user) {
-        return NextResponse.redirect(
-            new URL(`/${locale}/workspaces`, req.url)
-        );
-    }
+  return response;
+}
 
-    const systemMatch = cleanPath.match(/^\/marketplace\/systems\/([^\/]+)$/);
+function createRedirect(
+  url: URL,
+  originalResponse: NextResponse
+) {
+  const redirectResponse = NextResponse.redirect(url);
 
-    if (systemMatch && user) {
-        const systemId = systemMatch[1];
+  for (const cookie of originalResponse.cookies.getAll()) {
+    redirectResponse.cookies.set(cookie);
+  }
 
-        const { data: system } = await supabase
-            .from("systems")
-            .select("owner_id")
-            .eq("id", systemId)
-            .single();
-
-        if (system && user.id === system.owner_id) {
-            return NextResponse.redirect(
-                new URL(`/${locale}/developer/systems/${systemId}`, req.url)
-            );
-        }
-    }
-
-    return response;
+  return redirectResponse;
 }
 
 export const config = {
-    matcher: [
-        "/",
-        "/(ar|en)/:path*",
-        "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
-    ],
+  matcher: [
+    "/",
+    "/(ar|en)/:path*",
+    "/((?!api|_next|_vercel|.*\\..*).*)",
+  ],
 };
