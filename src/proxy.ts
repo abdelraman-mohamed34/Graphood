@@ -15,6 +15,7 @@ const PUBLIC_ROUTES = [
   "/select-workspace",
   "/invitations/accept",
   "/auth/callback",
+  "/auth/reset-password/callback",
 ];
 
 export async function proxy(req: NextRequest) {

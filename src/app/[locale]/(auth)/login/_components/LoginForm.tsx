@@ -101,12 +101,12 @@ export function LoginForm({
                     {t("password")}
                   </FieldLabel>
 
-                  <a
-                    href="#"
+                  <Link
+                    href="/forgot_password"
                     className="ml-auto text-xs underline-offset-2 hover:underline text-muted-foreground"
                   >
                     {t("forgotPassword")}
-                  </a>
+                  </Link>
                 </div>
 
                 <Input

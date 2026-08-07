@@ -299,14 +299,41 @@
         "success": {
             "logged_in": "Welcome back!",
             "register": "Account created successfully!",
+            "password_updated": "Your password has been updated successfully!",
+            "reset_password_sent": "Password reset instructions have been sent to your email.",
             "signout": "Logged out successfully!"
         },
         "errors": {
             "generic_login_error": "Invalid email or password. Please try again.",
             "generic_logout_error": "Something went wrong. Please try again.",
             "generic_register_error": "An error occurred during registration. Please try again.",
+            "generic_password_update_error": "Unable to update password. Please try again.",
+            "generic_reset_password_error": "Unable to send password reset email. Please try again.",
+            "email_required": "Email address is required.",
+            "fields_required": "All fields are required.",
+            "password_too_short": "Password must be at least 8 characters.",
+            "passwords_do_not_match": "Passwords do not match.",
             "invitation_auto_accept_error": "We couldn't accept the invitation automatically. Redirecting so you can try again.",
             "confirm_email": "Please check your email to confirm your account."
+        },
+        "forgotPassword": {
+            "title": "Forgot Password",
+            "description": "Enter your email address and we'll send you a link to reset your password.",
+            "emailLabel": "Email Address",
+            "emailPlaceholder": "name@example.com",
+            "sending": "Sending...",
+            "sendLink": "Send Reset Link",
+            "backToLogin": "Back to Login",
+            "successMessage": "Reset link sent! Please check your inbox for instructions."
+        },
+        "resetPassword": {
+            "title": "Reset Password",
+            "description": "Enter your new password below to update your account credentials.",
+            "newPassword": "New Password",
+            "confirmPassword": "Confirm Password",
+            "passwordPlaceholder": "••••••••",
+            "updating": "Updating Password...",
+            "submit": "Update Password"
         },
         "login": {
             "title": "Welcome back",
