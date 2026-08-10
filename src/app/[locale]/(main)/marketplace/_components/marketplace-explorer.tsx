@@ -180,9 +180,8 @@ export default function MarketplaceExplorer({ labels }: MarketplaceExplorerProps
                             <h2 id="marketplace-heading" className="break-words text-2xl font-bold text-foreground sm:text-4xl lg:text-5xl">
                                 {labels.contentTitle}
                             </h2>
-
                             <div
-                                className="flex max-w-full snap-x items-center justify-start gap-2 overflow-x-auto px-1 pb-2 pt-4 sm:justify-center"
+                                className="no-scrollbar flex max-w-full items-center justify-start gap-2 overflow-x-auto overflow-y-hidden px-1 pb-2 pt-4 sm:flex-wrap sm:justify-center"
                                 role="group"
                                 aria-label={labels.contentEyebrow}
                             >
@@ -190,9 +189,9 @@ export default function MarketplaceExplorer({ labels }: MarketplaceExplorerProps
                                     type="button"
                                     aria-pressed={selectedCategory === "all"}
                                     onClick={() => setSelectedCategory("all")}
-                                    className={`shrink-0 snap-start rounded-xl px-4 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm ${selectedCategory === "all"
-                                        ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                                        : "border border-border bg-card text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                    className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm ${selectedCategory === "all"
+                                        ? "bg-primary text-primary-foreground shadow-md shadow-primary/25 scale-105"
+                                        : "border border-border/60 bg-background/80 text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:border-border"
                                         }`}
                                 >
                                     {labels.categories["all"] ?? "All"}
@@ -208,9 +207,9 @@ export default function MarketplaceExplorer({ labels }: MarketplaceExplorerProps
                                             type="button"
                                             aria-pressed={selectedCategory === categoryKey}
                                             onClick={() => setSelectedCategory(categoryKey)}
-                                            className={`shrink-0 snap-start rounded-xl px-4 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm ${selectedCategory === categoryKey
-                                                ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                                                : "border border-border bg-card text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                            className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm ${selectedCategory === categoryKey
+                                                ? "bg-primary text-primary-foreground shadow-md shadow-primary/25 scale-105"
+                                                : "border border-border/60 bg-background/80 text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:border-border"
                                                 }`}
                                         >
                                             {categoryLabel}
@@ -247,6 +246,8 @@ export default function MarketplaceExplorer({ labels }: MarketplaceExplorerProps
                     </div>
                 </div>
             </section>
+
+
         </main>
     );
 }
