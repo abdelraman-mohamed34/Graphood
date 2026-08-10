@@ -130,8 +130,8 @@ export default function CreateSystemForm() {
         <section style={{ border: "none" }} className="mx-auto w-full max-w-6xl">
             <CardContent>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-start">
-                    <FieldGroup className="space-y-5">
-                        <div>
+                    <FieldGroup>
+                        <div className="space-y-5">
                             <Field>
                                 <FieldLabel>{t("fields.name.label")}</FieldLabel>
                                 <Input
@@ -157,13 +157,13 @@ export default function CreateSystemForm() {
                             <Textarea
                                 rows={4}
                                 placeholder={t("fields.description.placeholder")}
-                                className="resize-none"
+                                className="resize-y min-h-[100px]"
                                 {...form.register("description")}
                             />
                             <FieldError errors={[form.formState.errors.description]} />
                         </Field>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex gap-4">
                             {/* Category: Multi-Select Combobox (LinkedIn Skills Style) */}
                             <Field className="space-y-2">
                                 <FieldLabel>{t("fields.category.label")}</FieldLabel>

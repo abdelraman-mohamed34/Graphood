@@ -142,11 +142,9 @@ export async function createPaymobPaymentIntent(
         PAYMOB_INSTAPAY_INTEGRATION_ID,
     } = parsedEnvironment.data;
 
-    // 🎯 تحديد الـ Integration ID بناءً على طريقة الدفع المختارة
-    const integrationId =
-        paymentMethod === "instapay"
-            ? PAYMOB_INSTAPAY_INTEGRATION_ID
-            : PAYMOB_WALLET_INTEGRATION_ID;
+    const integrationId = paymentMethod === "instapay"
+        ? PAYMOB_INSTAPAY_INTEGRATION_ID
+        : PAYMOB_WALLET_INTEGRATION_ID;
 
     const amountCents = Math.round(amount * 100);
 
@@ -185,7 +183,7 @@ export async function createPaymobPaymentIntent(
             expiration: 3600,
             order_id: paymobOrderId,
             currency,
-            integration_id: integrationId, // 👈 استخدام الـ integrationId الديناميكي
+            integration_id: integrationId,
             lock_order_when_paid: true,
             billing_data: {
                 first_name: customer.firstName,
