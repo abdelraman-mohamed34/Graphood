@@ -8,7 +8,7 @@ import {
     Search,
     XCircle,
 } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,7 @@ const filters: SystemFilter[] = ["ALL", "PENDING", "ACTIVE", "SUSPENDED", "REJEC
 export function SystemsTable() {
     const t = useTranslations("AdminSystems");
     const format = useFormatter();
+    const locale = useLocale();
     const { systems, isLoading, error, refresh } = useSystems();
     const [searchQuery, setSearchQuery] = useState("");
     const [activeFilter, setActiveFilter] = useState<SystemFilter>("ALL");
@@ -61,6 +62,9 @@ export function SystemsTable() {
             return matchesStatus && matchesSearch;
         });
     }, [activeFilter, searchQuery, systems]);
+
+    const isRtl = locale === "ar";
+    const textDirectionClass = isRtl ? "text-right" : "text-left";
 
     if (isLoading) return <TableSkeleton />;
 
@@ -126,13 +130,13 @@ export function SystemsTable() {
                                 filteredSystems.map((system) => (
                                     <TableRow key={system.id} className="transition-colors hover:bg-muted/20">
                                         <TableCell>
-                                            <div className="flex flex-col">
+                                            <div className={`flex flex-col ${textDirectionClass}`}>
                                                 <span className="text-sm font-semibold">{system.name}</span>
                                                 <span className="font-mono text-xs text-muted-foreground" dir="ltr">{system.slug}</span>
                                             </div>
                                         </TableCell>
                                         <TableCell>
-                                            <div className="flex flex-col text-sm">
+                                            <div className={`flex flex-col text-sm ${textDirectionClass}`}>
                                                 {system.ownerName && <span>{system.ownerName}</span>}
                                                 <span className="font-mono text-xs text-muted-foreground" dir="ltr">
                                                     {system.ownerEmail ?? t("table.emailUnavailable")}
@@ -152,7 +156,13 @@ export function SystemsTable() {
                                                         <MoreHorizontal className="size-4" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-52">
+                                                <DropdownMenuContent
+                                                    align={isRtl ? "start" : "end"}
+                                                    side="bottom"
+                                                    sideOffset={4}
+                                                    collisionPadding={12}
+                                                    className="w-52"
+                                                >
                                                     <DropdownMenuLabel>{t("actions.options")}</DropdownMenuLabel>
                                                     <DropdownMenuSeparator />
                                                     <DropdownMenuItem asChild>
