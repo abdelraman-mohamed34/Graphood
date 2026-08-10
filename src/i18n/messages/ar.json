@@ -1120,6 +1120,7 @@
         }
     },
     "adminSidebar": {
+        "navigation": "التنقل الإداري",
         "groups": {
             "platformManagement": "إدارة المنصة"
         },
@@ -1467,6 +1468,27 @@
                 "unknownError": "حدث خطأ غير متوقع في الخادم."
             }
         }
+    },
+    "AdminSystems": {
+        "metadataTitle": "إدارة الأنظمة | إدارة Graphood",
+        "header": { "title": "إدارة الأنظمة والطلبات", "description": "مراجعة طلبات الأنظمة الجديدة وإدارة حالة الأنظمة الحالية." },
+        "stats": { "total": "إجمالي الأنظمة", "pending": "قيد المراجعة", "active": "أنظمة نشطة", "inactive": "معلقة / مرفوضة" },
+        "search": { "placeholder": "ابحث بالنظام أو المعرّف أو المالك أو البريد..." },
+        "filters": { "ALL": "الكل", "PENDING": "قيد الانتظار", "ACTIVE": "نشطة", "SUSPENDED": "معلقة", "REJECTED": "مرفوضة" },
+        "statuses": { "PENDING": "قيد الانتظار", "ACTIVE": "نشط", "SUSPENDED": "معلق", "REJECTED": "مرفوض", "ARCHIVED": "مؤرشف" },
+        "table": { "system": "النظام", "owner": "المالك", "status": "الحالة", "createdAt": "تاريخ الإنشاء", "actions": "الإجراءات", "empty": "لا توجد أنظمة مطابقة.", "loadError": "تعذر تحميل الأنظمة.", "emailUnavailable": "البريد غير متاح", "unknownDate": "غير معروف" },
+        "actions": { "retry": "إعادة المحاولة", "cancel": "إلغاء", "openMenu": "فتح إجراءات النظام", "options": "الخيارات", "preview": "معاينة النظام", "activate": "قبول وتفعيل", "reject": "رفض الطلب", "suspend": "تعليق النظام" },
+        "dialog": {
+            "accept": { "title": "قبول وتفعيل النظام", "description": "هل تريد قبول وتفعيل {system}؟", "confirm": "تفعيل النظام" },
+            "reject": { "title": "رفض طلب النظام", "description": "هل تريد رفض {system}؟ يمكنك توضيح السبب أدناه.", "confirm": "رفض الطلب" },
+            "suspend": { "title": "تعليق النظام", "description": "سيتم إيقاف الوصول إلى {system} مؤقتًا.", "confirm": "تعليق النظام" },
+            "reasonLabel": "سبب الإجراء (اختياري)", "reasonPlaceholder": "وضّح سبب القرار لصاحب النظام...", "updating": "جارٍ التحديث..."
+        },
+        "toast": { "updateSuccess": "تم تحديث حالة النظام." },
+        "validation": { "systemIdInvalid": "معرّف النظام غير صحيح.", "reasonTooLong": "يجب ألا يتجاوز السبب 500 حرف.", "invalidInput": "تحقق من البيانات المدخلة." },
+        "auth": { "unauthorized": "يجب تسجيل الدخول للمتابعة.", "staffRequired": "يلزم امتلاك صلاحية ضمن فريق المنصة." },
+        "systems": { "fetchFailed": "تعذر تحميل الأنظمة.", "updateFailed": "تعذر تحديث حالة النظام.", "notFound": "النظام لم يعد موجودًا." },
+        "errors": { "unknown": "حدث خطأ. حاول مرة أخرى." }
     },
     "AdminStaff": {
         "metadataTitle": "فريق المنصة | إدارة Graphood",

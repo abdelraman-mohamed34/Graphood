@@ -650,6 +650,7 @@ export type Database = {
           slug: string
           starter_price: number
           status: Database["public"]["Enums"]["global_status"] | null
+          status_reason: string | null
           tags: string[]
           updated_at: string | null
         }
@@ -670,6 +671,7 @@ export type Database = {
           slug: string
           starter_price?: number
           status?: Database["public"]["Enums"]["global_status"] | null
+          status_reason?: string | null
           tags?: string[]
           updated_at?: string | null
         }
@@ -690,6 +692,7 @@ export type Database = {
           slug?: string
           starter_price?: number
           status?: Database["public"]["Enums"]["global_status"] | null
+          status_reason?: string | null
           tags?: string[]
           updated_at?: string | null
         }
@@ -847,7 +850,7 @@ export type Database = {
     Enums: {
       billing_interval: "MONTHLY" | "YEARLY" | "ONE_TIME"
       billing_type_enum: "FREE" | "ONE_TIME" | "SUBSCRIPTION"
-      global_status: "PENDING" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"
+      global_status: "PENDING" | "ACTIVE" | "SUSPENDED" | "ARCHIVED" | "REJECTED"
       invitation_status:
       | "PENDING"
       | "ACCEPTED"
@@ -994,7 +997,7 @@ export const Constants = {
     Enums: {
       billing_interval: ["MONTHLY", "YEARLY", "ONE_TIME"],
       billing_type_enum: ["FREE", "ONE_TIME", "SUBSCRIPTION"],
-      global_status: ["PENDING", "ACTIVE", "SUSPENDED", "ARCHIVED"],
+      global_status: ["PENDING", "ACTIVE", "SUSPENDED", "ARCHIVED", "REJECTED"],
       invitation_status: [
         "PENDING",
         "ACCEPTED",

@@ -16,7 +16,7 @@ export const queryKeys = {
         list: () => ["platform-staff", "list"] as const,
     },
     systems: {
-        all: ["systems"] as const,
+        all: () => ["systems"] as const,
         marketplace: () => ["systems", "marketplace"] as const,
         public: () => ["systems", "public"] as const,
         owned: () => ["systems", "owned"] as const,

@@ -21,7 +21,7 @@ export async function createSystem(
             ...data,
             owner_id: ownerId,
         })
-        .select("id, name, slug, description, owner_id, currency, status, icon_url, is_public, starter_price, pro_price, business_price, reseller_price, exclusive_price, tags, created_at, updated_at")
+        .select("id, name, slug, description, owner_id, currency, status, status_reason, icon_url, is_public, starter_price, pro_price, business_price, reseller_price, exclusive_price, tags, created_at, updated_at")
         .single();
 
 

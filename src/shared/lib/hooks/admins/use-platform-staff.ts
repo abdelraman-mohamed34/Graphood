@@ -74,7 +74,7 @@ export function usePlatformStaff() {
             if (!result.success) throw new Error(result.error ?? "errors.unknown");
             return result;
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.systems.all }),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.systems.all() }),
         onError: (error) => toast.error(localizedError(error.message)),
     });
 

@@ -40,7 +40,7 @@ export function useSystem(systemId?: string) {
 
         onSuccess: async () => {
             await queryClient.invalidateQueries({
-                queryKey: queryKeys.systems.all,
+                queryKey: queryKeys.systems.all(),
             });
         },
     });
@@ -56,7 +56,7 @@ export function useSystem(systemId?: string) {
 
         onSuccess: async () => {
             await queryClient.invalidateQueries({
-                queryKey: queryKeys.systems.all,
+                queryKey: queryKeys.systems.all(),
             });
         },
     });
@@ -67,7 +67,7 @@ export function useSystem(systemId?: string) {
 
         onSuccess: async (_, id) => {
             queryClient.removeQueries({ queryKey: queryKeys.systems.detail(id) });
-            await queryClient.invalidateQueries({ queryKey: queryKeys.systems.all });
+            await queryClient.invalidateQueries({ queryKey: queryKeys.systems.all() });
         },
     });
 

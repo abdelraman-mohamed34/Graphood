@@ -9,9 +9,10 @@ import { useTranslations } from "next-intl";
 
 interface AdminSidebarProps {
     className?: string;
+    onNavigate?: () => void;
 }
 
-export default function AdminSidebar({ className }: AdminSidebarProps) {
+export default function AdminSidebar({ className, onNavigate }: AdminSidebarProps) {
     const { isSuperAdmin } = usePlatformStaff();
     const t = useTranslations("adminSidebar");
 
@@ -37,5 +38,11 @@ export default function AdminSidebar({ className }: AdminSidebarProps) {
         },
     ];
 
-    return <ReusableSidebar items={items} className={cn(className)} />;
+    return (
+        <ReusableSidebar
+            items={items}
+            className={cn(className)}
+            onNavigate={onNavigate}
+        />
+    );
 }

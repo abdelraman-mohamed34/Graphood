@@ -1120,6 +1120,7 @@
         }
     },
     "adminSidebar": {
+        "navigation": "Admin navigation",
         "groups": {
             "platformManagement": "Platform Management"
         },
@@ -1467,6 +1468,27 @@
                 "unknownError": "An unexpected server error occurred."
             }
         }
+    },
+    "AdminSystems": {
+        "metadataTitle": "Systems management | Graphood Admin",
+        "header": { "title": "Systems and requests", "description": "Review new system requests and manage the status of existing systems." },
+        "stats": { "total": "Total systems", "pending": "Pending review", "active": "Active systems", "inactive": "Suspended / Rejected" },
+        "search": { "placeholder": "Search by system, slug, owner, or email..." },
+        "filters": { "ALL": "All", "PENDING": "Pending", "ACTIVE": "Active", "SUSPENDED": "Suspended", "REJECTED": "Rejected" },
+        "statuses": { "PENDING": "Pending", "ACTIVE": "Active", "SUSPENDED": "Suspended", "REJECTED": "Rejected", "ARCHIVED": "Archived" },
+        "table": { "system": "System", "owner": "Owner", "status": "Status", "createdAt": "Created", "actions": "Actions", "empty": "No matching systems found.", "loadError": "Systems could not be loaded.", "emailUnavailable": "Email unavailable", "unknownDate": "Unknown" },
+        "actions": { "retry": "Try again", "cancel": "Cancel", "openMenu": "Open system actions", "options": "Options", "preview": "Preview system", "activate": "Approve and activate", "reject": "Reject request", "suspend": "Suspend system" },
+        "dialog": {
+            "accept": { "title": "Approve and activate system", "description": "Are you sure you want to approve and activate {system}?", "confirm": "Activate system" },
+            "reject": { "title": "Reject system request", "description": "Are you sure you want to reject {system}? You can provide a reason below.", "confirm": "Reject request" },
+            "suspend": { "title": "Suspend system", "description": "Access to {system} will be temporarily disabled.", "confirm": "Suspend system" },
+            "reasonLabel": "Reason (optional)", "reasonPlaceholder": "Explain this decision to the system owner...", "updating": "Updating..."
+        },
+        "toast": { "updateSuccess": "System status updated." },
+        "validation": { "systemIdInvalid": "The system ID is invalid.", "reasonTooLong": "The reason cannot exceed 500 characters.", "invalidInput": "Check the entered information." },
+        "auth": { "unauthorized": "You must sign in to continue.", "staffRequired": "Platform staff access is required." },
+        "systems": { "fetchFailed": "Systems could not be loaded.", "updateFailed": "The system status could not be updated.", "notFound": "The system no longer exists." },
+        "errors": { "unknown": "Something went wrong. Please try again." }
     },
     "AdminStaff": {
         "metadataTitle": "Platform staff | Graphood Admin",

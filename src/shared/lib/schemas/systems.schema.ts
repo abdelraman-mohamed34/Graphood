@@ -82,3 +82,40 @@ export type CreateSystemInput = z.input<ReturnType<typeof getCreateSystemSchema>
 export const systemUpdateSchema = systemInsertSchema.partial();
 
 export type SystemUpdate = z.infer<typeof systemUpdateSchema>;
+
+export const adminSystemStatusSchema = z.enum([
+    "ACTIVE",
+    "SUSPENDED",
+    "REJECTED",
+]);
+
+export const updateSystemStatusSchema = z.object({
+    systemId: z.uuid({ error: "validation.systemIdInvalid" }),
+    status: adminSystemStatusSchema,
+    reason: z
+        .string()
+        .trim()
+        .max(500, { error: "validation.reasonTooLong" })
+        .optional()
+        .transform((reason) => reason || undefined),
+});
+
+export type UpdateSystemStatusInput = z.input<typeof updateSystemStatusSchema>;
+export type SystemItemStatus =
+    | "PENDING"
+    | "ACTIVE"
+    | "SUSPENDED"
+    | "REJECTED"
+    | "ARCHIVED";
+
+export interface SystemItem {
+    id: string;
+    name: string;
+    slug: string;
+    ownerId: string;
+    ownerEmail: string | null;
+    ownerName: string;
+    status: SystemItemStatus;
+    statusReason: string | null;
+    createdAt: string | null;
+}
