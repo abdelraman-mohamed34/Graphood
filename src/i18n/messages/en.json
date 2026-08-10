@@ -188,6 +188,7 @@
                 "selectedTier": "Selected tier",
                 "subtotal": "Subtotal",
                 "coupon": "Coupon ({code})",
+                "discount": "Discount ({percentage}%):",
                 "totalAmount": "Total amount",
                 "recurringFee": "Recurring subscription fee",
                 "oneTimePurchase": "One-time full purchase"
@@ -478,6 +479,7 @@
         "amount": "Amount",
         "subtotal": "Subtotal",
         "discount": "Discount",
+        "discountWithPercentage": "Discount ({percentage}%):",
         "tax": "Tax",
         "total": "Total",
         "paymentMethod": "Payment Method",
@@ -526,7 +528,7 @@
         "form": {
             "couponCode": "Coupon Code",
             "discountType": "Discount Type",
-            "discountValue": "Discount Value",
+            "discountPercentage": "Discount Percentage (%)",
             "maxDiscount": "Max Discount",
             "license": "License",
             "plan": "Plan",

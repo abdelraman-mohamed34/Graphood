@@ -16,6 +16,7 @@ interface CreateInitialOrderParams {
 
     originalAmount: number;
     discountAmount?: number;
+    discountPercentage?: number;
     couponId?: string;
 
     amount: number;
@@ -37,6 +38,7 @@ export async function createPendingOrder({
 
     originalAmount,
     discountAmount = 0,
+    discountPercentage,
     couponId,
 
     amount,
@@ -66,6 +68,10 @@ export async function createPendingOrder({
         throw new Error("Invalid order totals.");
     }
 
+    if (couponId && (discountPercentage == null || discountPercentage < 1 || discountPercentage > 100)) {
+        throw new Error("Invalid coupon percentage.");
+    }
+
     const { data: order, error: orderError } = await supabase
         .from("orders")
         .insert({
@@ -77,6 +83,7 @@ export async function createPendingOrder({
 
             original_amount: normalizedOriginalAmount,
             discount_amount: normalizedDiscountAmount,
+            discount_percentage: discountPercentage ?? null,
             coupon_id: couponId ?? null,
 
             amount: normalizedAmount,

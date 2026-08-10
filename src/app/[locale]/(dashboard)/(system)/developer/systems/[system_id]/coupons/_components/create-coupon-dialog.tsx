@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { type SubmitHandler, useForm, useWatch } from "react-hook-form";
+import { type SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
@@ -36,7 +36,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
-import { createCouponSchema, discountTypes } from "@/shared/lib/schemas/coupon/coupon.schema";
+import { createCouponSchema } from "@/shared/lib/schemas/coupon/coupon.schema";
 import { licenseTypes } from "@/shared/config/licensing";
 import { PLAN_LIMITS } from "@/shared/config/plans";
 
@@ -71,7 +71,7 @@ export function CreateCouponDialog({
             code: "",
             discount_type: "PERCENT",
             discount_value: 10,
-            max_discount: 1,
+            max_discount: null,
             license_type: null,
             plan: null,
             min_order_amount: 0,
@@ -84,28 +84,9 @@ export function CreateCouponDialog({
         },
     });
 
-    const discountType = useWatch({
-        control: form.control,
-        name: "discount_type",
-    });
-
     useEffect(() => {
         form.setValue("system_id", systemId);
     }, [systemId, form]);
-
-    useEffect(() => {
-        const current = form.getValues("max_discount");
-
-        if (discountType === "PERCENT") {
-            if (current == null) {
-                form.setValue("max_discount", 1);
-            }
-        } else {
-            if (current != null) {
-                form.setValue("max_discount", null);
-            }
-        }
-    }, [discountType, form]);
 
     const handleOpenChange = (newOpenState: boolean) => {
         if (!newOpenState) {
@@ -119,11 +100,8 @@ export function CreateCouponDialog({
             const payload: FormValues = {
                 ...values,
                 system_id: systemId,
-                discount_type: values.discount_type.toUpperCase() as FormValues["discount_type"],
-                max_discount:
-                    values.discount_type.toUpperCase() === "PERCENT"
-                        ? values.max_discount
-                        : null,
+                discount_type: "PERCENT",
+                max_discount: null,
                 license_type: values.license_type || null,
                 plan: values.plan || null,
                 starts_at: values.starts_at ? new Date(values.starts_at) : null,
@@ -173,42 +151,15 @@ export function CreateCouponDialog({
 
                             <FormField
                                 control={form.control}
-                                name="discount_type"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t("form.discountType")}</FormLabel>
-                                        <Select
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {discountTypes.map((type) => (
-                                                    <SelectItem key={type} value={type}>
-                                                        {type}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
                                 name="discount_value"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t("form.discountValue")}</FormLabel>
+                                        <FormLabel>{t("form.discountPercentage")}</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="number"
                                                 min="1"
+                                                max="100"
                                                 onKeyDown={preventInvalidNumberKeys}
                                                 {...field}
                                                 onChange={(e) => {
@@ -222,30 +173,6 @@ export function CreateCouponDialog({
                                 )}
                             />
 
-                            {discountType === "PERCENT" && (
-                                <FormField
-                                    control={form.control}
-                                    name="max_discount"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t("form.maxDiscount")}</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    min="1"
-                                                    onKeyDown={preventInvalidNumberKeys}
-                                                    value={field.value ?? ""}
-                                                    onChange={(e) => {
-                                                        const val = e.target.value;
-                                                        field.onChange(val === "" ? null : Number(val));
-                                                    }}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            )}
                         </div>
 
                         <div className="grid gap-4 md:grid-cols-2">

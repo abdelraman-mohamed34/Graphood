@@ -25,6 +25,7 @@ export const orderSchema = z.object({
     original_amount: z.number().min(0),
 
     discount_amount: z.number().min(0).default(0),
+    discount_percentage: z.number().min(1).max(100).optional().nullable(),
 
     // Final amount paid
     amount: z.number().min(0),

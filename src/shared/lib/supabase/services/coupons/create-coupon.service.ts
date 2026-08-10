@@ -14,10 +14,8 @@ interface CreateCouponParams {
     code?: string;
     generateCode?: boolean;
 
-    discountType: "PERCENT" | "FIXED";
+    discountType: "PERCENT";
     discountValue: number;
-
-    maxDiscount?: number;
 
     licenseType?: LicenseType;
     plan?: PlanType;
@@ -46,8 +44,6 @@ export async function createCoupon({
 
     discountType,
     discountValue,
-
-    maxDiscount,
 
     licenseType,
     plan,
@@ -78,14 +74,6 @@ export async function createCoupon({
         if (discountValue <= 0 || discountValue > 100) {
             throw new Error(
                 "Percentage discount must be between 1 and 100."
-            );
-        }
-    }
-
-    if (discountType === "FIXED") {
-        if (discountValue <= 0) {
-            throw new Error(
-                "Fixed discount must be greater than zero."
             );
         }
     }
@@ -200,7 +188,7 @@ export async function createCoupon({
         discount_type: discountType,
         discount_value: discountValue,
 
-        max_discount: maxDiscount ?? null,
+        max_discount: null,
 
         license_type: licenseType ?? null,
 

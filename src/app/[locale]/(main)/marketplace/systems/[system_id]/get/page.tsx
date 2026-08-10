@@ -31,6 +31,7 @@ export default function Page() {
     const [preview, setPreview] = useState<{
         originalAmount: number;
         discountAmount: number;
+        discountPercentage: number;
         finalAmount: number;
         coupon?: {
             id: string;
@@ -447,7 +448,7 @@ export default function Page() {
                                 </div>
 
                                 <div className="flex justify-between text-sm text-green-600 dark:text-green-500">
-                                    <span>{t("summary.coupon", { code: preview.coupon?.code ?? "" })}</span>
+                                    <span>{t("summary.discount", { percentage: preview.discountPercentage })}</span>
                                     <span>
                                         -{(Number(preview.discountAmount) || 0).toFixed(2)} {system.currency}
                                     </span>

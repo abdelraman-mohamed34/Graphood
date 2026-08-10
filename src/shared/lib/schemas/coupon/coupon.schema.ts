@@ -99,28 +99,21 @@ const rawCreateCouponSchema = couponSchema.pick({
     starts_at: true,
     expires_at: true,
     is_active: true,
+}).extend({
+    discount_type: z.literal("PERCENT"),
+    discount_value: z
+        .number({ message: "Discount percentage must be a valid number" })
+        .min(1, "Discount percentage must be at least 1%")
+        .max(100, "Discount percentage cannot exceed 100%"),
+    // Percentage coupons are calculated directly from the subtotal. There is
+    // no separate monetary cap in the percentage-only creation flow.
+    max_discount: z.null(),
 });
 
 export const createCouponSchema = rawCreateCouponSchema
     .refine(
-        (data) => data.discount_type === "PERCENT" || data.max_discount === null,
-        { message: "Maximum discount only applies to percentage coupons", path: ["max_discount"] }
-    )
-    .refine(
         (data) => data.max_uses === null || data.max_uses_per_user <= data.max_uses,
         { message: "Per-user limit cannot exceed the total usage limit", path: ["max_uses_per_user"] }
-    )
-    .refine(
-        (data) => {
-            if (data.discount_type === "PERCENT") {
-                return data.discount_value <= 100;
-            }
-            return true;
-        },
-        {
-            message: "Percentage discount cannot exceed 100%",
-            path: ["discount_value"],
-        }
     )
     .refine(
         (data) => {
@@ -132,18 +125,6 @@ export const createCouponSchema = rawCreateCouponSchema
         {
             message: "Expiration date must be after start date",
             path: ["expires_at"],
-        }
-    )
-    .refine(
-        (data) => {
-            if (data.discount_type === "PERCENT") {
-                return data.max_discount !== null && data.max_discount > 0;
-            }
-            return true;
-        },
-        {
-            message: "Max discount is required for percentage discounts",
-            path: ["max_discount"],
         }
     );
 

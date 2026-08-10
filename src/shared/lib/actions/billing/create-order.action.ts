@@ -211,6 +211,7 @@ export async function createOrderAction(
 
     let originalAmount = amount;
     let discountAmount = 0;
+    let discountPercentage: number | undefined;
     let couponId: string | undefined;
 
     if (couponCode) {
@@ -226,6 +227,7 @@ export async function createOrderAction(
 
         originalAmount = couponResult.originalAmount;
         discountAmount = couponResult.discountAmount;
+        discountPercentage = couponResult.discountPercentage;
         amount = couponResult.finalAmount;
         couponId = couponResult.coupon.id;
     }
@@ -258,6 +260,7 @@ export async function createOrderAction(
 
             originalAmount,
             discountAmount,
+            discountPercentage,
             couponId,
 
             description:
@@ -277,6 +280,7 @@ export async function createOrderAction(
 
             originalAmount,
             discountAmount,
+            discountPercentage,
             amount,
 
             couponId,

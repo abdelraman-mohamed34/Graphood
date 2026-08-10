@@ -188,6 +188,7 @@
                 "selectedTier": "الخطة المختارة",
                 "subtotal": "المجموع الفرعي",
                 "coupon": "الكوبون ({code})",
+                "discount": "الخصم ({percentage}%):",
                 "totalAmount": "المبلغ الإجمالي",
                 "recurringFee": "رسوم اشتراك متجددة",
                 "oneTimePurchase": "شراء كامل لمرة واحدة"
@@ -478,6 +479,7 @@
         "amount": "المبلغ",
         "subtotal": "المجموع الفرعي",
         "discount": "الخصم",
+        "discountWithPercentage": "الخصم ({percentage}%):",
         "tax": "الضريبة",
         "total": "الإجمالي",
         "paymentMethod": "طريقة الدفع",
@@ -526,7 +528,7 @@
         "form": {
             "couponCode": "رمز الكوبون",
             "discountType": "نوع الخصم",
-            "discountValue": "قيمة الخصم",
+            "discountPercentage": "نسبة الخصم (%)",
             "maxDiscount": "الحد الأقصى للخصم",
             "license": "الترخيص",
             "plan": "الخطة",

@@ -23,6 +23,7 @@ export interface ValidatedCouponResult {
     coupon: NonNullable<Awaited<ReturnType<typeof getCouponByCode>>>;
 
     originalAmount: number;
+    discountPercentage: number;
     discountAmount: number;
     finalAmount: number;
 }
@@ -200,15 +201,19 @@ export async function validateCoupon({
     // Calculate Discount
     //----------------------------------
 
+    if (coupon.discount_type !== "PERCENT") {
+        throw new Error("Coupon is not a percentage discount.");
+    }
+
+    const discountPercentage = Number(coupon.discount_value);
     const calculation = calculateDiscount({
         amount,
-        discountType: coupon.discount_type,
-        discountValue: Number(coupon.discount_value),
-        maxDiscount: coupon.max_discount == null ? null : Number(coupon.max_discount),
+        discountPercentage,
     });
 
     return {
         coupon,
+        discountPercentage,
 
         ...calculation,
     };

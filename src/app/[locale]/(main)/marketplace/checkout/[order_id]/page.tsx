@@ -55,6 +55,7 @@ export default function Page({ params }: PageProps) {
     const pricing = {
         subtotal: order.original_amount,
         discount: order.discount_amount,
+        discountPercentage: order.discount_percentage,
         tax: 0,
         total: order.amount,
     };

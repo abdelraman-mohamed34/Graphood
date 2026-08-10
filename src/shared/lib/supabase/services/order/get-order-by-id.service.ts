@@ -18,6 +18,7 @@ export async function getOrderById({
         status,
         original_amount,
         discount_amount,
+        discount_percentage,
         coupon_id,
         amount,
         currency,

@@ -41,7 +41,6 @@ export async function createCouponAction(input: CreateCouponInput) {
         code,
         discount_type,
         discount_value,
-        max_discount,
         license_type,
         plan,
         min_order_amount,
@@ -80,8 +79,6 @@ export async function createCouponAction(input: CreateCouponInput) {
 
             discountType: discount_type,
             discountValue: discount_value,
-
-            maxDiscount: max_discount ?? undefined,
 
             licenseType: license_type ?? undefined,
             plan: plan ?? undefined,

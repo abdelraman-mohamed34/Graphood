@@ -339,6 +339,7 @@ export type Database = {
           currency: string | null
           description: string | null
           discount_amount: number
+          discount_percentage: number | null
           id: string
           license_type: string
           original_amount: number
@@ -356,6 +357,7 @@ export type Database = {
           currency?: string | null
           description?: string | null
           discount_amount?: number
+          discount_percentage?: number | null
           id?: string
           license_type: string
           original_amount?: number
@@ -373,6 +375,7 @@ export type Database = {
           currency?: string | null
           description?: string | null
           discount_amount?: number
+          discount_percentage?: number | null
           id?: string
           license_type?: string
           original_amount?: number
