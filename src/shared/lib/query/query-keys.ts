@@ -10,6 +10,10 @@ export const queryKeys = {
         detail: (profileId?: string) => ["profiles", "detail", profileId] as const,
         currentWithAvatar: () => ["profiles", "current-with-avatar"] as const,
     },
+    platformStaff: {
+        role: () => ["platform-staff", "role"] as const,
+        list: () => ["platform-staff", "list"] as const,
+    },
     systems: {
         all: ["systems"] as const,
         marketplace: () => ["systems", "marketplace"] as const,
