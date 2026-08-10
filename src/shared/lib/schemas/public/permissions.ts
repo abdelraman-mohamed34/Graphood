@@ -1,25 +1,25 @@
 export const permissions = [
-    "tenants.manage",
-    "tenants.read",
-
+    // Tenant permissions
     "tenant.manage",
     "tenant.read",
     "tenant.write",
     "tenant.delete",
 
+    // Members permissions
     "members.read",
     "members.invite",
     "members.remove",
     "members.manage",
     "members.transfer_ownership",
 
+    // Billing permissions
     "billing.read",
     "billing.manage",
 
-    "systems.read",
-    "systems.manage",
-
-    "dashboard.read"
+    // Dashboards
+    "dashboard.read",
+    "admin_dashboard.manage",
+    "admin_dashboard.read"
 ] as const;
 
 export type Permission = (typeof permissions)[number];

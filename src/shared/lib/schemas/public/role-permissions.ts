@@ -14,36 +14,31 @@ export const rolePermissions: Record<
     SUPER_ADMIN: [...permissions],
 
     SUPPORT_AGENT: [
-        "tenants.read",
-        "systems.read",
-        "dashboard.read"
+        "admin_dashboard.read",
+        "tenant.read",
+        "members.read",
+        "billing.read"
     ],
 
     OWNER: [
         "tenant.manage",
         "tenant.read",
-
         "members.remove",
         "members.invite",
         "members.read",
         "members.transfer_ownership",
-
         "billing.manage",
         "billing.read",
-
         "dashboard.read"
     ],
 
     ADMIN: [
         "tenant.manage",
         "tenant.read",
-
         "members.invite",
         "members.read",
-
         "billing.manage",
         "billing.read",
-
         "dashboard.read"
     ],
 
@@ -51,11 +46,10 @@ export const rolePermissions: Record<
         "tenant.read",
         "members.read",
         "billing.read",
-
         "dashboard.read"
     ],
 
     MEMBER: [
-        "tenant.read",
-    ],
+        "tenant.read"
+    ]
 };
