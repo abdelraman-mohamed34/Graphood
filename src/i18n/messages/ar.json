@@ -1102,6 +1102,21 @@
             }
         }
     },
+    "DocsSidebar": {
+        "groups": {
+            "gettingStarted": "البدء",
+            "reference": "المرجع"
+        },
+        "items": {
+            "introduction": "مقدمة",
+            "quickStart": "البدء السريع",
+            "authentication": "المصادقة",
+            "endpoints": "نقاط النهاية",
+            "responseFormat": "صيغة الاستجابة",
+            "errors": "الأخطاء",
+            "changelog": "سجل التغييرات"
+        }
+    },
     "DeveloperDocsPage": {
         "title": "توثيق المطورين",
         "description": "كل ما تحتاجه لدمج تطبيقاتك، إدارة المستأجرين، والتعامل مع عضويات النظام باستخدام Graphood Developer API.",

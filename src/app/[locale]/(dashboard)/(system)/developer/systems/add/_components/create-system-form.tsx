@@ -71,7 +71,6 @@ export default function CreateSystemForm() {
         },
     });
 
-    // متابعة الوسوم/الكاتيجوري المحددة كقائمة
     const selectedTagIds = useWatch({
         control: form.control,
         name: "tags",
@@ -128,16 +127,7 @@ export default function CreateSystemForm() {
     };
 
     return (
-        <Card className="mx-auto max-w-3xl border shadow-xs rounded-2xl">
-            <CardHeader className="text-start space-y-1.5">
-                <CardTitle className="text-xl font-bold tracking-tight">
-                    {t("title")}
-                </CardTitle>
-                <CardDescription className="text-sm text-muted-foreground">
-                    {t("subtitle")}
-                </CardDescription>
-            </CardHeader>
-
+        <section style={{ border: "none" }} className="mx-auto w-full max-w-6xl">
             <CardContent>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-start">
                     <FieldGroup className="space-y-5">
@@ -190,22 +180,22 @@ export default function CreateSystemForm() {
                                         {selectedTags.map((tag) => {
                                             const tagName = locale === "ar" ? tag.name_ar : tag.name_en;
                                             return (
-                                            <Badge
-                                                key={tag.id}
-                                                variant="secondary"
-                                                className="h-6 max-w-full gap-1.5 rounded-md px-2 text-xs"
-                                            >
-                                                <span className="truncate text-start">{tagName}</span>
-                                                <button
-                                                    type="button"
-                                                    aria-label={t("fields.category.remove", { category: tagName })}
-                                                    onMouseDown={(event) => event.preventDefault()}
-                                                    onClick={() => handleRemoveTag(tag.id)}
-                                                    className="ms-auto shrink-0 rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                                <Badge
+                                                    key={tag.id}
+                                                    variant="secondary"
+                                                    className="h-6 max-w-full gap-1.5 rounded-md px-2 text-xs"
                                                 >
-                                                    <X className="size-3" />
-                                                </button>
-                                            </Badge>
+                                                    <span className="truncate text-start">{tagName}</span>
+                                                    <button
+                                                        type="button"
+                                                        aria-label={t("fields.category.remove", { category: tagName })}
+                                                        onMouseDown={(event) => event.preventDefault()}
+                                                        onClick={() => handleRemoveTag(tag.id)}
+                                                        className="ms-auto shrink-0 rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                                    >
+                                                        <X className="size-3" />
+                                                    </button>
+                                                </Badge>
                                             );
                                         })}
                                         <input
@@ -368,6 +358,6 @@ export default function CreateSystemForm() {
                     </div>
                 </form>
             </CardContent>
-        </Card>
+        </section>
     );
 }

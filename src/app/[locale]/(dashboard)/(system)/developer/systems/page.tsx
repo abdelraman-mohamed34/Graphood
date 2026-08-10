@@ -52,7 +52,7 @@ export default function Page() {
                 </div>
             ) : currentSystems?.length === 0 ? (
                 /* Empty State */
-                <div className="border border-dashed border-border/80 rounded-xl p-12 text-center space-y-4 bg-card/10">
+                <div className="p-12 text-center space-y-4 bg-card/10">
                     <div className="w-12 h-12 rounded-full bg-muted/50 flex items-center justify-center mx-auto">
                         <Terminal className="w-6 h-6 text-muted-foreground" />
                     </div>

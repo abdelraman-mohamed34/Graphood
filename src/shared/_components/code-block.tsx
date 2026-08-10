@@ -35,8 +35,7 @@ export function CodeBlock({
     };
 
     return (
-        <div className={cn("relative group min-w-0 max-w-full overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50/70 p-1 transition-colors hover:border-zinc-300", className)}>
-            {/* زر النسخ */}
+        <div dir="ltr" className={cn("relative group min-w-0 max-w-full overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50/70 p-1 transition-colors hover:border-zinc-300", className)}>
             <button
                 onClick={handleCopy}
                 className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 bg-white/90 text-zinc-600 opacity-0 shadow-sm transition-all hover:bg-zinc-100 hover:text-zinc-900 group-hover:opacity-100"

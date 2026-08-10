@@ -23,16 +23,14 @@ export function useOAuth() {
         try {
             const supabase = createClient();
 
-            const redirectTo = new URL(
-                `/${locale}/auth/callback`,
-                window.location.origin
-            ).toString();
+            const redirectTo = new URL(`/${locale}/auth/callback`, window.location.origin).toString();
 
-            const { error } =
+            const { data, error } =
                 await supabase.auth.signInWithOAuth({
                     provider,
                     options: {
                         redirectTo,
+                        skipBrowserRedirect: true,
 
                         ...(provider === "google" && {
                             queryParams: {
@@ -45,6 +43,26 @@ export function useOAuth() {
 
             if (error) {
                 throw error;
+            }
+
+            if (data?.url) {
+                const width = 500;
+                const height = 650;
+                const left = window.screen.width / 2 - width / 2;
+                const top = window.screen.height / 2 - height / 2;
+
+                const popup = window.open(
+                    data.url,
+                    "Google Sign In",
+                    `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=no`
+                );
+
+                const timer = setInterval(() => {
+                    if (popup?.closed) {
+                        clearInterval(timer);
+                        setIsOAuthLoading(false);
+                    }
+                }, 500);
             }
 
         } catch (error) {

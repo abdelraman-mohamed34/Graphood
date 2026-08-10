@@ -1102,6 +1102,21 @@
             }
         }
     },
+    "DocsSidebar": {
+        "groups": {
+            "gettingStarted": "Getting Started",
+            "reference": "Reference"
+        },
+        "items": {
+            "introduction": "Introduction",
+            "quickStart": "Quick Start",
+            "authentication": "Authentication",
+            "endpoints": "Endpoints",
+            "responseFormat": "Response Format",
+            "errors": "Errors",
+            "changelog": "Changelog"
+        }
+    },
     "DeveloperDocsPage": {
         "title": "Developer Docs",
         "description": "Everything you need to integrate your apps, manage tenants, and work with system memberships using the Graphood Developer API.",
