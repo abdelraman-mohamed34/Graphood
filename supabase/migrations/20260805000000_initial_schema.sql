@@ -157,6 +157,7 @@ CREATE TABLE public.payments (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   provider_reference text UNIQUE,
+  provider_integration_id integer,
   CONSTRAINT payments_pkey PRIMARY KEY (id),
   CONSTRAINT payments_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.orders(id)
 );
