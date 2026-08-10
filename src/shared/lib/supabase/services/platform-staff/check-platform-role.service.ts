@@ -16,7 +16,11 @@ export async function checkPlatformRoleService({
         .eq("profile_id", profileId)
         .maybeSingle();
 
-    if (error || !data) {
+    if (error) {
+        throw new Error(`staff.roleLookupFailed: ${error.message}`);
+    }
+
+    if (!data) {
         return null;
     }
 

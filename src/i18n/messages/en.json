@@ -1119,6 +1119,15 @@
             "changelog": "Changelog"
         }
     },
+    "adminSidebar": {
+        "groups": {
+            "platformManagement": "Platform Management"
+        },
+        "items": {
+            "systemsOrders": "Systems & Orders",
+            "staff": "Staff"
+        }
+    },
     "DeveloperDocsPage": {
         "title": "Developer Docs",
         "description": "Everything you need to integrate your apps, manage tenants, and work with system memberships using the Graphood Developer API.",
@@ -1458,6 +1467,22 @@
                 "unknownError": "An unexpected server error occurred."
             }
         }
+    },
+    "AdminStaff": {
+        "metadataTitle": "Platform staff | Graphood Admin",
+        "header": { "title": "Platform staff", "description": "Manage support agents and administrators and control access to the admin dashboard.", "addStaff": "Add staff member" },
+        "fields": { "email": "Email", "role": "System role" },
+        "roles": { "SUPER_ADMIN": "Super Admin", "SUPPORT_AGENT": "Support Agent" },
+        "actions": { "cancel": "Cancel", "close": "Close", "retry": "Try again" },
+        "add": { "title": "Add a staff member", "description": "Enter an existing user's email and choose the administrative access to grant.", "emailPlaceholder": "name@company.com", "emailHint": "Access is granted to the profile associated with this email.", "rolePlaceholder": "Select a role", "submit": "Add staff member", "submitting": "Adding..." },
+        "delete": { "trigger": "Remove {email}", "title": "Remove staff member?", "description": "This immediately revokes the staff member's administrative access.", "confirm": "Remove staff member" },
+        "table": { "email": "Email", "profileId": "Profile ID", "role": "Role", "createdAt": "Added", "actions": "Actions", "empty": "No staff members found.", "loadError": "Staff members could not be loaded.", "emailUnavailable": "Email unavailable", "unknownDate": "Unknown" },
+        "toast": { "addSuccess": "Staff member added.", "removeSuccess": "Staff member removed." },
+        "validation": { "emailInvalid": "Enter a valid email address.", "profileIdInvalid": "The profile ID is invalid.", "staffIdInvalid": "The staff ID is invalid.", "roleInvalid": "Select a valid role.", "identifierRequired": "Enter an email address or profile ID.", "invalidInput": "Check the entered information." },
+        "auth": { "unauthorized": "You must sign in to continue.", "superAdminRequired": "Super Admin access is required." },
+        "profiles": { "notFound": "No profile is associated with this email.", "identifierMismatch": "The email and profile ID do not identify the same user.", "lookupFailed": "The user profile could not be checked." },
+        "staff": { "addFailed": "The staff member could not be added.", "removeFailed": "The staff member could not be removed.", "fetchFailed": "Staff members could not be loaded.", "roleLookupFailed": "Your platform role could not be checked.", "lookupFailed": "The staff member could not be checked.", "notFound": "The staff member no longer exists.", "cannotRemoveSelf": "You cannot remove your own Super Admin access." },
+        "errors": { "unknown": "Something went wrong. Please try again." }
     },
     "NotFoundPage": {
         "title": "Page Not Found",

@@ -11,6 +11,7 @@ export const queryKeys = {
         currentWithAvatar: () => ["profiles", "current-with-avatar"] as const,
     },
     platformStaff: {
+        all: () => ["platform-staff"] as const,
         role: () => ["platform-staff", "role"] as const,
         list: () => ["platform-staff", "list"] as const,
     },

@@ -1,55 +1,35 @@
 "use server";
 
-import {
-    addPlatformStaffService,
-    checkPlatformRoleService,
-} from "@/shared/lib/supabase/services/platform-staff";
-import { CreatePlatformStaffInput, createPlatformStaffSchema, PlatformStaff } from "../../schemas/graphood-staff.schema";
-import { createClient } from "../../supabase/client";
+import type {
+    CreatePlatformStaffInput,
+    PlatformStaff,
+} from "@/shared/lib/schemas/graphood-staff.schema";
+import { createPlatformStaffSchema } from "@/shared/lib/schemas/graphood-staff.schema";
+import { addPlatformStaffService } from "@/shared/lib/supabase/services/platform-staff";
+import { authorizeSuperAdmin } from "./authorize-super-admin";
 
+export type PlatformStaffActionResult<T> = {
+    success: boolean;
+    data?: T;
+    error?: string;
+};
 
 export async function addPlatformStaffAction(
-    input: CreatePlatformStaffInput
-): Promise<{
-    success: boolean;
-    data?: PlatformStaff;
-    error?: string;
-}> {
+    input: CreatePlatformStaffInput,
+): Promise<PlatformStaffActionResult<PlatformStaff>> {
+    const parsed = createPlatformStaffSchema.safeParse(input);
+    if (!parsed.success) {
+        return { success: false, error: parsed.error.issues[0]?.message ?? "validation.invalidInput" };
+    }
+
     try {
-        const parsed = createPlatformStaffSchema.safeParse(input);
-        if (!parsed.success) {
-            return {
-                success: false,
-                error: parsed.error.issues[0]?.message || "Invalid input data",
-            };
-        }
-
-        const supabase = await createClient();
-
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError || !user) {
-            return { success: false, error: "Unauthorized" };
-        }
-
-        const currentRole = await checkPlatformRoleService({
-            supabase,
-            profileId: user.id,
-        });
-
-        if (currentRole !== "SUPER_ADMIN") {
-            return { success: false, error: "Forbidden: Super Admin access required" };
-        }
-
-        const staff = await addPlatformStaffService({
-            supabase,
-            payload: parsed.data,
-        });
-
-        return { success: true, data: staff };
-    } catch (error: any) {
+        const { supabase } = await authorizeSuperAdmin();
+        const data = await addPlatformStaffService({ supabase, payload: parsed.data });
+        return { success: true, data };
+    } catch (error) {
         return {
             success: false,
-            error: error?.message || "Failed to add platform staff",
+            error: error instanceof Error ? error.message : "staff.addFailed",
         };
     }
 }

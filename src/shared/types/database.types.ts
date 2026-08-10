@@ -470,6 +470,35 @@ export type Database = {
           },
         ]
       }
+      platform_staff: {
+        Row: {
+          created_at: string | null
+          id: string
+          profile_id: string
+          role: "SUPER_ADMIN" | "SUPPORT_AGENT"
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          profile_id: string
+          role: "SUPER_ADMIN" | "SUPPORT_AGENT"
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          profile_id?: string
+          role?: "SUPER_ADMIN" | "SUPPORT_AGENT"
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_staff_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

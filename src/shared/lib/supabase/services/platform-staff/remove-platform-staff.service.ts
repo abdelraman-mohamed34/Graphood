@@ -1,20 +1,25 @@
-import { SupabaseClient } from "@supabase/supabase-js";
-
-interface RemovePlatformStaffParams {
-    supabase: SupabaseClient;
-    staffId: string;
-}
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export async function removePlatformStaffService({
     supabase,
     staffId,
-}: RemovePlatformStaffParams): Promise<void> {
-    const { error } = await supabase
+}: {
+    supabase: SupabaseClient;
+    staffId: string;
+}): Promise<{ id: string }> {
+    const { data, error } = await supabase
         .from("platform_staff")
         .delete()
-        .eq("id", staffId);
+        .eq("id", staffId)
+        .select("id")
+        .maybeSingle();
 
     if (error) {
-        throw error;
+        throw new Error(`staff.removeFailed: ${error.message}`);
     }
+    if (!data) {
+        throw new Error("staff.notFound");
+    }
+
+    return data;
 }

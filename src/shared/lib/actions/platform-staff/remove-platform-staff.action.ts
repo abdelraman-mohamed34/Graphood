@@ -1,51 +1,39 @@
 "use server";
 
-import {
-    checkPlatformRoleService,
-    removePlatformStaffService,
-} from "@/shared/lib/supabase/services/platform-staff";
-import { z } from "zod";
-import { createClient } from "../../supabase/client";
-
-const removeStaffSchema = z.object({
-    staffId: z.string().uuid("Invalid Staff ID"),
-});
+import { removePlatformStaffSchema } from "@/shared/lib/schemas/graphood-staff.schema";
+import { removePlatformStaffService } from "@/shared/lib/supabase/services/platform-staff";
+import type { PlatformStaffActionResult } from "./add-platform-staff.action";
+import { authorizeSuperAdmin } from "./authorize-super-admin";
 
 export async function removePlatformStaffAction(
-    staffId: string
-): Promise<{ success: boolean; error?: string }> {
+    staffId: string,
+): Promise<PlatformStaffActionResult<{ id: string }>> {
+    const parsed = removePlatformStaffSchema.safeParse({ staffId });
+    if (!parsed.success) {
+        return { success: false, error: parsed.error.issues[0]?.message ?? "validation.staffIdInvalid" };
+    }
+
     try {
-        const parsed = removeStaffSchema.safeParse({ staffId });
-        if (!parsed.success) {
-            return { success: false, error: "Invalid Staff ID" };
-        }
+        const { supabase, user } = await authorizeSuperAdmin();
+        const { data: target, error: lookupError } = await supabase
+            .from("platform_staff")
+            .select("profile_id")
+            .eq("id", parsed.data.staffId)
+            .maybeSingle();
 
-        const supabase = await createClient();
+        if (lookupError) throw new Error(`staff.lookupFailed: ${lookupError.message}`);
+        if (!target) throw new Error("staff.notFound");
+        if (target.profile_id === user.id) throw new Error("staff.cannotRemoveSelf");
 
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError || !user) {
-            return { success: false, error: "Unauthorized" };
-        }
-
-        const currentRole = await checkPlatformRoleService({
-            supabase,
-            profileId: user.id,
-        });
-
-        if (currentRole !== "SUPER_ADMIN") {
-            return { success: false, error: "Forbidden: Super Admin access required" };
-        }
-
-        await removePlatformStaffService({
+        const data = await removePlatformStaffService({
             supabase,
             staffId: parsed.data.staffId,
         });
-
-        return { success: true };
-    } catch (error: any) {
+        return { success: true, data };
+    } catch (error) {
         return {
             success: false,
-            error: error?.message || "Failed to remove platform staff",
+            error: error instanceof Error ? error.message : "staff.removeFailed",
         };
     }
 }

@@ -1,33 +1,28 @@
 "use server";
 
+import type { SystemRole } from "@/shared/lib/schemas/graphood-staff.schema";
+import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { checkPlatformRoleService } from "@/shared/lib/supabase/services/platform-staff";
-import { createClient } from "../../supabase/client";
-import { SystemRole } from "../../schemas/public/role-permissions";
+import type { PlatformStaffActionResult } from "./add-platform-staff.action";
 
-export async function checkPlatformRoleAction(): Promise<{
-    success: boolean;
-    role: SystemRole | null;
-    error?: string;
-}> {
+export async function checkPlatformRoleAction(): Promise<
+    PlatformStaffActionResult<SystemRole | null>
+> {
     try {
-        const supabase = await createClient();
+        const supabase = await createSupabaseServerClient();
+        const {
+            data: { user },
+            error,
+        } = await supabase.auth.getUser();
 
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError || !user) {
-            return { success: false, role: null, error: "Unauthorized" };
-        }
+        if (error || !user) return { success: false, error: "auth.unauthorized" };
 
-        const role = await checkPlatformRoleService({
-            supabase,
-            profileId: user.id,
-        });
-
-        return { success: true, role };
-    } catch (error: any) {
+        const data = await checkPlatformRoleService({ supabase, profileId: user.id });
+        return { success: true, data };
+    } catch (error) {
         return {
             success: false,
-            role: null,
-            error: error?.message || "Failed to check platform role",
+            error: error instanceof Error ? error.message : "staff.roleLookupFailed",
         };
     }
 }
