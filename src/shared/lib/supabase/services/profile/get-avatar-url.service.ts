@@ -15,6 +15,10 @@ export async function getAvatarUrl({
         return null;
     }
 
+    if (/^https?:\/\//i.test(path)) {
+        return path;
+    }
+
     const { data, error } = await supabase.storage
         .from("avatars")
         .createSignedUrl(path, 60 * 60);

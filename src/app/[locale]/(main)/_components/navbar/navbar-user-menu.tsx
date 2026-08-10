@@ -51,7 +51,12 @@ export default function UserMenu() {
             >
                 <Avatar className="h-8 w-8 border border-gray-100 dark:border-zinc-800">
                     <AvatarImage
-                        src={profile?.avatarUrl ?? undefined}
+                        src={
+                            profile?.avatarUrl ??
+                            profile?.avatar_url ??
+                            user.avatar_url ??
+                            undefined
+                        }
                         alt={`${user.first_name} ${user.last_name}`}
                         className="object-cover"
                     />
@@ -73,10 +78,6 @@ export default function UserMenu() {
                             }`}
                     >
                         <div className="border-b border-gray-100 px-4 py-3 dark:border-zinc-700">
-                            <p className="text-xs text-gray-400">
-                                {t("userMenu.signedInAs")}
-                            </p>
-
                             <p className="truncate font-semibold text-sm mt-0.5">
                                 {user.first_name} {user.last_name}
                             </p>

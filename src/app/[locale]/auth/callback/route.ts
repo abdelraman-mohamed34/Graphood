@@ -1,6 +1,13 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import type { Database } from "@/shared/types/database.types";
+
+type CookieToSet = {
+    name: string;
+    value: string;
+    options: CookieOptions;
+};
 
 export async function GET(request: NextRequest) {
     const { searchParams, origin } = request.nextUrl;
@@ -15,10 +22,10 @@ export async function GET(request: NextRequest) {
     }
 
     const cookieStore = await cookies();
-    const cookiesToSetInResponse: { name: string; value: string; options: any }[] = [];
+    const cookiesToSetInResponse: CookieToSet[] = [];
 
     try {
-        const supabase = createServerClient(
+        const supabase = createServerClient<Database>(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
             {
@@ -37,13 +44,46 @@ export async function GET(request: NextRequest) {
             }
         );
 
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
         if (error) {
             console.error("[AUTH_CALLBACK]", error);
-            return NextResponse.redirect(
+            return redirectWithCookies(
                 new URL("/en/login?error=auth_failed", origin),
-                { status: 303 }
+                cookiesToSetInResponse
+            );
+        }
+
+        const user = data.user;
+
+        if (!user) {
+            console.error("[AUTH_CALLBACK] Session exchange returned no user");
+            return redirectWithCookies(
+                new URL("/en/login?error=auth_failed", origin),
+                cookiesToSetInResponse
+            );
+        }
+
+        const { firstName, lastName, avatarUrl } = parseGoogleMetadata(
+            user.user_metadata
+        );
+        const { error: profileError } = await supabase.from("profiles").upsert(
+            {
+                id: user.id,
+                email: user.email ?? null,
+                first_name: firstName,
+                last_name: lastName,
+                avatar_url: avatarUrl,
+                updated_at: new Date().toISOString(),
+            },
+            { onConflict: "id" }
+        );
+
+        if (profileError) {
+            console.error("[AUTH_CALLBACK_PROFILE_UPSERT]", profileError);
+            return redirectWithCookies(
+                new URL("/en/login?error=profile_sync_failed", origin),
+                cookiesToSetInResponse
             );
         }
 
@@ -58,13 +98,13 @@ export async function GET(request: NextRequest) {
               <script>
                 try {
                   if (window.opener && !window.opener.closed) {
-                    window.opener.location.href = "${next}";
+                    window.opener.location.href = ${JSON.stringify(next)};
                     window.close();
                   } else {
-                    window.location.href = "${next}";
+                    window.location.href = ${JSON.stringify(next)};
                   }
                 } catch (e) {
-                  window.location.href = "${next}";
+                  window.location.href = ${JSON.stringify(next)};
                 }
               </script>
             </body>
@@ -83,9 +123,9 @@ export async function GET(request: NextRequest) {
 
     } catch (error) {
         console.error("[AUTH_CALLBACK_UNEXPECTED]", error);
-        return NextResponse.redirect(
+        return redirectWithCookies(
             new URL("/en/login?error=server_error", origin),
-            { status: 303 }
+            cookiesToSetInResponse
         );
     }
 }
@@ -100,4 +140,35 @@ function sanitizeRedirect(next: string | null): string {
     }
 
     return next;
+}
+
+function parseGoogleMetadata(metadata: Record<string, unknown>) {
+    const fullName = stringValue(metadata.full_name);
+    const nameParts = fullName.split(/\s+/).filter(Boolean);
+    const firstName = stringValue(metadata.given_name) || nameParts[0] || "";
+    const lastName =
+        stringValue(metadata.family_name) || nameParts.slice(1).join(" ");
+
+    return {
+        firstName,
+        lastName,
+        avatarUrl:
+            stringValue(metadata.avatar_url) ||
+            stringValue(metadata.picture) ||
+            null,
+    };
+}
+
+function stringValue(value: unknown): string {
+    return typeof value === "string" ? value.trim() : "";
+}
+
+function redirectWithCookies(url: URL, cookiesToSet: CookieToSet[]) {
+    const response = NextResponse.redirect(url, { status: 303 });
+
+    cookiesToSet.forEach(({ name, value, options }) => {
+        response.cookies.set(name, value, options);
+    });
+
+    return response;
 }
