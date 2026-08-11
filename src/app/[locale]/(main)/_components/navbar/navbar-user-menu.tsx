@@ -1,6 +1,6 @@
 "use client";
 
-import { User, Settings, LogOut, Network, PanelsTopLeft } from "lucide-react";
+import { User, Settings, LogOut, Network, PanelsTopLeft, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Link } from "@/i18n/navigation";
@@ -11,6 +11,7 @@ import { useRef, useState } from "react";
 import { useClickOutside } from "./hooks/use-click-outside";
 import { useLocale, useTranslations } from "next-intl";
 import { useProfile } from "@/shared/lib/hooks/profile/use-profile";
+import { usePlatformStaff } from "@/shared/lib/hooks/admins/use-platform-staff";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function UserMenu() {
@@ -25,6 +26,7 @@ export default function UserMenu() {
     const isRtl = locale === "ar";
 
     const { profile } = useProfile(locale);
+    const { isPlatformStaff } = usePlatformStaff(Boolean(user));
 
     if (isLoading) {
         return (
@@ -115,6 +117,23 @@ export default function UserMenu() {
                                 <span>{t("userMenu.developerSystems")}</span>
                             </Link>
                         </div>
+
+                        {isPlatformStaff && (
+                            <>
+                                <div className="my-1 border-t border-gray-100 dark:border-zinc-700" />
+
+                                <div className="p-1">
+                                    <Link
+                                        href="/admin/systems"
+                                        onClick={() => setOpen(false)}
+                                        className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors hover:bg-gray-50 dark:hover:bg-zinc-700/60"
+                                    >
+                                        <ShieldCheck className="size-4 text-primary" />
+                                        <span>{t("userMenu.adminDashboard")}</span>
+                                    </Link>
+                                </div>
+                            </>
+                        )}
 
                         <div className="my-1 border-t border-gray-100 dark:border-zinc-700" />
 

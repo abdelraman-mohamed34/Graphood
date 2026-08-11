@@ -271,6 +271,7 @@
             "workspaces": "Workspaces",
             "settings": "Settings",
             "developerSystems": "Developer systems",
+            "adminDashboard": "Admin Dashboard",
             "logout": "Logout"
         }
     },

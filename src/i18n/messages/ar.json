@@ -271,6 +271,7 @@
             "workspaces": "مساحات العمل",
             "settings": "الإعدادات",
             "developerSystems": "أنظمة المطور",
+            "adminDashboard": "لوحة تحكم الإدارة",
             "logout": "تسجيل الخروج"
         }
     },

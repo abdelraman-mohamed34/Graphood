@@ -14,7 +14,7 @@ import {
 import { queryKeys } from "@/shared/lib/query";
 import type { CreatePlatformStaffInput } from "@/shared/lib/schemas/graphood-staff.schema";
 
-export function usePlatformStaff() {
+export function usePlatformStaff(enabled = true) {
     const queryClient = useQueryClient();
     const t = useTranslations("AdminStaff");
 
@@ -25,6 +25,7 @@ export function usePlatformStaff() {
 
     const roleQuery = useQuery({
         queryKey: queryKeys.platformStaff.role(),
+        enabled,
         queryFn: async () => {
             const result = await checkPlatformRoleAction();
             if (!result.success) throw new Error(result.error ?? "staff.roleLookupFailed");
@@ -34,7 +35,7 @@ export function usePlatformStaff() {
 
     const staffQuery = useQuery({
         queryKey: queryKeys.platformStaff.list(),
-        enabled: roleQuery.data === "SUPER_ADMIN",
+        enabled: enabled && roleQuery.data === "SUPER_ADMIN",
         queryFn: async () => {
             const result = await fetchPlatformStaffAction();
             if (!result.success) throw new Error(result.error ?? "staff.fetchFailed");
