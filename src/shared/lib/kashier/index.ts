@@ -1,3 +1,4 @@
+import { url } from "@/app/[locale]/(dashboard)/(system)/developer/docs/endpoints/tenant/page";
 import crypto from "crypto";
 
 export class KashierError extends Error {
@@ -34,7 +35,7 @@ export async function createKashierCheckoutUrl({
     }
 
     const baseUrl = "https://checkout.kashier.io";
-    const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const siteUrl = process.env.NEXT_PUBLIC_APP_URL || url;
     const merchantRedirect = encodeURIComponent(`${siteUrl}/marketplace/checkout/${orderId}`);
 
     const formattedAmount = Math.round(amount);

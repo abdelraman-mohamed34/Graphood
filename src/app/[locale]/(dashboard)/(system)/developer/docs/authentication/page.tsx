@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { CodeBlock } from "@/shared/_components/code-block";
 import { InlineCode } from "@/shared/_components/inline-code";
+import { url } from "../endpoints/tenant/page";
 
 export default function AuthenticationPage() {
     const t = useTranslations("AuthenticationPage");
@@ -90,7 +91,7 @@ export default function AuthenticationPage() {
                 <CodeBlock
                     language="bash"
                     code={`curl --request GET \\
-  --url http://localhost:3000/api/developer/v1/me?tenantSlug=workspace-slug \\
+  --url ${url}/api/developer/v1/me?tenantSlug=workspace-slug \\
   --header "Authorization: Bearer YOUR_API_KEY"`}
                 />
             </section>

@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { CodeBlock } from "@/shared/_components/code-block";
+import { url } from "inspector";
 
 export default function QuickStartPage() {
     const t = useTranslations("QuickStartPage");
@@ -73,7 +74,7 @@ export default function QuickStartPage() {
                 <CodeBlock
                     language="bash"
                     code={`curl --request GET \\
-  --url http://localhost:3000/api/developer/v1/me?tenantSlug=workspace-slug \\
+  --url ${url}/api/developer/v1/me?tenantSlug=workspace-slug \\
   --header "Authorization: Bearer YOUR_API_KEY"`}
                 />
             </section>
