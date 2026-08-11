@@ -23,7 +23,8 @@ export async function getAuditLogs(supabase: SupabaseClient, {
       *,
       actor:profiles!actor_id (
         id,
-        full_name,
+        first_name,
+      last_name,
         email,
         avatar_url
       )

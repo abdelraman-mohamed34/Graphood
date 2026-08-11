@@ -1127,7 +1127,7 @@
         "items": {
             "systemsOrders": "الأنظمة والطلبات",
             "staff": "فريق العمل",
-            "audit_logs": "سجلات التدقيق"
+            "audit_logs": "السجلات"
         }
     },
     "DeveloperDocsPage": {
@@ -1639,6 +1639,32 @@
         },
         "errors": {
             "unknown": "حدث خطأ. حاول مرة أخرى."
+        }
+    },
+    "AdminAuditLogs": {
+        "metadataTitle": "سجلات التدقيق | إدارة Graphood",
+        "header": {
+            "title": "سجلات التدقيق",
+            "description": "راجع سجل التدقيق الشامل للأنشطة على منصة Graphood."
+        },
+        "states": {
+            "loading": "جارٍ تحميل سجلات التدقيق...",
+            "error": "تعذر تحميل سجلات التدقيق: {error}",
+            "empty": "لا توجد سجلات تدقيق."
+        },
+        "table": {
+            "action": "الإجراء",
+            "actor": "المنفّذ",
+            "entityType": "نوع الكيان",
+            "entityId": "معرّف الكيان",
+            "ipAddress": "عنوان IP",
+            "date": "التاريخ",
+            "systemActor": "النظام"
+        },
+        "pagination": {
+            "previous": "السابق",
+            "next": "التالي",
+            "page": "الصفحة {page} من {totalPages}"
         }
     },
     "NotFoundPage": {

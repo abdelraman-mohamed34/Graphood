@@ -1641,6 +1641,32 @@
             "unknown": "Something went wrong. Please try again."
         }
     },
+    "AdminAuditLogs": {
+        "metadataTitle": "Audit logs | Graphood Admin",
+        "header": {
+            "title": "Audit logs",
+            "description": "Review the system-wide audit trail and activity across the Graphood platform."
+        },
+        "states": {
+            "loading": "Loading audit logs...",
+            "error": "Audit logs could not be loaded: {error}",
+            "empty": "No audit logs found."
+        },
+        "table": {
+            "action": "Action",
+            "actor": "Actor",
+            "entityType": "Entity type",
+            "entityId": "Entity ID",
+            "ipAddress": "IP address",
+            "date": "Date",
+            "systemActor": "System"
+        },
+        "pagination": {
+            "previous": "Previous",
+            "next": "Next",
+            "page": "Page {page} of {totalPages}"
+        }
+    },
     "NotFoundPage": {
         "title": "Page Not Found",
         "description": "The page you are looking for doesn't exist or has been moved.",
