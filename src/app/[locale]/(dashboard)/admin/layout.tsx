@@ -10,7 +10,7 @@ import {
 } from "@/shared/lib/supabase/services/platform-staff";
 import { createQueryClient, queryKeys } from "@/shared/lib/query";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
-import { Dir } from "@/shared/_components/dirs";
+import { Dir } from "@/shared/_components/dir";
 import Navbar from "../../(main)/_components/navbar";
 import Footer from "../../(main)/_components/footer/Footer";
 

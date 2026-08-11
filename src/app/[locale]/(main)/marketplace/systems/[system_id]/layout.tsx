@@ -7,7 +7,7 @@ import { getSystemById } from '@/shared/lib/supabase/services/systems';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { redirect } from '@/i18n/navigation';
 import React from 'react';
-import { Dir } from '@/shared/_components/dirs';
+import { Dir } from '@/shared/_components/dir';
 import { createQueryClient, queryKeys } from '@/shared/lib/query';
 
 interface SystemDetailsLayoutProps {

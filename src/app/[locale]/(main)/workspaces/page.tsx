@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Dir } from "@/shared/_components/dirs";
+import { Dir } from "@/shared/_components/dir";
 import { useAuth } from "@/shared/lib/auth/auth-context";
 import { useOnboarding } from "@/shared/lib/providers/onboarding-provider";
 import { Tenant } from "@/shared/lib/schemas/tenants.schema";

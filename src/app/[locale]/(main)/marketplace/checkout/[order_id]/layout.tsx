@@ -10,7 +10,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
 import { getOrderById } from "@/shared/lib/supabase/services/billing";
-import { Dir } from "@/shared/_components/dirs";
+import { Dir } from "@/shared/_components/dir";
 import { createQueryClient, queryKeys } from "@/shared/lib/query";
 
 interface CheckoutLayoutProps {

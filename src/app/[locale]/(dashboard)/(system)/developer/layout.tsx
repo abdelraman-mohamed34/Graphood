@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Navbar from "@/app/[locale]/(main)/_components/navbar";
-import { Dir } from "@/shared/_components/dirs";
+import { Dir } from "@/shared/_components/dir";
 import { SystemNavigationProvider } from "@/shared/_components/system-navigation-provider";
 
 export default function DeveloperLayout({ children }: { children: ReactNode }) {
