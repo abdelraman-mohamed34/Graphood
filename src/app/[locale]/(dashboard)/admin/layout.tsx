@@ -2,10 +2,13 @@
 
 import { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { checkPlatformRoleService } from "@/shared/lib/supabase/services/platform-staff";
-import { queryKeys } from "@/shared/lib/query";
+import {
+    checkPlatformRoleService,
+    fetchPlatformStaffService,
+} from "@/shared/lib/supabase/services/platform-staff";
+import { createQueryClient, queryKeys } from "@/shared/lib/query";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
 import { Dir } from "@/shared/_components/dirs";
 import Navbar from "../../(main)/_components/navbar";
@@ -34,11 +37,18 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
     }
 
     // 2. Query Prefetching
-    const queryClient = new QueryClient();
+    const queryClient = createQueryClient();
     await queryClient.prefetchQuery({
         queryKey: queryKeys.platformStaff.role(),
         queryFn: () => role,
     });
+
+    if (role === "SUPER_ADMIN") {
+        await queryClient.prefetchQuery({
+            queryKey: queryKeys.platformStaff.list(),
+            queryFn: () => fetchPlatformStaffService({ supabase }),
+        });
+    }
 
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>

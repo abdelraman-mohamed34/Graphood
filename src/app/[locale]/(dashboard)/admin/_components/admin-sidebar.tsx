@@ -1,6 +1,6 @@
 "use client";
 
-import { Server, Users } from "lucide-react";
+import { FileText, Server, Users } from "lucide-react";
 
 import { ReusableSidebar, type SidebarGroup } from "@/shared/_components/reusable_sidebar";
 import { cn } from "@/lib/utils";
@@ -34,6 +34,11 @@ export default function AdminSidebar({ className, onNavigate }: AdminSidebarProp
                         },
                     ]
                     : []),
+                {
+                    label: t("items.audit_logs"),
+                    href: "/admin/logs",
+                    icon: FileText,
+                }
             ],
         },
     ];

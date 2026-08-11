@@ -1126,7 +1126,8 @@
         },
         "items": {
             "systemsOrders": "Systems & Orders",
-            "staff": "Staff"
+            "staff": "Staff",
+            "audit_logs": "Audit Logs"
         }
     },
     "DeveloperDocsPage": {
@@ -1471,40 +1472,174 @@
     },
     "AdminSystems": {
         "metadataTitle": "Systems management | Graphood Admin",
-        "header": { "title": "Systems and requests", "description": "Review new system requests and manage the status of existing systems." },
-        "stats": { "total": "Total systems", "pending": "Pending review", "active": "Active systems", "inactive": "Suspended / Rejected" },
-        "search": { "placeholder": "Search by system, slug, owner, or email..." },
-        "filters": { "ALL": "All", "PENDING": "Pending", "ACTIVE": "Active", "SUSPENDED": "Suspended", "REJECTED": "Rejected" },
-        "statuses": { "PENDING": "Pending", "ACTIVE": "Active", "SUSPENDED": "Suspended", "REJECTED": "Rejected", "ARCHIVED": "Archived" },
-        "table": { "system": "System", "owner": "Owner", "status": "Status", "createdAt": "Created", "actions": "Actions", "empty": "No matching systems found.", "loadError": "Systems could not be loaded.", "emailUnavailable": "Email unavailable", "unknownDate": "Unknown" },
-        "actions": { "retry": "Try again", "cancel": "Cancel", "openMenu": "Open system actions", "options": "Options", "preview": "Preview system", "activate": "Approve and activate", "reject": "Reject request", "suspend": "Suspend system" },
-        "dialog": {
-            "accept": { "title": "Approve and activate system", "description": "Are you sure you want to approve and activate {system}?", "confirm": "Activate system" },
-            "reject": { "title": "Reject system request", "description": "Are you sure you want to reject {system}? You can provide a reason below.", "confirm": "Reject request" },
-            "suspend": { "title": "Suspend system", "description": "Access to {system} will be temporarily disabled.", "confirm": "Suspend system" },
-            "reasonLabel": "Reason (optional)", "reasonPlaceholder": "Explain this decision to the system owner...", "updating": "Updating..."
+        "header": {
+            "title": "Systems and requests",
+            "description": "Review new system requests and manage the status of existing systems."
         },
-        "toast": { "updateSuccess": "System status updated." },
-        "validation": { "systemIdInvalid": "The system ID is invalid.", "reasonTooLong": "The reason cannot exceed 500 characters.", "invalidInput": "Check the entered information." },
-        "auth": { "unauthorized": "You must sign in to continue.", "staffRequired": "Platform staff access is required." },
-        "systems": { "fetchFailed": "Systems could not be loaded.", "updateFailed": "The system status could not be updated.", "notFound": "The system no longer exists." },
-        "errors": { "unknown": "Something went wrong. Please try again." }
+        "stats": {
+            "total": "Total systems",
+            "pending": "Pending review",
+            "active": "Active systems",
+            "inactive": "Suspended / Rejected"
+        },
+        "search": {
+            "placeholder": "Search by system, slug, owner, or email..."
+        },
+        "filters": {
+            "ALL": "All",
+            "PENDING": "Pending",
+            "ACTIVE": "Active",
+            "SUSPENDED": "Suspended",
+            "REJECTED": "Rejected"
+        },
+        "statuses": {
+            "PENDING": "Pending",
+            "ACTIVE": "Active",
+            "SUSPENDED": "Suspended",
+            "REJECTED": "Rejected",
+            "ARCHIVED": "Archived"
+        },
+        "table": {
+            "system": "System",
+            "owner": "Owner",
+            "status": "Status",
+            "createdAt": "Created",
+            "actions": "Actions",
+            "empty": "No matching systems found.",
+            "loadError": "Systems could not be loaded.",
+            "emailUnavailable": "Email unavailable",
+            "unknownDate": "Unknown"
+        },
+        "actions": {
+            "retry": "Try again",
+            "cancel": "Cancel",
+            "openMenu": "Open system actions",
+            "options": "Options",
+            "preview": "Preview system",
+            "activate": "Approve and activate",
+            "reject": "Reject request",
+            "suspend": "Suspend system"
+        },
+        "dialog": {
+            "accept": {
+                "title": "Approve and activate system",
+                "description": "Are you sure you want to approve and activate {system}?",
+                "confirm": "Activate system"
+            },
+            "reject": {
+                "title": "Reject system request",
+                "description": "Are you sure you want to reject {system}? You can provide a reason below.",
+                "confirm": "Reject request"
+            },
+            "suspend": {
+                "title": "Suspend system",
+                "description": "Access to {system} will be temporarily disabled.",
+                "confirm": "Suspend system"
+            },
+            "reasonLabel": "Reason (optional)",
+            "reasonPlaceholder": "Explain this decision to the system owner...",
+            "updating": "Updating..."
+        },
+        "toast": {
+            "updateSuccess": "System status updated."
+        },
+        "validation": {
+            "systemIdInvalid": "The system ID is invalid.",
+            "reasonTooLong": "The reason cannot exceed 500 characters.",
+            "invalidInput": "Check the entered information."
+        },
+        "auth": {
+            "unauthorized": "You must sign in to continue.",
+            "staffRequired": "Platform staff access is required."
+        },
+        "systems": {
+            "fetchFailed": "Systems could not be loaded.",
+            "updateFailed": "The system status could not be updated.",
+            "notFound": "The system no longer exists."
+        },
+        "errors": {
+            "unknown": "Something went wrong. Please try again."
+        }
     },
     "AdminStaff": {
         "metadataTitle": "Platform staff | Graphood Admin",
-        "header": { "title": "Platform staff", "description": "Manage support agents and administrators and control access to the admin dashboard.", "addStaff": "Add staff member" },
-        "fields": { "email": "Email", "role": "System role" },
-        "roles": { "SUPER_ADMIN": "Super Admin", "SUPPORT_AGENT": "Support Agent" },
-        "actions": { "cancel": "Cancel", "close": "Close", "retry": "Try again" },
-        "add": { "title": "Add a staff member", "description": "Enter an existing user's email and choose the administrative access to grant.", "emailPlaceholder": "name@company.com", "emailHint": "Access is granted to the profile associated with this email.", "rolePlaceholder": "Select a role", "submit": "Add staff member", "submitting": "Adding..." },
-        "delete": { "trigger": "Remove {email}", "title": "Remove staff member?", "description": "This immediately revokes the staff member's administrative access.", "confirm": "Remove staff member" },
-        "table": { "email": "Email", "profileId": "Profile ID", "role": "Role", "createdAt": "Added", "actions": "Actions", "empty": "No staff members found.", "loadError": "Staff members could not be loaded.", "emailUnavailable": "Email unavailable", "unknownDate": "Unknown" },
-        "toast": { "addSuccess": "Staff member added.", "removeSuccess": "Staff member removed." },
-        "validation": { "emailInvalid": "Enter a valid email address.", "profileIdInvalid": "The profile ID is invalid.", "staffIdInvalid": "The staff ID is invalid.", "roleInvalid": "Select a valid role.", "identifierRequired": "Enter an email address or profile ID.", "invalidInput": "Check the entered information." },
-        "auth": { "unauthorized": "You must sign in to continue.", "superAdminRequired": "Super Admin access is required." },
-        "profiles": { "notFound": "No profile is associated with this email.", "identifierMismatch": "The email and profile ID do not identify the same user.", "lookupFailed": "The user profile could not be checked." },
-        "staff": { "addFailed": "The staff member could not be added.", "removeFailed": "The staff member could not be removed.", "fetchFailed": "Staff members could not be loaded.", "roleLookupFailed": "Your platform role could not be checked.", "lookupFailed": "The staff member could not be checked.", "notFound": "The staff member no longer exists.", "cannotRemoveSelf": "You cannot remove your own Super Admin access." },
-        "errors": { "unknown": "Something went wrong. Please try again." }
+        "header": {
+            "title": "Platform staff",
+            "description": "Manage support agents and administrators and control access to the admin dashboard.",
+            "addStaff": "Add staff member"
+        },
+        "fields": {
+            "email": "Email",
+            "role": "System role"
+        },
+        "roles": {
+            "SUPER_ADMIN": "Super Admin",
+            "SUPPORT_AGENT": "Support Agent"
+        },
+        "actions": {
+            "cancel": "Cancel",
+            "close": "Close",
+            "retry": "Try again"
+        },
+        "add": {
+            "title": "Add a staff member",
+            "description": "Enter an existing user's email and choose the administrative access to grant.",
+            "emailPlaceholder": "name@company.com",
+            "emailHint": "Access is granted to the profile associated with this email.",
+            "rolePlaceholder": "Select a role",
+            "submit": "Add staff member",
+            "submitting": "Adding..."
+        },
+        "delete": {
+            "trigger": "Remove {email}",
+            "title": "Remove staff member?",
+            "description": "This immediately revokes the staff member's administrative access.",
+            "confirm": "Remove staff member"
+        },
+        "table": {
+            "email": "Email",
+            "profileId": "Profile ID",
+            "role": "Role",
+            "createdAt": "Added",
+            "actions": "Actions",
+            "empty": "No staff members found.",
+            "loadError": "Staff members could not be loaded.",
+            "emailUnavailable": "Email unavailable",
+            "unknownDate": "Unknown"
+        },
+        "toast": {
+            "addSuccess": "Staff member added.",
+            "removeSuccess": "Staff member removed."
+        },
+        "validation": {
+            "emailInvalid": "Enter a valid email address.",
+            "profileIdInvalid": "The profile ID is invalid.",
+            "staffIdInvalid": "The staff ID is invalid.",
+            "roleInvalid": "Select a valid role.",
+            "identifierRequired": "Enter an email address or profile ID.",
+            "invalidInput": "Check the entered information."
+        },
+        "auth": {
+            "unauthorized": "You must sign in to continue.",
+            "superAdminRequired": "Super Admin access is required."
+        },
+        "profiles": {
+            "notFound": "No profile is associated with this email.",
+            "identifierMismatch": "The email and profile ID do not identify the same user.",
+            "lookupFailed": "The user profile could not be checked."
+        },
+        "staff": {
+            "addFailed": "The staff member could not be added.",
+            "removeFailed": "The staff member could not be removed.",
+            "fetchFailed": "Staff members could not be loaded.",
+            "roleLookupFailed": "Your platform role could not be checked.",
+            "lookupFailed": "The staff member could not be checked.",
+            "notFound": "The staff member no longer exists.",
+            "cannotRemoveSelf": "You cannot remove your own Super Admin access."
+        },
+        "errors": {
+            "unknown": "Something went wrong. Please try again."
+        }
     },
     "NotFoundPage": {
         "title": "Page Not Found",

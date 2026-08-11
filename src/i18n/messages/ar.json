@@ -1126,7 +1126,8 @@
         },
         "items": {
             "systemsOrders": "الأنظمة والطلبات",
-            "staff": "فريق العمل"
+            "staff": "فريق العمل",
+            "audit_logs": "سجلات التدقيق"
         }
     },
     "DeveloperDocsPage": {
@@ -1471,40 +1472,174 @@
     },
     "AdminSystems": {
         "metadataTitle": "إدارة الأنظمة | إدارة Graphood",
-        "header": { "title": "إدارة الأنظمة والطلبات", "description": "مراجعة طلبات الأنظمة الجديدة وإدارة حالة الأنظمة الحالية." },
-        "stats": { "total": "إجمالي الأنظمة", "pending": "قيد المراجعة", "active": "أنظمة نشطة", "inactive": "معلقة / مرفوضة" },
-        "search": { "placeholder": "ابحث بالنظام أو المعرّف أو المالك أو البريد..." },
-        "filters": { "ALL": "الكل", "PENDING": "قيد الانتظار", "ACTIVE": "نشطة", "SUSPENDED": "معلقة", "REJECTED": "مرفوضة" },
-        "statuses": { "PENDING": "قيد الانتظار", "ACTIVE": "نشط", "SUSPENDED": "معلق", "REJECTED": "مرفوض", "ARCHIVED": "مؤرشف" },
-        "table": { "system": "النظام", "owner": "المالك", "status": "الحالة", "createdAt": "تاريخ الإنشاء", "actions": "الإجراءات", "empty": "لا توجد أنظمة مطابقة.", "loadError": "تعذر تحميل الأنظمة.", "emailUnavailable": "البريد غير متاح", "unknownDate": "غير معروف" },
-        "actions": { "retry": "إعادة المحاولة", "cancel": "إلغاء", "openMenu": "فتح إجراءات النظام", "options": "الخيارات", "preview": "معاينة النظام", "activate": "قبول وتفعيل", "reject": "رفض الطلب", "suspend": "تعليق النظام" },
-        "dialog": {
-            "accept": { "title": "قبول وتفعيل النظام", "description": "هل تريد قبول وتفعيل {system}؟", "confirm": "تفعيل النظام" },
-            "reject": { "title": "رفض طلب النظام", "description": "هل تريد رفض {system}؟ يمكنك توضيح السبب أدناه.", "confirm": "رفض الطلب" },
-            "suspend": { "title": "تعليق النظام", "description": "سيتم إيقاف الوصول إلى {system} مؤقتًا.", "confirm": "تعليق النظام" },
-            "reasonLabel": "سبب الإجراء (اختياري)", "reasonPlaceholder": "وضّح سبب القرار لصاحب النظام...", "updating": "جارٍ التحديث..."
+        "header": {
+            "title": "إدارة الأنظمة والطلبات",
+            "description": "مراجعة طلبات الأنظمة الجديدة وإدارة حالة الأنظمة الحالية."
         },
-        "toast": { "updateSuccess": "تم تحديث حالة النظام." },
-        "validation": { "systemIdInvalid": "معرّف النظام غير صحيح.", "reasonTooLong": "يجب ألا يتجاوز السبب 500 حرف.", "invalidInput": "تحقق من البيانات المدخلة." },
-        "auth": { "unauthorized": "يجب تسجيل الدخول للمتابعة.", "staffRequired": "يلزم امتلاك صلاحية ضمن فريق المنصة." },
-        "systems": { "fetchFailed": "تعذر تحميل الأنظمة.", "updateFailed": "تعذر تحديث حالة النظام.", "notFound": "النظام لم يعد موجودًا." },
-        "errors": { "unknown": "حدث خطأ. حاول مرة أخرى." }
+        "stats": {
+            "total": "إجمالي الأنظمة",
+            "pending": "قيد المراجعة",
+            "active": "أنظمة نشطة",
+            "inactive": "معلقة / مرفوضة"
+        },
+        "search": {
+            "placeholder": "ابحث بالنظام أو المعرّف أو المالك أو البريد..."
+        },
+        "filters": {
+            "ALL": "الكل",
+            "PENDING": "قيد الانتظار",
+            "ACTIVE": "نشطة",
+            "SUSPENDED": "معلقة",
+            "REJECTED": "مرفوضة"
+        },
+        "statuses": {
+            "PENDING": "قيد الانتظار",
+            "ACTIVE": "نشط",
+            "SUSPENDED": "معلق",
+            "REJECTED": "مرفوض",
+            "ARCHIVED": "مؤرشف"
+        },
+        "table": {
+            "system": "النظام",
+            "owner": "المالك",
+            "status": "الحالة",
+            "createdAt": "تاريخ الإنشاء",
+            "actions": "الإجراءات",
+            "empty": "لا توجد أنظمة مطابقة.",
+            "loadError": "تعذر تحميل الأنظمة.",
+            "emailUnavailable": "البريد غير متاح",
+            "unknownDate": "غير معروف"
+        },
+        "actions": {
+            "retry": "إعادة المحاولة",
+            "cancel": "إلغاء",
+            "openMenu": "فتح إجراءات النظام",
+            "options": "الخيارات",
+            "preview": "معاينة النظام",
+            "activate": "قبول وتفعيل",
+            "reject": "رفض الطلب",
+            "suspend": "تعليق النظام"
+        },
+        "dialog": {
+            "accept": {
+                "title": "قبول وتفعيل النظام",
+                "description": "هل تريد قبول وتفعيل {system}؟",
+                "confirm": "تفعيل النظام"
+            },
+            "reject": {
+                "title": "رفض طلب النظام",
+                "description": "هل تريد رفض {system}؟ يمكنك توضيح السبب أدناه.",
+                "confirm": "رفض الطلب"
+            },
+            "suspend": {
+                "title": "تعليق النظام",
+                "description": "سيتم إيقاف الوصول إلى {system} مؤقتًا.",
+                "confirm": "تعليق النظام"
+            },
+            "reasonLabel": "سبب الإجراء (اختياري)",
+            "reasonPlaceholder": "وضّح سبب القرار لصاحب النظام...",
+            "updating": "جارٍ التحديث..."
+        },
+        "toast": {
+            "updateSuccess": "تم تحديث حالة النظام."
+        },
+        "validation": {
+            "systemIdInvalid": "معرّف النظام غير صحيح.",
+            "reasonTooLong": "يجب ألا يتجاوز السبب 500 حرف.",
+            "invalidInput": "تحقق من البيانات المدخلة."
+        },
+        "auth": {
+            "unauthorized": "يجب تسجيل الدخول للمتابعة.",
+            "staffRequired": "يلزم امتلاك صلاحية ضمن فريق المنصة."
+        },
+        "systems": {
+            "fetchFailed": "تعذر تحميل الأنظمة.",
+            "updateFailed": "تعذر تحديث حالة النظام.",
+            "notFound": "النظام لم يعد موجودًا."
+        },
+        "errors": {
+            "unknown": "حدث خطأ. حاول مرة أخرى."
+        }
     },
     "AdminStaff": {
         "metadataTitle": "فريق المنصة | إدارة Graphood",
-        "header": { "title": "فريق عمل المنصة", "description": "إدارة موظفي الدعم والمديرين والتحكم في صلاحيات الوصول إلى لوحة الإدارة.", "addStaff": "إضافة موظف" },
-        "fields": { "email": "البريد الإلكتروني", "role": "صلاحية النظام" },
-        "roles": { "SUPER_ADMIN": "مدير النظام", "SUPPORT_AGENT": "موظف دعم" },
-        "actions": { "cancel": "إلغاء", "close": "إغلاق", "retry": "إعادة المحاولة" },
-        "add": { "title": "إضافة موظف جديد", "description": "أدخل بريد مستخدم حالي وحدد صلاحية الوصول الإدارية التي تريد منحها.", "emailPlaceholder": "name@company.com", "emailHint": "ستُمنح الصلاحية للملف الشخصي المرتبط بهذا البريد.", "rolePlaceholder": "اختر الصلاحية", "submit": "إضافة الموظف", "submitting": "جارٍ الإضافة..." },
-        "delete": { "trigger": "إزالة {email}", "title": "إزالة الموظف؟", "description": "سيؤدي ذلك إلى إلغاء صلاحية وصول الموظف الإدارية فورًا.", "confirm": "إزالة الموظف" },
-        "table": { "email": "البريد الإلكتروني", "profileId": "معرّف الملف", "role": "الصلاحية", "createdAt": "تاريخ الإضافة", "actions": "الإجراءات", "empty": "لا يوجد موظفون.", "loadError": "تعذر تحميل فريق المنصة.", "emailUnavailable": "البريد غير متاح", "unknownDate": "غير معروف" },
-        "toast": { "addSuccess": "تمت إضافة الموظف.", "removeSuccess": "تمت إزالة الموظف." },
-        "validation": { "emailInvalid": "أدخل بريدًا إلكترونيًا صحيحًا.", "profileIdInvalid": "معرّف الملف الشخصي غير صحيح.", "staffIdInvalid": "معرّف الموظف غير صحيح.", "roleInvalid": "اختر صلاحية صحيحة.", "identifierRequired": "أدخل البريد الإلكتروني أو معرّف الملف الشخصي.", "invalidInput": "تحقق من البيانات المدخلة." },
-        "auth": { "unauthorized": "يجب تسجيل الدخول للمتابعة.", "superAdminRequired": "يلزم امتلاك صلاحية مدير النظام." },
-        "profiles": { "notFound": "لا يوجد ملف شخصي مرتبط بهذا البريد.", "identifierMismatch": "البريد ومعرّف الملف لا يشيران إلى المستخدم نفسه.", "lookupFailed": "تعذر التحقق من ملف المستخدم." },
-        "staff": { "addFailed": "تعذرت إضافة الموظف.", "removeFailed": "تعذرت إزالة الموظف.", "fetchFailed": "تعذر تحميل فريق المنصة.", "roleLookupFailed": "تعذر التحقق من صلاحيتك.", "lookupFailed": "تعذر التحقق من الموظف.", "notFound": "الموظف لم يعد موجودًا.", "cannotRemoveSelf": "لا يمكنك إزالة صلاحية مدير النظام الخاصة بك." },
-        "errors": { "unknown": "حدث خطأ. حاول مرة أخرى." }
+        "header": {
+            "title": "فريق عمل المنصة",
+            "description": "إدارة موظفي الدعم والمديرين والتحكم في صلاحيات الوصول إلى لوحة الإدارة.",
+            "addStaff": "إضافة موظف"
+        },
+        "fields": {
+            "email": "البريد الإلكتروني",
+            "role": "صلاحية النظام"
+        },
+        "roles": {
+            "SUPER_ADMIN": "مدير النظام",
+            "SUPPORT_AGENT": "موظف دعم"
+        },
+        "actions": {
+            "cancel": "إلغاء",
+            "close": "إغلاق",
+            "retry": "إعادة المحاولة"
+        },
+        "add": {
+            "title": "إضافة موظف جديد",
+            "description": "أدخل بريد مستخدم حالي وحدد صلاحية الوصول الإدارية التي تريد منحها.",
+            "emailPlaceholder": "name@company.com",
+            "emailHint": "ستُمنح الصلاحية للملف الشخصي المرتبط بهذا البريد.",
+            "rolePlaceholder": "اختر الصلاحية",
+            "submit": "إضافة الموظف",
+            "submitting": "جارٍ الإضافة..."
+        },
+        "delete": {
+            "trigger": "إزالة {email}",
+            "title": "إزالة الموظف؟",
+            "description": "سيؤدي ذلك إلى إلغاء صلاحية وصول الموظف الإدارية فورًا.",
+            "confirm": "إزالة الموظف"
+        },
+        "table": {
+            "email": "البريد الإلكتروني",
+            "profileId": "معرّف الملف",
+            "role": "الصلاحية",
+            "createdAt": "تاريخ الإضافة",
+            "actions": "الإجراءات",
+            "empty": "لا يوجد موظفون.",
+            "loadError": "تعذر تحميل فريق المنصة.",
+            "emailUnavailable": "البريد غير متاح",
+            "unknownDate": "غير معروف"
+        },
+        "toast": {
+            "addSuccess": "تمت إضافة الموظف.",
+            "removeSuccess": "تمت إزالة الموظف."
+        },
+        "validation": {
+            "emailInvalid": "أدخل بريدًا إلكترونيًا صحيحًا.",
+            "profileIdInvalid": "معرّف الملف الشخصي غير صحيح.",
+            "staffIdInvalid": "معرّف الموظف غير صحيح.",
+            "roleInvalid": "اختر صلاحية صحيحة.",
+            "identifierRequired": "أدخل البريد الإلكتروني أو معرّف الملف الشخصي.",
+            "invalidInput": "تحقق من البيانات المدخلة."
+        },
+        "auth": {
+            "unauthorized": "يجب تسجيل الدخول للمتابعة.",
+            "superAdminRequired": "يلزم امتلاك صلاحية مدير النظام."
+        },
+        "profiles": {
+            "notFound": "لا يوجد ملف شخصي مرتبط بهذا البريد.",
+            "identifierMismatch": "البريد ومعرّف الملف لا يشيران إلى المستخدم نفسه.",
+            "lookupFailed": "تعذر التحقق من ملف المستخدم."
+        },
+        "staff": {
+            "addFailed": "تعذرت إضافة الموظف.",
+            "removeFailed": "تعذرت إزالة الموظف.",
+            "fetchFailed": "تعذر تحميل فريق المنصة.",
+            "roleLookupFailed": "تعذر التحقق من صلاحيتك.",
+            "lookupFailed": "تعذر التحقق من الموظف.",
+            "notFound": "الموظف لم يعد موجودًا.",
+            "cannotRemoveSelf": "لا يمكنك إزالة صلاحية مدير النظام الخاصة بك."
+        },
+        "errors": {
+            "unknown": "حدث خطأ. حاول مرة أخرى."
+        }
     },
     "NotFoundPage": {
         "title": "الصفحة غير موجودة",
