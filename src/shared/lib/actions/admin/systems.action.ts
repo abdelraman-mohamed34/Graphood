@@ -12,6 +12,7 @@ import {
     updateSystemStatusService,
 } from "@/shared/lib/supabase/services/admin/systems.service";
 import { checkPlatformRoleService } from "@/shared/lib/supabase/services/platform-staff";
+import { createAuditLog } from "../../supabase/services/audit-logs";
 
 export interface SystemsActionResult<T> {
     success: boolean;
@@ -33,17 +34,15 @@ async function authorizeSystemsStaff() {
         throw new Error("auth.staffRequired");
     }
 
-    // Authorization uses the caller's session; privileged data access happens
-    // only after that check so platform staff are not dependent on end-user RLS.
-    return createAdminClient();
+    return { supabaseAdmin: createAdminClient(), user };
 }
 
 export async function fetchSystemsAction(): Promise<
     SystemsActionResult<SystemItem[]>
 > {
     try {
-        const supabase = await authorizeSystemsStaff();
-        const data = await fetchSystemsService(supabase);
+        const { supabaseAdmin } = await authorizeSystemsStaff();
+        const data = await fetchSystemsService(supabaseAdmin);
         return { success: true, data };
     } catch (error) {
         return {
@@ -71,8 +70,22 @@ export async function updateSystemStatusAction(
     }
 
     try {
-        const supabase = await authorizeSystemsStaff();
-        const data = await updateSystemStatusService({ supabase, ...parsed.data });
+        const { supabaseAdmin, user } = await authorizeSystemsStaff();
+
+        const data = await updateSystemStatusService({ supabase: supabaseAdmin, ...parsed.data });
+
+        await createAuditLog(supabaseAdmin, {
+            actor_id: user.id,
+            action: `SYSTEM_STATUS_${data.status}`,
+            entity_type: "system",
+            entity_id: data.systemId,
+            tenant_id: null,
+            metadata: {
+                new_status: data.status,
+                reason: data.statusReason ?? null,
+            },
+        });
+
         return { success: true, data };
     } catch (error) {
         return {

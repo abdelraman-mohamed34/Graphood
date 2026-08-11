@@ -1,6 +1,6 @@
 "use server";
 
-import { getAuditLogs } from "@/shared/lib/supabase/services/audit-logs";
+import { getAuditLogs, getAuditLogReadState } from "@/shared/lib/supabase/services/audit-logs";
 import { requireUser } from "../../auth/requires/require-user";
 
 interface GetAuditLogsInput {
@@ -28,17 +28,23 @@ export async function getAuditLogsAction(
         }
 
         const { logs, total } = await getAuditLogs(supabase, params);
+        const lastViewedAt = await getAuditLogReadState(supabase, user.id);
+        const lastViewedTime = lastViewedAt ? new Date(lastViewedAt).getTime() : 0;
 
         return {
             success: true,
-            logs: logs ?? [],
+            logs: (logs ?? []).map((log) => ({
+                ...log,
+                is_read: new Date(log.created_at ?? 0).getTime() <= lastViewedTime,
+            })),
             total: total ?? 0,
         };
-    } catch (error: any) {
-        console.error("Error in getAuditLogsAction:", error?.message || error);
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Failed to fetch audit logs";
+        console.error("Error in getAuditLogsAction:", message);
         return {
             success: false,
-            error: error?.message || "Failed to fetch audit logs",
+            error: message,
             logs: [],
             total: 0,
         };

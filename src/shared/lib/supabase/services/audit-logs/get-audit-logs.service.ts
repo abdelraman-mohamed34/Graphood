@@ -1,5 +1,4 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { createSupabaseServerClient } from "../../server";
 
 interface GetAuditLogsParams {
     limit?: number;

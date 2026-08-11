@@ -523,18 +523,21 @@ export type Database = {
       }
       platform_staff: {
         Row: {
+          audit_logs_last_viewed_at: string
           created_at: string | null
           id: string
           profile_id: string
           role: "SUPER_ADMIN" | "SUPPORT_AGENT"
         }
         Insert: {
+          audit_logs_last_viewed_at?: string
           created_at?: string | null
           id?: string
           profile_id: string
           role: "SUPER_ADMIN" | "SUPPORT_AGENT"
         }
         Update: {
+          audit_logs_last_viewed_at?: string
           created_at?: string | null
           id?: string
           profile_id?: string

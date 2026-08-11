@@ -4,9 +4,10 @@ import { updateSystemStatusService } from "@/shared/lib/supabase/services/platfo
 import { z } from "zod";
 import type { PlatformStaffActionResult } from "./add-platform-staff.action";
 import { authorizeSuperAdmin } from "./authorize-super-admin";
+import { createAuditLog } from "../../supabase/services/audit-logs";
 
 const updateSystemStatusSchema = z.object({
-    systemId: z.uuid({ error: "validation.systemIdInvalid" }),
+    systemId: z.string().uuid({ message: "validation.systemIdInvalid" }),
     status: z.enum(["ACTIVE", "REJECTED", "PENDING", "SUSPENDED"]),
 });
 
@@ -21,12 +22,24 @@ export async function updateSystemStatusAction(
     }
 
     try {
-        const { supabase } = await authorizeSuperAdmin();
+        const { supabase, user } = await authorizeSuperAdmin();
         await updateSystemStatusService({
             supabase,
             systemId: parsed.data.systemId,
             status: parsed.data.status,
         });
+
+        await createAuditLog(supabase, {
+            actor_id: user.id,
+            action: `SYSTEM_STATUS_${parsed.data.status}`,
+            entity_type: "system",
+            entity_id: parsed.data.systemId,
+            tenant_id: null,
+            metadata: {
+                new_status: parsed.data.status,
+            },
+        });
+
         return { success: true, data: { systemId: parsed.data.systemId } };
     } catch (error) {
         return {

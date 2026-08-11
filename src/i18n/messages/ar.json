@@ -1579,7 +1579,20 @@
         "actions": {
             "cancel": "إلغاء",
             "close": "إغلاق",
-            "retry": "إعادة المحاولة"
+            "retry": "إعادة المحاولة",
+            "openMenu": "فتح إجراءات الموظف",
+            "viewDetails": "عرض التفاصيل"
+        },
+        "details": {
+            "title": "تفاصيل الموظف",
+            "description": "راجع الملف الشخصي للموظف وصلاحيات وصوله الإدارية."
+        },
+        "analytics": {
+            "rolesTitle": "توزيع الصلاحيات",
+            "rolesDescription": "توزيع فريق المنصة الحالي حسب الصلاحية الإدارية.",
+            "growthTitle": "نمو فريق المنصة",
+            "growthDescription": "الموظفون الجدد الذين تمت إضافتهم كل شهر.",
+            "staffCount": "عدد الموظفين"
         },
         "add": {
             "title": "إضافة موظف جديد",
@@ -1597,6 +1610,8 @@
             "confirm": "إزالة الموظف"
         },
         "table": {
+            "title": "دليل الموظفين",
+            "description": "راجع صلاحيات الموظفين وأدوارهم وتفاصيل حساباتهم.",
             "email": "البريد الإلكتروني",
             "profileId": "معرّف الملف",
             "role": "الصلاحية",
@@ -1605,7 +1620,8 @@
             "empty": "لا يوجد موظفون.",
             "loadError": "تعذر تحميل فريق المنصة.",
             "emailUnavailable": "البريد غير متاح",
-            "unknownDate": "غير معروف"
+            "unknownDate": "غير معروف",
+            "cannotDeleteLastSuperAdmin": "لا يمكن إزالة آخر مدير للنظام. عيّن مديرًا آخر أولًا."
         },
         "toast": {
             "addSuccess": "تمت إضافة الموظف.",
@@ -1660,6 +1676,15 @@
             "ipAddress": "عنوان IP",
             "date": "التاريخ",
             "systemActor": "النظام"
+        },
+        "actions": {
+            "STAFF_INVITED": "تمت دعوة موظف جديد",
+            "STAFF_REMOVED": "تمت إزالة الموظف",
+            "STAFF_ROLE_UPDATED": "تم تحديث صلاحيات الموظف",
+            "SYSTEM_STATUS_ACTIVE": "تم تفعيل النظام",
+            "SYSTEM_STATUS_SUSPENDED": "تم إيقاف النظام",
+            "SYSTEM_STATUS_REJECTED": "تم رفض النظام",
+            "SYSTEM_STATUS_PENDING": "النظام في انتظار المراجعة"
         },
         "pagination": {
             "previous": "السابق",

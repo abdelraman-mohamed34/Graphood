@@ -6,6 +6,7 @@ import { ReusableSidebar, type SidebarGroup } from "@/shared/_components/reusabl
 import { cn } from "@/lib/utils";
 import { usePlatformStaff } from "@/shared/lib/hooks/admins/use-platform-staff";
 import { useTranslations } from "next-intl";
+import { useAuditLogUnreadCount } from "@/shared/lib/hooks/audit_logs/use-audit-log-unread-count";
 
 interface AdminSidebarProps {
     className?: string;
@@ -15,6 +16,7 @@ interface AdminSidebarProps {
 export default function AdminSidebar({ className, onNavigate }: AdminSidebarProps) {
     const { isSuperAdmin } = usePlatformStaff();
     const t = useTranslations("adminSidebar");
+    const { unreadCount } = useAuditLogUnreadCount();
 
     const items: SidebarGroup[] = [
         {
@@ -38,6 +40,8 @@ export default function AdminSidebar({ className, onNavigate }: AdminSidebarProp
                     label: t("items.audit_logs"),
                     href: "/admin/logs",
                     icon: FileText,
+                    badge: unreadCount > 0 ? (unreadCount > 99 ? "99+" : unreadCount) : undefined,
+                    badgeVariant: "destructive" as const,
                 }
             ],
         },

@@ -1579,7 +1579,20 @@
         "actions": {
             "cancel": "Cancel",
             "close": "Close",
-            "retry": "Try again"
+            "retry": "Try again",
+            "openMenu": "Open staff actions",
+            "viewDetails": "View details"
+        },
+        "details": {
+            "title": "Staff details",
+            "description": "Review this staff member's profile and administrative access."
+        },
+        "analytics": {
+            "rolesTitle": "Role distribution",
+            "rolesDescription": "Current staff grouped by administrative role.",
+            "growthTitle": "Staff growth",
+            "growthDescription": "New staff members added each month.",
+            "staffCount": "Staff members"
         },
         "add": {
             "title": "Add a staff member",
@@ -1597,6 +1610,8 @@
             "confirm": "Remove staff member"
         },
         "table": {
+            "title": "Staff directory",
+            "description": "Review staff access, roles, and account details.",
             "email": "Email",
             "profileId": "Profile ID",
             "role": "Role",
@@ -1605,7 +1620,8 @@
             "empty": "No staff members found.",
             "loadError": "Staff members could not be loaded.",
             "emailUnavailable": "Email unavailable",
-            "unknownDate": "Unknown"
+            "unknownDate": "Unknown",
+            "cannotDeleteLastSuperAdmin": "The last Super Admin cannot be removed. Assign another Super Admin first."
         },
         "toast": {
             "addSuccess": "Staff member added.",
@@ -1660,6 +1676,15 @@
             "ipAddress": "IP address",
             "date": "Date",
             "systemActor": "System"
+        },
+        "actions": {
+            "STAFF_INVITED": "Staff member invited",
+            "STAFF_REMOVED": "Staff member removed",
+            "STAFF_ROLE_UPDATED": "Staff role updated",
+            "SYSTEM_STATUS_ACTIVE": "System activated",
+            "SYSTEM_STATUS_SUSPENDED": "System suspended",
+            "SYSTEM_STATUS_REJECTED": "System rejected",
+            "SYSTEM_STATUS_PENDING": "System set to pending"
         },
         "pagination": {
             "previous": "Previous",

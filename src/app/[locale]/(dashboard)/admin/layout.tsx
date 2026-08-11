@@ -57,9 +57,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
                 <Dir />
                 <MobileAdminSidebar />
                 <div className="flex flex-1 w-full items-start">
-                    <aside className="hidden md:block w-64 shrink-0 border-e min-h-[calc(100vh-7rem)] sticky top-15">
-                        <AdminSidebar />
-                    </aside>
+                    <AdminSidebar />
                     <main className="flex-1 w-full min-w-0 px-4 py-6 sm:px-6 md:px-8 md:py-10">
                         {children}
                     </main>

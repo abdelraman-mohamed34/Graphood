@@ -1,10 +1,19 @@
 "use client";
 
-import { ShieldAlert, ShieldCheck } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { Eye, MoreHorizontal, ShieldAlert, ShieldCheck, Trash2 } from "lucide-react";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
     Table,
     TableBody,
@@ -13,13 +22,18 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { usePlatformStaff } from "@/shared/lib/hooks/admins/use-platform-staff";
 import { DeleteStaffDialog } from "./delete-staff-dialog";
+import { StaffDetailsDialog } from "./staff-details-dialog";
+import { cn } from "@/lib/utils";
 
 export function StaffTable() {
     const t = useTranslations("AdminStaff");
     const format = useFormatter();
     const { staff, isSuperAdmin, isLoadingStaff, error, refresh } = usePlatformStaff();
+    const locale = useLocale();
+    const directionText = locale === "ar" ? "text-right" : "text-left";
 
     if (isLoadingStaff) {
         return <TableLoadingState />;
@@ -29,78 +43,165 @@ export function StaffTable() {
         return (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6 text-center">
                 <p className="text-sm text-destructive">{t("table.loadError")}</p>
-                <Button variant="outline" size="sm" className="mt-3" onClick={() => void refresh()}>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => void refresh()}
+                >
                     {t("actions.retry")}
                 </Button>
             </div>
         );
     }
 
+
+    const superAdminCount = staff.filter(
+        (member) => member.role === "SUPER_ADMIN",
+    ).length;
+
     return (
-        <div className="overflow-hidden rounded-lg border bg-card shadow-sm">
-            <div className="w-full overflow-x-auto">
-                <Table className="min-w-[620px]">
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="text-start">{t("table.email")}</TableHead>
-                            <TableHead className="hidden text-start md:table-cell">
-                                {t("table.profileId")}
-                            </TableHead>
-                            <TableHead className="text-start">{t("table.role")}</TableHead>
-                            <TableHead className="hidden text-start md:table-cell">
-                                {t("table.createdAt")}
-                            </TableHead>
-                            {isSuperAdmin && (
-                                <TableHead className="w-20 text-center">{t("table.actions")}</TableHead>
-                            )}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {staff.length === 0 ? (
+        <TooltipProvider>
+            <Card>
+                <CardHeader>
+                    <CardTitle>{t("table.title")}</CardTitle>
+                    <CardDescription>{t("table.description")}</CardDescription>
+                </CardHeader>
+                <CardContent className="px-0">
+                <div className="w-full overflow-x-auto border-y">
+                    <Table className="min-w-[620px]">
+                        <TableHeader>
                             <TableRow>
-                                <TableCell colSpan={isSuperAdmin ? 5 : 4} className="h-28 text-center text-muted-foreground">
-                                    {t("table.empty")}
-                                </TableCell>
+                                <TableHead className="text-start">{t("table.email")}</TableHead>
+                                <TableHead className="hidden text-start md:table-cell">
+                                    {t("table.profileId")}
+                                </TableHead>
+                                <TableHead className="text-start">{t("table.role")}</TableHead>
+                                <TableHead className="hidden text-start md:table-cell">
+                                    {t("table.createdAt")}
+                                </TableHead>
+                                <TableHead className="w-20 text-center">{t("table.actions")}</TableHead>
                             </TableRow>
-                        ) : (
-                            staff.map((member) => (
-                                <TableRow key={member.id}>
-                                    <TableCell className="max-w-52 truncate font-medium" dir="ltr">
-                                        {member.email ?? t("table.emailUnavailable")}
+                        </TableHeader>
+                        <TableBody>
+                            {staff.length === 0 ? (
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={5}
+                                        className="h-28 text-center text-muted-foreground"
+                                    >
+                                        {t("table.empty")}
                                     </TableCell>
-                                    <TableCell className="hidden font-mono text-xs md:table-cell" dir="ltr">
-                                        {member.profileId}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge
-                                            variant={member.role === "SUPER_ADMIN" ? "destructive" : "secondary"}
-                                            className="gap-1 whitespace-nowrap"
-                                        >
-                                            {member.role === "SUPER_ADMIN" ? (
-                                                <ShieldAlert className="size-3" />
-                                            ) : (
-                                                <ShieldCheck className="size-3" />
-                                            )}
-                                            {t(`roles.${member.role}`)}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="hidden whitespace-nowrap text-sm text-muted-foreground md:table-cell">
-                                        {member.createdAt
-                                            ? format.dateTime(new Date(member.createdAt), { dateStyle: "medium" })
-                                            : t("table.unknownDate")}
-                                    </TableCell>
-                                    {isSuperAdmin && (
-                                        <TableCell className="text-center">
-                                            <DeleteStaffDialog staff={member} />
-                                        </TableCell>
-                                    )}
                                 </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
-        </div>
+                            ) : (
+                                staff.map((member) => {
+                                    const isLastSuperAdmin =
+                                        member.role === "SUPER_ADMIN" && superAdminCount === 1;
+
+                                    return (
+                                        <TableRow
+                                            className={cn(
+                                                directionText,
+                                                isLastSuperAdmin && "opacity-60",
+                                            )}
+                                            key={member.id}
+                                        >
+                                            <TableCell
+                                                className="max-w-52 truncate font-medium"
+                                                dir="ltr"
+                                            >
+                                                {member.email ?? t("table.emailUnavailable")}
+                                            </TableCell>
+                                            <TableCell
+                                                className="hidden font-mono text-xs md:table-cell"
+                                                dir="ltr"
+                                            >
+                                                {member.profileId}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge
+                                                    variant={
+                                                        member.role === "SUPER_ADMIN"
+                                                            ? "destructive"
+                                                            : "secondary"
+                                                    }
+                                                    className="gap-1 whitespace-nowrap"
+                                                >
+                                                    {member.role === "SUPER_ADMIN" ? (
+                                                        <ShieldAlert className="size-3" />
+                                                    ) : (
+                                                        <ShieldCheck className="size-3" />
+                                                    )}
+                                                    {t(`roles.${member.role}`)}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="hidden whitespace-nowrap text-sm text-muted-foreground md:table-cell">
+                                                {member.createdAt
+                                                    ? format.dateTime(new Date(member.createdAt), {
+                                                        dateStyle: "medium",
+                                                    })
+                                                    : t("table.unknownDate")}
+                                            </TableCell>
+                                            <TableCell className="text-center">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" aria-label={t("actions.openMenu")}>
+                                                            <MoreHorizontal className="size-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end" className="w-48">
+                                                        <DropdownMenuLabel>{t("table.actions")}</DropdownMenuLabel>
+                                                        <StaffDetailsDialog
+                                                            staff={member}
+                                                            trigger={
+                                                                <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
+                                                                    <Eye />
+                                                                    {t("actions.viewDetails")}
+                                                                </DropdownMenuItem>
+                                                            }
+                                                        />
+                                                        {isSuperAdmin && <DropdownMenuSeparator />}
+                                                        {isSuperAdmin && (isLastSuperAdmin ? (
+                                                            <Tooltip delayDuration={300}>
+                                                                <TooltipTrigger asChild>
+                                                                    <div>
+                                                                        <DropdownMenuItem disabled variant="destructive">
+                                                                            <Trash2 />
+                                                                            {t("delete.confirm")}
+                                                                        </DropdownMenuItem>
+                                                                    </div>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent side="left" className="max-w-xs text-xs">
+                                                                    {t("table.cannotDeleteLastSuperAdmin")}
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        ) : (
+                                                            <DeleteStaffDialog
+                                                                staff={member}
+                                                                trigger={
+                                                                    <DropdownMenuItem
+                                                                        variant="destructive"
+                                                                        onSelect={(event) => event.preventDefault()}
+                                                                    >
+                                                                        <Trash2 />
+                                                                        {t("delete.confirm")}
+                                                                    </DropdownMenuItem>
+                                                                }
+                                                            />
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+                </CardContent>
+            </Card>
+        </TooltipProvider>
     );
 }
 

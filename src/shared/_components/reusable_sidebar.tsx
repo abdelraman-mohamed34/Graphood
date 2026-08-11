@@ -5,12 +5,14 @@ import { type LucideIcon } from "lucide-react";
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 export interface SidebarItem {
     label: string;
     href: string;
     icon: LucideIcon;
     badge?: string | number;
+    badgeVariant?: "default" | "secondary" | "destructive" | "outline";
     exact?: boolean;
 }
 
@@ -64,7 +66,7 @@ export function ReusableSidebar({
     return (
         <aside
             className={cn(
-                "sticky top-[113px] hidden h-[calc(100vh-7.1rem)] w-64 shrink-0 flex-col border-e border-border bg-background p-2 pt-4 text-start md:flex",
+                "sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-e border-border bg-background p-2 pt-4 text-start md:flex",
                 className
             )}
             {...props}
@@ -120,9 +122,9 @@ export function ReusableSidebar({
                                                 </span>
 
                                                 {item.badge != null && (
-                                                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                                                    <Badge variant={item.badgeVariant ?? "secondary"}>
                                                         {item.badge}
-                                                    </span>
+                                                    </Badge>
                                                 )}
                                             </Link>
                                         </li>

@@ -1,16 +1,10 @@
 import "server-only";
 
-import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { checkPlatformRoleService } from "@/shared/lib/supabase/services/platform-staff";
+import { requireUser } from "../../auth/requires/require-user";
 
 export async function authorizeSuperAdmin() {
-    const supabase = await createSupabaseServerClient();
-    const {
-        data: { user },
-        error,
-    } = await supabase.auth.getUser();
-
-    if (error || !user) throw new Error("auth.unauthorized");
+    const { user, supabase } = await requireUser()
 
     const role = await checkPlatformRoleService({
         supabase,

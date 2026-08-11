@@ -1,10 +1,19 @@
 import { CreateAuditLogInput } from "@/shared/lib/schemas";
-import { createSupabaseServerClient } from "../../server";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { headers } from "next/headers";
 
-export async function createAuditLog(payload: CreateAuditLogInput) {
-    const supabase = await createSupabaseServerClient();
+async function getClientIpAddress() {
+    const requestHeaders = await headers();
+    const forwardedFor = requestHeaders.get("x-forwarded-for");
 
+    return forwardedFor?.split(",")[0]?.trim()
+        || requestHeaders.get("x-real-ip")?.trim()
+        || null;
+}
+
+export async function createAuditLog(supabase: SupabaseClient, payload: CreateAuditLogInput) {
     let actorId = payload.actor_id;
+    const ipAddress = payload.ip_address ?? await getClientIpAddress();
 
     if (!actorId) {
         const {
@@ -22,7 +31,7 @@ export async function createAuditLog(payload: CreateAuditLogInput) {
                 entity_type: payload.entity_type,
                 entity_id: payload.entity_id,
                 metadata: payload.metadata ?? {},
-                ip_address: payload.ip_address,
+                ip_address: ipAddress,
             },
         ])
         .select()

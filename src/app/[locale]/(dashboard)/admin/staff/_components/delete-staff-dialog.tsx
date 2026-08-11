@@ -2,7 +2,7 @@
 
 import { Loader2, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -19,7 +19,13 @@ import { Button } from "@/components/ui/button";
 import { usePlatformStaff } from "@/shared/lib/hooks/admins/use-platform-staff";
 import type { PlatformStaff } from "@/shared/lib/schemas/graphood-staff.schema";
 
-export function DeleteStaffDialog({ staff }: { staff: PlatformStaff }) {
+interface DeleteStaffDialogProps {
+    staff: PlatformStaff;
+    disabled?: boolean;
+    trigger?: ReactNode;
+}
+
+export function DeleteStaffDialog({ staff, disabled = false, trigger }: DeleteStaffDialogProps) {
     const t = useTranslations("AdminStaff");
     const [isOpen, setIsOpen] = useState(false);
     const { removeStaff, isRemovingStaff, removingStaffId } = usePlatformStaff();
@@ -28,10 +34,10 @@ export function DeleteStaffDialog({ staff }: { staff: PlatformStaff }) {
     return (
         <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
             <AlertDialogTrigger asChild>
-                <Button
+                {trigger ?? <Button
                     variant="ghost"
                     size="icon"
-                    disabled={isRemovingStaff}
+                    disabled={disabled || isRemovingStaff}
                     className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                     aria-label={t("delete.trigger", { email: staff.email ?? staff.profileId })}
                 >
@@ -40,7 +46,7 @@ export function DeleteStaffDialog({ staff }: { staff: PlatformStaff }) {
                     ) : (
                         <Trash2 className="size-4" />
                     )}
-                </Button>
+                </Button>}
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>

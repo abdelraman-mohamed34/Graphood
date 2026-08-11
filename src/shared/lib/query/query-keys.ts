@@ -15,6 +15,10 @@ export const queryKeys = {
         role: () => ["platform-staff", "role"] as const,
         list: () => ["platform-staff", "list"] as const,
     },
+    auditLogs: {
+        all: () => ["audit-logs"] as const,
+        unreadCount: () => ["audit-logs", "unread-count"] as const,
+    },
     systems: {
         all: () => ["systems"] as const,
         marketplace: () => ["systems", "marketplace"] as const,
