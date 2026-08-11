@@ -7,6 +7,11 @@ import {
 import { requireApiAccess } from "@/shared/lib/api/developer/guards/require-api-access";
 import { developerJsonError } from "@/shared/lib/api/developer/response";
 import type { DeveloperContext } from "@/shared/lib/types/developer";
+import {
+    isSandboxRequest,
+    MOCK_DEVELOPER_CONTEXT,
+    SANDBOX_MODE_HEADER,
+} from "@/shared/lib/api/developer/sandbox";
 
 type DeveloperHandler = (
     context: DeveloperContext,
@@ -58,14 +63,21 @@ export function withDeveloperContext(
             }
 
             const apiKey = authorization.slice(7).trim();
-
             const tenantSlug = await getTenantSlug(request);
+            const tenantHeader = request.headers.get("X-Tenant-Slug");
+            const sandbox = isSandboxRequest(apiKey, tenantHeader);
+
+            if (sandbox) {
+                const response = await handler(MOCK_DEVELOPER_CONTEXT, request);
+                response.headers.set(SANDBOX_MODE_HEADER, "sandbox");
+                return response;
+            }
 
             if (!tenantSlug) {
                 return developerJsonError(
                     DeveloperApiErrorCodes.TENANT_SLUG_REQUIRED,
                     "Tenant slug is required",
-                    400
+                    401
                 );
             }
 

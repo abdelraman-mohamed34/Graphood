@@ -59,6 +59,7 @@ export async function resolveDeveloperContextAction(
     const subscriptionCapabilities = requireSubscription(subscription);
 
     return {
+        mode: "live" as const,
         systemId: apiKeyContext.systemId,
         tenantId: tenant.id,
         tenantSlug: tenant.slug,

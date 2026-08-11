@@ -7,9 +7,16 @@ import { DeveloperApiErrorCodes } from "@/shared/lib/api/developer/errors";
 import { createAdminClient } from "@/shared/lib/supabase/admin";
 import { getSystemById } from "@/shared/lib/supabase/services/systems";
 import { mapDeveloperContext } from "@/shared/lib/api/developer/map-developer-context";
+import { MOCK_SYSTEM } from "@/shared/lib/api/developer/sandbox";
 
 export const GET = withDeveloperContext(
     async (context) => {
+        if (context.mode === "sandbox") {
+            return developerJson(
+                mapDeveloperContext(context, { system: MOCK_SYSTEM })
+            );
+        }
+
         // API-key authorization is established by withDeveloperContext. The
         // admin client is scoped immediately by that verified system id.
         const supabase = createAdminClient();

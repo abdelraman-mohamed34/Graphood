@@ -6,27 +6,28 @@ import {
     getApiKeyByHash,
     updateApiKeyLastUsed,
 } from "@/shared/lib/supabase/services/developer/api-keys";
+import { DeveloperApiErrorCodes } from "@/shared/lib/api/developer/errors";
 
 export async function verifyApiKeyAction(
     apiKey: string
 ) {
     if (!apiKey) {
-        throw new Error("API Key is required");
+        throw new Error(DeveloperApiErrorCodes.INVALID_API_KEY);
     }
     const hash = hashApiKey(apiKey);
     const record = await getApiKeyByHash(hash);
     if (!record) {
-        throw new Error("Invalid API Key");
+        throw new Error(DeveloperApiErrorCodes.INVALID_API_KEY);
     }
     if (!record.is_active) {
-        throw new Error("API Key is disabled");
+        throw new Error(DeveloperApiErrorCodes.API_KEY_DISABLED);
     }
 
     if (
         record.expires_at &&
         new Date(record.expires_at) < new Date()
     ) {
-        throw new Error("API Key has expired");
+        throw new Error(DeveloperApiErrorCodes.API_KEY_EXPIRED);
     }
     await updateApiKeyLastUsed(record.id);
 

@@ -1,4 +1,5 @@
 export interface DeveloperContext {
+    mode: "live" | "sandbox";
     systemId: string;
     tenantId: string;
     tenantSlug: string;

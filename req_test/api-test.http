@@ -1,0 +1,4 @@
+### Test Graphood Sandbox API
+GET http://localhost:3000/api/developer/v1/me
+Authorization: Bearer gh_test
+X-Tenant-Slug: sandbox

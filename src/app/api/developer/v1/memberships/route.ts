@@ -2,10 +2,15 @@ import { withDeveloperContext } from "@/shared/lib/api/developer/with-developer-
 import { developerJson } from "@/shared/lib/api/developer/response";
 import { createAdminClient } from "@/shared/lib/supabase/admin";
 import { getMembershipsByTenantId } from "@/shared/lib/supabase/services/memberships";
+import { MOCK_MEMBERSHIPS } from "@/shared/lib/api/developer/sandbox";
 
 
 export const GET = withDeveloperContext(
     async (context) => {
+        if (context.mode === "sandbox") {
+            return developerJson({ memberships: MOCK_MEMBERSHIPS });
+        }
+
         const supabase =
             await createAdminClient();
 

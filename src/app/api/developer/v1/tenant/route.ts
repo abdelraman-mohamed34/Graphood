@@ -3,10 +3,15 @@ import { developerJson, developerJsonError } from "@/shared/lib/api/developer/re
 import { DeveloperApiErrorCodes } from "@/shared/lib/api/developer/errors";
 import { createAdminClient } from "@/shared/lib/supabase/admin";
 import { getTenantById } from "@/shared/lib/supabase/services/tenants/get-tenant-by-id.service";
+import { MOCK_TENANT } from "@/shared/lib/api/developer/sandbox";
 
 
 export const GET = withDeveloperContext(
     async (context) => {
+        if (context.mode === "sandbox") {
+            return developerJson({ tenant: MOCK_TENANT });
+        }
+
         const supabase = await createAdminClient();
 
         const tenant = await getTenantById(
