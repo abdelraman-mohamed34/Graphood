@@ -1,5 +1,6 @@
-import { url } from "@/app/[locale]/(dashboard)/(system)/developer/docs/endpoints/tenant/page";
 import crypto from "crypto";
+
+const DEFAULT_SITE_URL = "https://graphood-5x58.vercel.app";
 
 export class KashierError extends Error {
     constructor(message: string) {
@@ -35,7 +36,7 @@ export async function createKashierCheckoutUrl({
     }
 
     const baseUrl = "https://checkout.kashier.io";
-    const siteUrl = process.env.NEXT_PUBLIC_APP_URL || url;
+    const siteUrl = (process.env.NEXT_PUBLIC_APP_URL || DEFAULT_SITE_URL).replace(/\/+$/, "");
     const merchantRedirect = encodeURIComponent(`${siteUrl}/marketplace/checkout/${orderId}`);
 
     const formattedAmount = Math.round(amount);

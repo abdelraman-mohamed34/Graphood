@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { CodeBlock } from "@/shared/_components/code-block";
-import { url } from "../tenant/page";
+import { DEVELOPER_API_BASE_URL } from "@/shared/lib/api/developer/base-url";
 
 export default function SubscriptionEndpointPage() {
     const t = useTranslations("SubscriptionEndpointPage");
@@ -105,7 +105,7 @@ export default function SubscriptionEndpointPage() {
 
                 <CodeBlock
                     code={`curl --request GET \\
-  --url ${url}/api/developer/v1/subscription?tenantSlug=workspace-6376e0e4 \\
+  --url ${DEVELOPER_API_BASE_URL}/subscription?tenantSlug=workspace-6376e0e4 \\
   --header "Authorization: Bearer YOUR_API_KEY"`}
                 />
             </section>

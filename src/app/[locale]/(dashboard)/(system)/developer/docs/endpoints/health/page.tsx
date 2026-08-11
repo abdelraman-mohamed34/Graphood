@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { CodeBlock } from "@/shared/_components/code-block";
-import { url } from "../tenant/page";
+import { DEVELOPER_API_BASE_URL } from "@/shared/lib/api/developer/base-url";
 
 export default function HealthEndpointPage() {
     const t = useTranslations("HealthEndpointPage");
@@ -69,7 +69,7 @@ export default function HealthEndpointPage() {
 
                 <CodeBlock
                     code={`curl --request GET \\
-  --url ${url}/api/developer/v1/health`}
+  --url ${DEVELOPER_API_BASE_URL}/health`}
                 />
             </section>
 

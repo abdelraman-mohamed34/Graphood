@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { CodeBlock } from "@/shared/_components/code-block";
-import { url } from "inspector";
+import { DEVELOPER_API_BASE_URL } from "@/shared/lib/api/developer/base-url";
 
 export default function QuickStartPage() {
     const t = useTranslations("QuickStartPage");
@@ -44,7 +44,7 @@ export default function QuickStartPage() {
                     {t("baseUrl.description")}
                 </p>
 
-                <CodeBlock language="text" code="https://api.graphood.com/api/developer/v1" />
+                <CodeBlock language="text" code={DEVELOPER_API_BASE_URL} />
 
             </section>
 
@@ -74,7 +74,7 @@ export default function QuickStartPage() {
                 <CodeBlock
                     language="bash"
                     code={`curl --request GET \\
-  --url ${url}/api/developer/v1/me?tenantSlug=workspace-slug \\
+  --url ${DEVELOPER_API_BASE_URL}/me?tenantSlug=workspace-slug \\
   --header "Authorization: Bearer YOUR_API_KEY"`}
                 />
             </section>
