@@ -4,6 +4,7 @@ import {
     getDeveloperApiStatusCode,
     isDeveloperApiErrorCode,
 } from "@/shared/lib/api/developer/errors";
+import type { DeveloperApiErrorCode } from "@/shared/lib/api/developer/errors";
 import { requireApiAccess } from "@/shared/lib/api/developer/guards/require-api-access";
 import { developerJsonError } from "@/shared/lib/api/developer/response";
 import type { DeveloperContext } from "@/shared/lib/types/developer";
@@ -17,6 +18,22 @@ type DeveloperHandler = (
     context: DeveloperContext,
     request: Request
 ) => Response | Promise<Response>;
+
+const ERROR_MESSAGES: Record<DeveloperApiErrorCode, string> = {
+    [DeveloperApiErrorCodes.INVALID_API_KEY]: "The API key is missing or invalid",
+    [DeveloperApiErrorCodes.API_KEY_DISABLED]: "The API key is disabled",
+    [DeveloperApiErrorCodes.API_KEY_EXPIRED]: "The API key has expired",
+    [DeveloperApiErrorCodes.TENANT_NOT_FOUND]: "Tenant not found",
+    [DeveloperApiErrorCodes.TENANT_NOT_ALLOWED]: "The API key cannot access this tenant",
+    [DeveloperApiErrorCodes.TENANT_SLUG_REQUIRED]: "Tenant slug is required",
+    [DeveloperApiErrorCodes.SUBSCRIPTION_INACTIVE]: "The subscription is inactive",
+    [DeveloperApiErrorCodes.SYSTEM_NOT_FOUND]: "System not found",
+    [DeveloperApiErrorCodes.API_ACCESS_DENIED]: "API access is not available for this plan",
+    [DeveloperApiErrorCodes.RESOURCE_NOT_FOUND]: "Resource not found",
+    [DeveloperApiErrorCodes.INVALID_RESOURCE]: "The resource is invalid",
+    [DeveloperApiErrorCodes.RESOURCE_ACCESS_DENIED]: "Access to this resource is denied",
+    [DeveloperApiErrorCodes.UNKNOWN_ERROR]: "Developer API request failed",
+};
 
 async function getTenantSlug(
     request: Request
@@ -105,22 +122,15 @@ export function withDeveloperContext(
             );
         } catch (error) {
 
-            const code =
+            const code: DeveloperApiErrorCode =
                 error instanceof Error &&
                     isDeveloperApiErrorCode(error.message)
                     ? error.message
                     : DeveloperApiErrorCodes.UNKNOWN_ERROR;
 
-            if (code === DeveloperApiErrorCodes.TENANT_NOT_FOUND) {
-                return Response.json(
-                    { success: false, message: "Tenant not found" },
-                    { status: 404 }
-                );
-            }
-
             return developerJsonError(
                 code,
-                "Developer API request failed",
+                ERROR_MESSAGES[code],
                 getDeveloperApiStatusCode(code)
             );
         }

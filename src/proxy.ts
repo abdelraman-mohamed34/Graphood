@@ -5,6 +5,11 @@ import { createServerClient } from "@supabase/ssr";
 
 const handleI18nRouting = createMiddleware(routing);
 
+const DEVELOPER_CORS_HEADERS = {
+  "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Authorization, Content-Type, X-Tenant-Slug",
+} as const;
+
 const PUBLIC_ROUTES = [
   "/",
   "/home",
@@ -18,10 +23,53 @@ const PUBLIC_ROUTES = [
   "/auth/reset-password/callback",
 ];
 
+function isAllowedLocalhostOrigin(origin: string): boolean {
+  try {
+    const url = new URL(origin);
+
+    return (
+      (url.protocol === "http:" || url.protocol === "https:") &&
+      url.port === "3000" &&
+      (url.hostname === "localhost" || url.hostname.endsWith(".localhost"))
+    );
+  } catch {
+    return false;
+  }
+}
+
+function addDeveloperCorsHeaders(
+  response: NextResponse,
+  origin: string
+): NextResponse {
+  if (isAllowedLocalhostOrigin(origin)) {
+    response.headers.set("Access-Control-Allow-Origin", origin);
+  }
+
+  for (const [name, value] of Object.entries(DEVELOPER_CORS_HEADERS)) {
+    response.headers.set(name, value);
+  }
+
+  response.headers.append("Vary", "Origin");
+  return response;
+}
+
 export async function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
-  let response = handleI18nRouting(req);
+  if (pathname.startsWith("/api/developer")) {
+    const origin = req.headers.get("origin") ?? "";
+
+    if (req.method === "OPTIONS") {
+      return addDeveloperCorsHeaders(
+        new NextResponse(null, { status: 204 }),
+        origin
+      );
+    }
+
+    return addDeveloperCorsHeaders(NextResponse.next(), origin);
+  }
+
+  const response = handleI18nRouting(req);
 
   const locales = routing.locales;
   type Locale = (typeof locales)[number];
@@ -172,6 +220,7 @@ export const config = {
   matcher: [
     "/",
     "/(ar|en)/:path*",
+    "/api/developer/:path*",
     "/((?!api|_next|_vercel|.*\\..*).*)",
   ],
 };

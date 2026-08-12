@@ -21,18 +21,12 @@ export function requireApiAccess(
 
 
     if (!capabilities.isActive) {
-        throw {
-            code: DeveloperApiErrorCodes.SUBSCRIPTION_INACTIVE,
-            message: "Subscription is inactive",
-        };
+        throw new Error(DeveloperApiErrorCodes.SUBSCRIPTION_INACTIVE);
     }
 
 
     if (!capabilities.limits.api) {
-        throw {
-            code: DeveloperApiErrorCodes.API_ACCESS_DENIED,
-            message: "API access is not available for this plan",
-        };
+        throw new Error(DeveloperApiErrorCodes.API_ACCESS_DENIED);
     }
 
 
