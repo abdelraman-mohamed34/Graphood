@@ -21,28 +21,32 @@ type DeveloperHandler = (
 async function getTenantSlug(
     request: Request
 ): Promise<string | undefined> {
-    let tenantSlug: unknown;
+    const queryTenantSlug = new URL(request.url)
+        .searchParams
+        .get("tenantSlug");
 
-    if (request.method === "GET") {
-        tenantSlug =
-            new URL(request.url)
-                .searchParams
-                .get("tenantSlug");
-    } else {
-        try {
-            const body = await request.clone().json();
-            tenantSlug = body?.tenantSlug;
-        } catch {
-            tenantSlug = undefined;
+    let bodyTenantSlug: unknown;
+
+    try {
+        const body = await request.clone().json();
+        bodyTenantSlug = body?.tenantSlug;
+    } catch {
+        bodyTenantSlug = undefined;
+    }
+
+    const candidates = [
+        queryTenantSlug,
+        bodyTenantSlug,
+        request.headers.get("X-Tenant-Slug"),
+    ];
+
+    for (const candidate of candidates) {
+        if (typeof candidate === "string" && candidate.trim()) {
+            return candidate.trim();
         }
     }
 
-    const resolvedTenantSlug =
-        typeof tenantSlug === "string" && tenantSlug.trim()
-            ? tenantSlug.trim()
-            : request.headers.get("X-Tenant-Slug")?.trim();
-
-    return resolvedTenantSlug || undefined;
+    return undefined;
 }
 
 export function withDeveloperContext(
