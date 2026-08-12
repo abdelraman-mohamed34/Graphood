@@ -21,20 +21,28 @@ type DeveloperHandler = (
 async function getTenantSlug(
     request: Request
 ): Promise<string | undefined> {
+    let tenantSlug: unknown;
+
     if (request.method === "GET") {
-        return (
+        tenantSlug =
             new URL(request.url)
                 .searchParams
-                .get("tenantSlug") ?? undefined
-        );
+                .get("tenantSlug");
+    } else {
+        try {
+            const body = await request.clone().json();
+            tenantSlug = body?.tenantSlug;
+        } catch {
+            tenantSlug = undefined;
+        }
     }
 
-    try {
-        const body = await request.clone().json();
-        return body?.tenantSlug;
-    } catch {
-        return undefined;
-    }
+    const resolvedTenantSlug =
+        typeof tenantSlug === "string" && tenantSlug.trim()
+            ? tenantSlug.trim()
+            : request.headers.get("X-Tenant-Slug")?.trim();
+
+    return resolvedTenantSlug || undefined;
 }
 
 export function withDeveloperContext(
@@ -64,8 +72,7 @@ export function withDeveloperContext(
 
             const apiKey = authorization.slice(7).trim();
             const tenantSlug = await getTenantSlug(request);
-            const tenantHeader = request.headers.get("X-Tenant-Slug");
-            const sandbox = isSandboxRequest(apiKey, tenantHeader);
+            const sandbox = isSandboxRequest(apiKey, tenantSlug);
 
             if (sandbox) {
                 const response = await handler(MOCK_DEVELOPER_CONTEXT, request);
@@ -99,6 +106,13 @@ export function withDeveloperContext(
                     isDeveloperApiErrorCode(error.message)
                     ? error.message
                     : DeveloperApiErrorCodes.UNKNOWN_ERROR;
+
+            if (code === DeveloperApiErrorCodes.TENANT_NOT_FOUND) {
+                return Response.json(
+                    { success: false, message: "Tenant not found" },
+                    { status: 404 }
+                );
+            }
 
             return developerJsonError(
                 code,

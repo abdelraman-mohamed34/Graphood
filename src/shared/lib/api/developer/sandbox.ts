@@ -97,10 +97,7 @@ export const MOCK_MEMBERSHIPS: DeveloperMembershipResponse[] = [
     },
 ];
 
-export function isSandboxRequest(apiKey: string, tenantHeader: string | null) {
-    const normalizedTenant = tenantHeader?.trim().toLowerCase();
-
-    return apiKey.startsWith("sk_test_") ||
-        normalizedTenant === "sandbox" ||
-        normalizedTenant === "mock-tenant";
+export function isSandboxRequest(apiKey: string, tenantSlug?: string) {
+    return apiKey === "sk_test_sandbox" &&
+        (!tenantSlug || tenantSlug === MOCK_DEVELOPER_CONTEXT.tenantSlug);
 }
