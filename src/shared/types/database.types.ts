@@ -700,6 +700,10 @@ export type Database = {
           name: string
           owner_id: string
           pro_price: number
+          pending_readme: string | null
+          pending_readme_submitted_at: string | null
+          pending_readme_submitted_by: string | null
+          readme: string | null
           reseller_price: number
           slug: string
           starter_price: number
@@ -721,6 +725,10 @@ export type Database = {
           name: string
           owner_id: string
           pro_price?: number
+          pending_readme?: string | null
+          pending_readme_submitted_at?: string | null
+          pending_readme_submitted_by?: string | null
+          readme?: string | null
           reseller_price?: number
           slug: string
           starter_price?: number
@@ -742,6 +750,10 @@ export type Database = {
           name?: string
           owner_id?: string
           pro_price?: number
+          pending_readme?: string | null
+          pending_readme_submitted_at?: string | null
+          pending_readme_submitted_by?: string | null
+          readme?: string | null
           reseller_price?: number
           slug?: string
           starter_price?: number

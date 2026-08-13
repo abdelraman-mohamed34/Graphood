@@ -7,6 +7,7 @@ import {
     MoreHorizontal,
     Search,
     XCircle,
+    FileSearch,
 } from "lucide-react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
@@ -171,6 +172,14 @@ export function SystemsTable() {
                                                             {t("actions.preview")}
                                                         </Link>
                                                     </DropdownMenuItem>
+                                                    {system.hasPendingReadme && (
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href={`/admin/systems/${system.id}/review`} className="cursor-pointer gap-2">
+                                                                <FileSearch className="size-4 text-amber-600" />
+                                                                {t("actions.reviewReadme")}
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                    )}
                                                     {system.status === "PENDING" && (
                                                         <>
                                                             <ActionItem icon={CheckCircle2} label={t("actions.activate")} className="text-emerald-600 focus:text-emerald-700" onSelect={() => setSelectedSystem({ system, action: "ACCEPT" })} />

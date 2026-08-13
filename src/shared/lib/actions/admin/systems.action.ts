@@ -8,9 +8,12 @@ import { updateSystemStatusSchema } from "@/shared/lib/schemas/systems.schema";
 import { createAdminClient } from "@/shared/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import {
+    approveSystemReadmeService,
     fetchSystemsService,
+    getSystemReadmeReviewService,
     updateSystemStatusService,
 } from "@/shared/lib/supabase/services/admin/systems.service";
+import { z } from "zod";
 import { checkPlatformRoleService } from "@/shared/lib/supabase/services/platform-staff";
 import { createAuditLog } from "../../supabase/services/audit-logs";
 
@@ -18,6 +21,40 @@ export interface SystemsActionResult<T> {
     success: boolean;
     data?: T;
     error?: string;
+}
+
+export async function getSystemReadmeReviewAction(systemId: string) {
+    const parsedId = z.string().uuid().safeParse(systemId);
+    if (!parsedId.success) return { success: false as const, error: "validation.systemIdInvalid" };
+    try {
+        const { supabaseAdmin } = await authorizeSystemsStaff();
+        const data = await getSystemReadmeReviewService(supabaseAdmin, parsedId.data);
+        return data
+            ? { success: true as const, data }
+            : { success: false as const, error: "systems.notFound" };
+    } catch (error) {
+        return { success: false as const, error: error instanceof Error ? error.message : "systems.fetchFailed" };
+    }
+}
+
+export async function approveSystemReadmeAction(systemId: string) {
+    const parsedId = z.string().uuid().safeParse(systemId);
+    if (!parsedId.success) return { success: false as const, error: "validation.systemIdInvalid" };
+    try {
+        const { supabaseAdmin, user } = await authorizeSystemsStaff();
+        await approveSystemReadmeService(supabaseAdmin, parsedId.data);
+        await createAuditLog(supabaseAdmin, {
+            actor_id: user.id,
+            action: "SYSTEM_README_APPROVED",
+            entity_type: "system",
+            entity_id: parsedId.data,
+            tenant_id: null,
+            metadata: { published: true },
+        });
+        return { success: true as const };
+    } catch (error) {
+        return { success: false as const, error: error instanceof Error ? error.message : "systems.updateFailed" };
+    }
 }
 
 async function authorizeSystemsStaff() {

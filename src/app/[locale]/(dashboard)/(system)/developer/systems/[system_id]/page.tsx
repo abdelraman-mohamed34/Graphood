@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import DeveloperDashboardContainer from "@/shared/_components/developer-dashboard-container";
 import { useSystem } from "@/shared/lib/hooks";
 import { useTags } from "@/shared/lib/hooks/tags/use-tag";
+import { SystemReadmeEditor } from "./_components/system-readme-editor";
 
 interface PageProps {
     params: Promise<{
@@ -92,6 +93,7 @@ export default function Page({ params }: PageProps) {
                     </div>
                 </div>
             </div>
+            <SystemReadmeEditor systemId={system.id} initialReadme={system.readme ?? ""} />
         </DeveloperDashboardContainer>
     );
 }

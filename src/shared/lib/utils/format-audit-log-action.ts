@@ -6,6 +6,8 @@ export const auditLogActionTranslationKeys = {
     SYSTEM_STATUS_SUSPENDED: "actions.SYSTEM_STATUS_SUSPENDED",
     SYSTEM_STATUS_REJECTED: "actions.SYSTEM_STATUS_REJECTED",
     SYSTEM_STATUS_PENDING: "actions.SYSTEM_STATUS_PENDING",
+    SYSTEM_PROFILE_UPDATE_SUBMITTED: "actions.SYSTEM_PROFILE_UPDATE_SUBMITTED",
+    SYSTEM_README_APPROVED: "actions.SYSTEM_README_APPROVED",
 } as const;
 
 type AuditLogAction = keyof typeof auditLogActionTranslationKeys;
@@ -31,6 +33,8 @@ export function getAuditLogActionLabel(
 export type AuditLogActionTone = "success" | "warning" | "info" | "neutral";
 
 export function getAuditLogActionTone(action: string): AuditLogActionTone {
+    if (action === "SYSTEM_README_APPROVED") return "success";
+    if (action === "SYSTEM_PROFILE_UPDATE_SUBMITTED") return "info";
     if (action === "SYSTEM_STATUS_ACTIVE") return "success";
     if (action === "STAFF_INVITED") return "info";
     if (

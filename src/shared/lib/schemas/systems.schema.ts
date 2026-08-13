@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { status } from "./public/shared";
 import type { Tables } from "@/shared/types/database.types";
+import { hasUnsafeMarkdown, SYSTEM_DESCRIPTION_MAX_LENGTH, SYSTEM_README_MAX_LENGTH } from "@/shared/lib/markdown";
 
 // systems.schema.ts
 export const systemSchema = z.object({
@@ -20,7 +21,13 @@ export const systemSchema = z.object({
     description: z
         .string()
         .trim()
-        .min(10, "Description must be at least 10 characters"),
+        .min(10, "Description must be at least 10 characters")
+        .max(SYSTEM_DESCRIPTION_MAX_LENGTH, "Description must not exceed 250 characters"),
+
+    readme: z.string().max(SYSTEM_README_MAX_LENGTH, "README must not exceed 30,000 characters")
+        .refine((value) => !hasUnsafeMarkdown(value), "README contains unsafe HTML or a prohibited URL protocol")
+        .optional()
+        .default(""),
 
     // Owner (creator of the system itself)
     owner_id: z.string().uuid("Invalid Owner ID"),
@@ -66,7 +73,8 @@ export const getCreateSystemSchema = (t?: (key: string) => string) =>
         description: z
             .string()
             .trim()
-            .min(10, t ? t("validation.descriptionMin") : "Description must be at least 10 characters"),
+            .min(10, t ? t("validation.descriptionMin") : "Description must be at least 10 characters")
+            .max(SYSTEM_DESCRIPTION_MAX_LENGTH, t ? t("validation.descriptionMax") : "Description must not exceed 250 characters"),
         tags: z
             .array(z.string().uuid(t ? t("validation.invalidTag") : "Invalid Tag ID"))
             .min(1, t ? t("validation.tagsRequired") : "Select at least one tag/category"),
@@ -118,4 +126,5 @@ export interface SystemItem {
     status: SystemItemStatus;
     statusReason: string | null;
     createdAt: string | null;
+    hasPendingReadme: boolean;
 }

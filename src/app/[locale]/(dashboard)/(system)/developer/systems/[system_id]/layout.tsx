@@ -1,7 +1,6 @@
 import React from "react";
 import { redirect, notFound } from "next/navigation";
 import { getSystemAction } from "@/shared/lib/actions/developer/systems";
-import { System } from "@/shared/lib/schemas/systems.schema";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { createQueryClient, queryKeys } from "@/shared/lib/query";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
@@ -33,7 +32,7 @@ export default async function SystemDetailLayout({
         throw new Error("profile not found");
     }
 
-    const system: System = await getSystemAction(system_id, supabase);
+    const system = await getSystemAction(system_id, supabase);
 
     if (!system) {
         notFound();

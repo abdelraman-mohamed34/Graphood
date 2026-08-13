@@ -9,6 +9,7 @@ export async function updateSystem(
     const payload = {
         name: data.name,
         description: data.description,
+        readme: data.readme,
 
         starter_price: data.starter_price,
         pro_price: data.pro_price,
@@ -38,7 +39,7 @@ export async function updateSystem(
         .from("systems")
         .update(payload)
         .eq("id", id)
-        .select("id, name, slug, description, owner_id, currency, status, status_reason, icon_url, is_public, starter_price, pro_price, business_price, reseller_price, exclusive_price, tags, created_at, updated_at")
+        .select("id, name, slug, description, readme, owner_id, currency, status, status_reason, icon_url, is_public, starter_price, pro_price, business_price, reseller_price, exclusive_price, tags, created_at, updated_at")
         .single();
 
     if (error) {
@@ -47,4 +48,22 @@ export async function updateSystem(
     }
 
     return record as System;
+}
+
+export async function submitPendingReadme(
+    id: string,
+    readme: string,
+    submitterId: string,
+): Promise<void> {
+    const supabase = await createSupabaseServerClient();
+    const { error } = await supabase
+        .from("systems")
+        .update({
+            pending_readme: readme,
+            pending_readme_submitted_at: new Date().toISOString(),
+            pending_readme_submitted_by: submitterId,
+        })
+        .eq("id", id);
+
+    if (error) throw error;
 }

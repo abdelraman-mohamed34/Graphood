@@ -34,8 +34,16 @@
                         "description": "يُستخدم في الروابط العامة."
                     },
                     "description": {
-                        "label": "الوصف",
+                        "label": "الوصف المختصر",
                         "placeholder": "صِف إمكانات نظامك وميزاته..."
+                    },
+                    "readme": {
+                        "label": "توثيق README",
+                        "description": "توثيق Markdown المعروض في صفحة السوق العامة.",
+                        "write": "كتابة",
+                        "preview": "معاينة",
+                        "placeholder": "أضف خطوات التثبيت والميزات والأمثلة والتوثيق...",
+                        "empty": "لا يوجد محتوى للمعاينة بعد."
                     },
                     "category": {
                         "label": "الوسوم والتصنيفات",
@@ -74,6 +82,7 @@
                     "nameMin": "يجب ألا يقل اسم النظام عن 3 أحرف.",
                     "slugMin": "يجب ألا يقل الرابط المختصر عن 5 أحرف.",
                     "descriptionMin": "يجب ألا يقل الوصف عن 10 أحرف.",
+                    "descriptionMax": "يجب ألا يتجاوز الوصف المختصر 250 حرفًا.",
                     "invalidTag": "اختر وسمًا صالحًا.",
                     "tagsRequired": "اختر وسمًا أو تصنيفًا واحدًا على الأقل."
                 },
@@ -239,7 +248,21 @@
         "statusLabel": "الحالة",
         "statusActive": "نشط",
         "statusInactive": "غير نشط",
-        "categoryLabel": "الفئة"
+        "categoryLabel": "الفئة",
+        "readme": {
+            "title": "توثيق README",
+            "description": "توثيق Markdown المعروض في صفحة السوق العامة.",
+            "writeTab": "كتابة",
+            "previewTab": "معاينة",
+            "placeholder": "أضف خطوات التثبيت والميزات والأمثلة والتوثيق...",
+            "empty": "لا يوجد محتوى للمعاينة بعد.",
+            "save": "حفظ README",
+            "saving": "جارٍ الحفظ...",
+            "saved": "تم حفظ README.",
+            "submitted": "تم إرسال README لمراجعة الإدارة. ستظل النسخة الحالية منشورة في السوق.",
+            "saveError": "تعذر حفظ README.",
+            "editorLabel": "محرر README"
+        }
     },
     "systemSidebar": {
         "overview": "نظرة عامة",
@@ -1519,7 +1542,21 @@
             "preview": "معاينة النظام",
             "activate": "قبول وتفعيل",
             "reject": "رفض الطلب",
-            "suspend": "تعليق النظام"
+            "suspend": "تعليق النظام",
+            "reviewReadme": "مراجعة تغييرات README"
+        },
+        "review": {
+            "title": "مراجعة README: {system}",
+            "submittedBy": "أرسله {developer}",
+            "live": "README المنشور",
+            "pending": "README قيد المراجعة",
+            "emptyLive": "لا يوجد README منشور حاليًا.",
+            "emptyPending": "README المرسل فارغ.",
+            "noPending": "لا يوجد README بانتظار الموافقة.",
+            "approve": "الموافقة والنشر",
+            "approving": "جارٍ النشر...",
+            "approved": "تمت الموافقة على README ونشره.",
+            "approveError": "تعذرت الموافقة على README. حدّث الصفحة وحاول مجددًا."
         },
         "dialog": {
             "accept": {
@@ -1685,7 +1722,9 @@
             "SYSTEM_STATUS_ACTIVE": "تم تفعيل النظام",
             "SYSTEM_STATUS_SUSPENDED": "تم إيقاف النظام",
             "SYSTEM_STATUS_REJECTED": "تم رفض النظام",
-            "SYSTEM_STATUS_PENDING": "النظام في انتظار المراجعة"
+            "SYSTEM_STATUS_PENDING": "النظام في انتظار المراجعة",
+            "SYSTEM_PROFILE_UPDATE_SUBMITTED": "تم إرسال تحديث النظام للمراجعة",
+            "SYSTEM_README_APPROVED": "تمت الموافقة على README للنظام"
         },
         "pagination": {
             "previous": "السابق",

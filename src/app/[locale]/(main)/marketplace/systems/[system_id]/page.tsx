@@ -14,6 +14,7 @@ import { getSystemById } from '@/shared/lib/supabase/services/systems'
 
 import CheckoutButton from './_components/check-out-btn'
 import { queryKeys } from '@/shared/lib/query'
+import { MarkdownRenderer } from '@/shared/_components/markdown-renderer'
 
 export default function Page() {
     const params = useParams<{ system_id: string }>()
@@ -107,16 +108,20 @@ export default function Page() {
 
             <div className="mt-8 grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-8">
                 <div className="min-w-0">
-                    <Card className="overflow-hidden border-border/70 bg-card shadow-sm">
-                        <CardHeader className="border-b bg-muted/30 px-6 py-5 sm:px-8">
+                    <Card className="overflow-hidden border-border/70 bg-card shadow-sm pt-0">
+                        <CardHeader className="border-b bg-muted/80 px-6 py-5 sm:px-8">
                             <CardTitle className="text-lg font-semibold">
-                                {label('description', 'Description', 'الوصف')}
+                                {label('readme', 'README', 'نظرة عامة')}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-6 sm:p-8">
-                            <p className="whitespace-pre-line break-words text-base leading-8 text-muted-foreground">
-                                {system.description || label('noDescription', 'No description has been provided yet.', 'لم تتم إضافة وصف بعد.')}
-                            </p>
+                            {system.readme?.trim() ? (
+                                <MarkdownRenderer markdown={system.readme} />
+                            ) : (
+                                <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+                                    {label('noReadme', 'No README documentation has been provided yet.', 'لم تتم إضافة توثيق README بعد.')}
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
@@ -136,7 +141,7 @@ export default function Page() {
                         </CardContent>
                     </Card>
 
-                    <Card className="overflow-hidden border-border/70 shadow-sm">
+                    <Card className="overflow-hidden border-border/70 shadow-sm lg:flex hidden">
                         <CardHeader className="border-b bg-muted/20 px-5 py-4">
                             <CardTitle className="text-base font-semibold">
                                 {label('systemOverview', 'System overview', 'نظرة عامة على النظام')}

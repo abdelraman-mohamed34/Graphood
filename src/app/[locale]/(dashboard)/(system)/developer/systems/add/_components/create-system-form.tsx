@@ -35,6 +35,7 @@ import {
     getCreateSystemSchema,
     type CreateSystemInput,
 } from "@/shared/lib/schemas/systems.schema";
+import { MarkdownEditor } from "@/shared/_components/markdown-editor";
 
 export default function CreateSystemForm() {
     const router = useRouter();
@@ -59,6 +60,7 @@ export default function CreateSystemForm() {
             name: "",
             slug: "",
             description: "",
+            readme: "",
             tags: [],
             starter_price: 0,
             pro_price: 0,
@@ -158,9 +160,21 @@ export default function CreateSystemForm() {
                                 rows={4}
                                 placeholder={t("fields.description.placeholder")}
                                 className="resize-y min-h-[100px]"
+                                maxLength={250}
                                 {...form.register("description")}
                             />
                             <FieldError errors={[form.formState.errors.description]} />
+                        </Field>
+
+                        <Field>
+                            <FieldLabel>{t("fields.readme.label")}</FieldLabel>
+                            <FieldDescription>{t("fields.readme.description")}</FieldDescription>
+                            <MarkdownEditor
+                                value={form.watch("readme") ?? ""}
+                                onChange={(value) => form.setValue("readme", value, { shouldDirty: true, shouldValidate: true })}
+                                labels={{ write: t("fields.readme.write"), preview: t("fields.readme.preview"), placeholder: t("fields.readme.placeholder"), empty: t("fields.readme.empty") }}
+                            />
+                            <FieldError errors={[form.formState.errors.readme]} />
                         </Field>
 
                         <div className="flex gap-4">

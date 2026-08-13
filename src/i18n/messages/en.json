@@ -34,8 +34,16 @@
                         "description": "Used in public URLs."
                     },
                     "description": {
-                        "label": "Description",
+                        "label": "Short Description",
                         "placeholder": "Describe your system capabilities and features..."
+                    },
+                    "readme": {
+                        "label": "README Documentation",
+                        "description": "Markdown documentation displayed on the public Marketplace page.",
+                        "write": "Write",
+                        "preview": "Preview",
+                        "placeholder": "Add installation steps, features, examples, and other documentation...",
+                        "empty": "Nothing to preview yet."
                     },
                     "category": {
                         "label": "Tags and categories",
@@ -74,6 +82,7 @@
                     "nameMin": "System name must be at least 3 characters.",
                     "slugMin": "Slug must be at least 5 characters.",
                     "descriptionMin": "Description must be at least 10 characters.",
+                    "descriptionMax": "Short description must not exceed 250 characters.",
                     "invalidTag": "Select a valid tag.",
                     "tagsRequired": "Select at least one tag or category."
                 },
@@ -239,7 +248,21 @@
         "statusLabel": "Status",
         "statusActive": "Active",
         "statusInactive": "Inactive",
-        "categoryLabel": "Category"
+        "categoryLabel": "Category",
+        "readme": {
+            "title": "README documentation",
+            "description": "Write the documentation shown on the public Marketplace page.",
+            "writeTab": "Write",
+            "previewTab": "Preview",
+            "placeholder": "Add installation steps, features, examples, and other documentation...",
+            "empty": "Nothing to preview yet.",
+            "save": "Save README",
+            "saving": "Saving...",
+            "saved": "README saved.",
+            "submitted": "README submitted for admin review. The current Marketplace version remains live.",
+            "saveError": "Could not save README.",
+            "editorLabel": "README editor"
+        }
     },
     "systemSidebar": {
         "overview": "Overview",
@@ -1519,7 +1542,21 @@
             "preview": "Preview system",
             "activate": "Approve and activate",
             "reject": "Reject request",
-            "suspend": "Suspend system"
+            "suspend": "Suspend system",
+            "reviewReadme": "Review README changes"
+        },
+        "review": {
+            "title": "Review README: {system}",
+            "submittedBy": "Submitted by {developer}",
+            "live": "Live README",
+            "pending": "Pending README",
+            "emptyLive": "No README is currently published.",
+            "emptyPending": "The submitted README is empty.",
+            "noPending": "There is no README awaiting approval.",
+            "approve": "Approve and publish",
+            "approving": "Publishing...",
+            "approved": "README approved and published.",
+            "approveError": "The README could not be approved. Refresh and try again."
         },
         "dialog": {
             "accept": {
@@ -1685,7 +1722,9 @@
             "SYSTEM_STATUS_ACTIVE": "System activated",
             "SYSTEM_STATUS_SUSPENDED": "System suspended",
             "SYSTEM_STATUS_REJECTED": "System rejected",
-            "SYSTEM_STATUS_PENDING": "System set to pending"
+            "SYSTEM_STATUS_PENDING": "System set to pending",
+            "SYSTEM_PROFILE_UPDATE_SUBMITTED": "System update submitted for review",
+            "SYSTEM_README_APPROVED": "System README approved"
         },
         "pagination": {
             "previous": "Previous",

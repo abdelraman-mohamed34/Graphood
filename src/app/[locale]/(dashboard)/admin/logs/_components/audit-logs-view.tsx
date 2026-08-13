@@ -10,8 +10,9 @@ import {
 import { getAuditLogEntityLabel } from "@/shared/lib/utils/format-audit-log-entity";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import React, { useEffect, useRef, useState } from "react";
+import { Link } from "@/i18n/navigation";
 
 const actionToneClasses: Record<AuditLogActionTone, string> = {
     success: "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-300",
@@ -114,8 +115,13 @@ export default function AuditLogsView({ locale }: { locale: string }) {
                                         <td className="max-w-48 p-3 text-xs">
                                             {(() => {
                                                 const entity = getAuditLogEntityLabel(log.metadata, log.entity_id);
+                                                const reviewUrl = getReviewUrl(log.metadata);
                                                 return (
-                                                    <span
+                                                    reviewUrl ? <Link
+                                                        href={reviewUrl}
+                                                        className="block truncate font-medium text-primary underline-offset-4 hover:underline"
+                                                        title={entity.fullValue}
+                                                    >{entity.label}</Link> : <span
                                                         className={cn("block truncate", entity.isFallback && "font-mono text-muted-foreground")}
                                                         title={entity.fullValue}
                                                     >
@@ -149,6 +155,7 @@ export default function AuditLogsView({ locale }: { locale: string }) {
                     const actor = [log.actor?.first_name, log.actor?.last_name].filter(Boolean).join(" ")
                         || log.actor?.email
                         || t("table.systemActor");
+                    const reviewUrl = getReviewUrl(log.metadata);
 
                     return (
                         <article
@@ -178,7 +185,7 @@ export default function AuditLogsView({ locale }: { locale: string }) {
                                 <dt className="text-muted-foreground">{t("table.entityType")}</dt>
                                 <dd className="text-end">{log.entity_type}</dd>
                                 <dt className="text-muted-foreground">{t("table.entityId")}</dt>
-                                <dd className="min-w-0 truncate text-end" title={entity.fullValue}>{entity.label}</dd>
+                                <dd className="min-w-0 truncate text-end" title={entity.fullValue}>{reviewUrl ? <Link href={reviewUrl} className="font-medium text-primary underline-offset-4 hover:underline">{entity.label}</Link> : entity.label}</dd>
                                 <dt className="text-muted-foreground">{t("table.ipAddress")}</dt>
                                 <dd className="truncate text-end font-mono text-xs" dir="ltr">{log.ip_address ?? "—"}</dd>
                             </dl>
@@ -210,4 +217,12 @@ export default function AuditLogsView({ locale }: { locale: string }) {
             )}
         </div>
     );
+}
+
+function getReviewUrl(metadata: unknown): `/admin/systems/${string}/review` | null {
+    if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) return null;
+    const value = (metadata as Record<string, unknown>).review_url;
+    return typeof value === "string" && /^\/admin\/systems\/[0-9a-f-]{36}\/review$/i.test(value)
+        ? value as `/admin/systems/${string}/review`
+        : null;
 }
