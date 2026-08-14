@@ -726,8 +726,6 @@
         "discountWithPercentage": "الخصم ({percentage}%):",
         "tax": "الضريبة",
         "total": "الإجمالي",
-        "paymentMethod": "طريقة الدفع",
-        "mockPayment": "دفع تجريبي للمطور",
         "processing": "جارٍ معالجة الدفع...",
         "completePayment": "إتمام الدفع",
         "paymentSuccess": "تم الدفع بنجاح.",

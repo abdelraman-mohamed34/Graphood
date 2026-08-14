@@ -726,8 +726,6 @@
         "discountWithPercentage": "Discount ({percentage}%):",
         "tax": "Tax",
         "total": "Total",
-        "paymentMethod": "Payment Method",
-        "mockPayment": "Developer Mock Payment",
         "processing": "Processing Payment...",
         "completePayment": "Complete Payment",
         "paymentSuccess": "Payment completed successfully.",

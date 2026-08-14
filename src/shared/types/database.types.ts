@@ -477,7 +477,6 @@ export type Database = {
           order_id: string
           paid_at: string | null
           provider: Database["public"]["Enums"]["payment_provider"]
-          provider_integration_id: number | null
           provider_reference: string | null
           status: Database["public"]["Enums"]["payment_status"] | null
           transaction_ref: string | null
@@ -491,7 +490,6 @@ export type Database = {
           order_id: string
           paid_at?: string | null
           provider: Database["public"]["Enums"]["payment_provider"]
-          provider_integration_id?: number | null
           provider_reference?: string | null
           status?: Database["public"]["Enums"]["payment_status"] | null
           transaction_ref?: string | null
@@ -505,7 +503,6 @@ export type Database = {
           order_id?: string
           paid_at?: string | null
           provider?: Database["public"]["Enums"]["payment_provider"]
-          provider_integration_id?: number | null
           provider_reference?: string | null
           status?: Database["public"]["Enums"]["payment_status"] | null
           transaction_ref?: string | null
@@ -616,8 +613,6 @@ export type Database = {
           profile_id: string | null
           start_date: string
           status: Database["public"]["Enums"]["subscription_status"] | null
-          stripe_customer_id: string | null
-          stripe_subscription_id: string | null
           system_id: string
           trial_end_date: string | null
           updated_at: string | null
@@ -636,8 +631,6 @@ export type Database = {
           profile_id?: string | null
           start_date?: string
           status?: Database["public"]["Enums"]["subscription_status"] | null
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
           system_id: string
           trial_end_date?: string | null
           updated_at?: string | null
@@ -656,8 +649,6 @@ export type Database = {
           profile_id?: string | null
           start_date?: string
           status?: Database["public"]["Enums"]["subscription_status"] | null
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
           system_id?: string
           trial_end_date?: string | null
           updated_at?: string | null
@@ -901,25 +892,17 @@ export type Database = {
           p_original_amount: number
           p_plan: string | null
           p_profile_id: string
-          p_provider: Database["public"]["Enums"]["payment_provider"]
           p_system_id: string
         }
         Returns: { is_existing: boolean; order_id: string; payment_id: string }[]
       }
-      confirm_paymob_payment: {
+      process_kashier_payment_atomic: {
         Args: {
-          p_amount_cents: number
+          p_amount: number
           p_currency: string
-          p_paymob_order_id: number
+          p_order_id: string
+          p_status: string
           p_transaction_ref: string
-        }
-        Returns: Json
-      }
-      fail_paymob_payment: {
-        Args: {
-          p_amount_cents: number
-          p_currency: string
-          p_paymob_order_id: number
         }
         Returns: Json
       }

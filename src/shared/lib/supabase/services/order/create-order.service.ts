@@ -2,7 +2,6 @@ import { SupabaseClient } from "@supabase/supabase-js";
 
 import { LicenseType } from "@/shared/config/licensing";
 import { PlanType } from "@/shared/config/plans";
-import { PaymentProvider } from "@/shared/lib/providers/billings/payment-provider";
 import { roundMoney } from "@/shared/lib/billing/money";
 
 interface CreateInitialOrderParams {
@@ -21,8 +20,6 @@ interface CreateInitialOrderParams {
 
     amount: number;
     currency?: string;
-
-    provider: PaymentProvider;
 
     description?: string;
 }
@@ -43,8 +40,6 @@ export async function createPendingOrder({
 
     amount,
     currency = "EGP",
-
-    provider,
 
     description,
 }: CreateInitialOrderParams) {
@@ -83,7 +78,6 @@ export async function createPendingOrder({
         p_coupon_id: couponId ?? null,
         p_amount: normalizedAmount,
         p_currency: currency,
-        p_provider: provider,
         p_description: description ?? null,
     });
 

@@ -1,11 +1,6 @@
 // src/shared/lib/providers/billings/payment-provider.ts
 
-export type PaymentProvider =
-    | "STRIPE"
-    | "PAYMOB"
-    | "CASH"
-    | "MANUAL"
-    | "KASHIER";
+export type PaymentProvider = "KASHIER";
 
 
 export interface PaymentProviderAdapter {

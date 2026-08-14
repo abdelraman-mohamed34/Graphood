@@ -22,7 +22,7 @@ CREATE TABLE public.systems (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
   slug text NOT NULL UNIQUE,
-  description text,
+  description text NOT NULL CHECK (char_length(description) <= 250),
   owner_id uuid NOT NULL,
   currency text DEFAULT 'EGP'::text,
   status USER-DEFINED DEFAULT 'PENDING'::global_status,
@@ -37,8 +37,15 @@ CREATE TABLE public.systems (
   tags ARRAY NOT NULL DEFAULT '{}'::text[],
   reseller_price numeric NOT NULL DEFAULT 0,
   exclusive_price numeric NOT NULL DEFAULT 0,
+  status_reason text CHECK (status_reason IS NULL OR char_length(status_reason) <= 500),
+  readme text CHECK (readme IS NULL OR char_length(readme) <= 30000),
+  pending_readme text CHECK (pending_readme IS NULL OR char_length(pending_readme) <= 30000),
+  pending_readme_submitted_at timestamp with time zone,
+  pending_readme_submitted_by uuid,
+  image_url text,
   CONSTRAINT systems_pkey PRIMARY KEY (id),
-  CONSTRAINT systems_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES public.profiles(id)
+  CONSTRAINT systems_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES public.profiles(id),
+  CONSTRAINT systems_pending_readme_submitted_by_fkey FOREIGN KEY (pending_readme_submitted_by) REFERENCES public.profiles(id)
 );
 CREATE TABLE public.tenants (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -113,8 +120,6 @@ CREATE TABLE public.subscriptions (
   auto_renew boolean DEFAULT true,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
-  stripe_subscription_id text,
-  stripe_customer_id text,
   license_type text DEFAULT 'SUBSCRIPTION'::text,
   profile_id uuid,
   order_id uuid,
@@ -139,6 +144,7 @@ CREATE TABLE public.orders (
   coupon_id uuid,
   original_amount numeric NOT NULL DEFAULT 0,
   discount_amount numeric NOT NULL DEFAULT 0,
+  discount_percentage numeric CHECK (discount_percentage IS NULL OR discount_percentage >= 1::numeric AND discount_percentage <= 100::numeric),
   CONSTRAINT orders_pkey PRIMARY KEY (id),
   CONSTRAINT orders_system_id_fkey FOREIGN KEY (system_id) REFERENCES public.systems(id),
   CONSTRAINT orders_subscription_id_fkey FOREIGN KEY (subscription_id) REFERENCES public.subscriptions(id),
@@ -157,7 +163,6 @@ CREATE TABLE public.payments (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   provider_reference text UNIQUE,
-  provider_integration_id integer,
   CONSTRAINT payments_pkey PRIMARY KEY (id),
   CONSTRAINT payments_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.orders(id)
 );
@@ -181,9 +186,9 @@ CREATE TABLE public.coupons (
   is_generated boolean NOT NULL DEFAULT false,
   system_id uuid,
   created_by uuid NOT NULL,
-  discount_type text NOT NULL CHECK (discount_type = ANY (ARRAY['PERCENT'::text, 'FIXED'::text])),
-  discount_value numeric NOT NULL CHECK (discount_value > 0::numeric),
-  max_discount numeric,
+  discount_type text NOT NULL CHECK (discount_type = 'PERCENT'::text),
+  discount_value numeric NOT NULL CHECK (discount_value >= 1::numeric AND discount_value <= 100::numeric),
+  max_discount numeric CHECK (max_discount IS NULL),
   license_type text CHECK (license_type = ANY (ARRAY['SUBSCRIPTION'::text, 'RESELLER'::text, 'EXCLUSIVE'::text])),
   plan text CHECK (plan = ANY (ARRAY['STARTER'::text, 'PRO'::text, 'BUSINESS'::text])),
   min_order_amount numeric NOT NULL DEFAULT 0,
@@ -220,4 +225,27 @@ CREATE TABLE public.tags (
   name_ar text NOT NULL,
   created_at timestamp with time zone DEFAULT now(),
   CONSTRAINT tags_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.platform_staff (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  profile_id uuid NOT NULL UNIQUE,
+  role USER-DEFINED NOT NULL DEFAULT 'SUPER_ADMIN'::system_role,
+  created_at timestamp with time zone DEFAULT now(),
+  audit_logs_last_viewed_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT platform_staff_pkey PRIMARY KEY (id),
+  CONSTRAINT platform_staff_user_id_fkey FOREIGN KEY (profile_id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.audit_logs (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  actor_id uuid,
+  action character varying NOT NULL,
+  entity_type character varying NOT NULL,
+  entity_id character varying,
+  metadata jsonb DEFAULT '{}'::jsonb,
+  ip_address character varying,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  tenant_id uuid,
+  CONSTRAINT audit_logs_pkey PRIMARY KEY (id),
+  CONSTRAINT audit_logs_actor_id_fkey FOREIGN KEY (actor_id) REFERENCES public.profiles(id),
+  CONSTRAINT audit_logs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES public.tenants(id)
 );

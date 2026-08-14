@@ -46,9 +46,6 @@ export const subscriptionSchema = z.object({
     // Settings
     auto_renew: z.boolean().default(true),
 
-    // Payment provider metadata
-    stripe_subscription_id: z.string().nullish(),
-    stripe_customer_id: z.string().nullish(),
 
     created_at: z.coerce.date(),
     updated_at: z.coerce.date().optional(),

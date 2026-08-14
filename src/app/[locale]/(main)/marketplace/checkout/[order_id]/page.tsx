@@ -80,7 +80,7 @@ export default function Page({ params }: PageProps) {
     const handleCompletePayment = () => {
         initiatePayment({
             orderId: order.id,
-            paymentMethod: "wallet",
+            locale: locale === "ar" ? "ar" : "en",
         });
     };
 

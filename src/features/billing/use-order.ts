@@ -1,13 +1,15 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 
 import { getOrderAction } from "@/shared/lib/actions/billing/get-order.action";
 import { queryKeys } from "@/shared/lib/query";
 
 export function useOrder(orderId: string) {
+    const queryClient = useQueryClient();
     const pollingStartedAt = useRef<number | null>(null);
+    const invalidatedPaidOrder = useRef<string | null>(null);
 
     useEffect(() => {
         pollingStartedAt.current = Date.now();
@@ -49,6 +51,18 @@ export function useOrder(orderId: string) {
             return 2_500;
         },
     });
+
+    useEffect(() => {
+        if (query.data?.status !== "PAID" || invalidatedPaidOrder.current === orderId) return;
+        invalidatedPaidOrder.current = orderId;
+
+        void Promise.all([
+            queryClient.invalidateQueries({ queryKey: queryKeys.orders.all }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.systems.all() }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.tenants.all }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.profiles.all }),
+        ]);
+    }, [orderId, query.data?.status, queryClient]);
 
     return {
         order: query.data,

@@ -8,7 +8,7 @@ import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.s
 
 const initiatePaymentSchema = z.object({
     orderId: z.string().uuid(),
-    paymentMethod: z.enum(["wallet", "instapay"]),
+    locale: z.enum(["ar", "en"]),
 });
 
 export type InitiatePaymentInput = z.infer<typeof initiatePaymentSchema>;
@@ -37,7 +37,7 @@ export async function initiatePaymentAction(
             await Promise.all([
                 supabase
                     .from("orders")
-                    .select("id, amount, currency, status, payments(id, provider, provider_reference, status)")
+                    .select("id, profile_id, system_id, amount, currency, status")
                     .eq("id", parsed.data.orderId)
                     .eq("profile_id", user.id)
                     .maybeSingle(),
@@ -81,9 +81,12 @@ export async function initiatePaymentAction(
                 lastName: profile.last_name,
                 email,
             },
+            profileId: order.profile_id,
+            systemId: order.system_id,
+            locale: parsed.data.locale,
         });
 
-        const { error: paymentUpdateError } = await supabase
+        const { data: payment, error: paymentUpdateError } = await supabase
             .from("payments")
             .update({
                 provider: "KASHIER",
@@ -91,9 +94,13 @@ export async function initiatePaymentAction(
                 updated_at: new Date().toISOString(),
             })
             .eq("order_id", order.id)
-            .eq("status", "PENDING");
+            .eq("provider", "KASHIER")
+            .eq("status", "PENDING")
+            .select("id")
+            .maybeSingle();
 
         if (paymentUpdateError) throw paymentUpdateError;
+        if (!payment) return { success: false, error: "Pending Kashier payment not found." };
 
         return { success: true, iframeUrl: checkoutUrl };
     } catch (error) {

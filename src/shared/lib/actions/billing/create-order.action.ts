@@ -256,8 +256,6 @@ export async function createOrderAction(
             amount,
             currency,
 
-            provider: "MANUAL",
-
             originalAmount,
             discountAmount,
             discountPercentage,
