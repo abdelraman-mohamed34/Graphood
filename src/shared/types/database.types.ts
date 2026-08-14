@@ -694,7 +694,8 @@ export type Database = {
           currency: string | null
           description: string | null
           exclusive_price: number
-          icon_url: string | null
+            icon_url: string | null
+            image_url: string | null
           id: string
           is_public: boolean | null
           name: string
@@ -719,7 +720,8 @@ export type Database = {
           currency?: string | null
           description?: string | null
           exclusive_price?: number
-          icon_url?: string | null
+            icon_url?: string | null
+            image_url?: string | null
           id?: string
           is_public?: boolean | null
           name: string
@@ -744,7 +746,8 @@ export type Database = {
           currency?: string | null
           description?: string | null
           exclusive_price?: number
-          icon_url?: string | null
+            icon_url?: string | null
+            image_url?: string | null
           id?: string
           is_public?: boolean | null
           name?: string

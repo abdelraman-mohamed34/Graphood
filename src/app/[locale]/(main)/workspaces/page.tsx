@@ -11,6 +11,7 @@ import { useOnboarding } from "@/shared/lib/providers/onboarding-provider";
 import { Tenant } from "@/shared/lib/schemas/tenants.schema";
 import { WorkspaceCard } from "./_components/workspace-card";
 import { CreateWorkspaceCard } from "./_components/create-workspace-card";
+import { useLightweightMotion } from "@/shared/lib/hooks/use-lightweight-motion";
 
 const DEFAULT_WORKSPACE_LOGO = "https://avatar.vercel.sh/shadcn1";
 
@@ -51,6 +52,7 @@ export default function WorkspaceSelectionPage() {
     const t = useTranslations("dashboard.welcome");
     const searchParams = useSearchParams();
     const router = useRouter();
+    const reduceMotion = useLightweightMotion();
     const error = searchParams.get("error");
 
     useEffect(() => {
@@ -70,7 +72,7 @@ export default function WorkspaceSelectionPage() {
             <main className="min-h-screen w-full bg-background p-4 sm:p-8 md:p-12">
                 <motion.div
                     variants={containerVariants}
-                    initial="hidden"
+                    initial={reduceMotion ? false : "hidden"}
                     animate="show"
                     className="mx-auto w-full max-w-5xl space-y-8"
                 >
@@ -97,7 +99,7 @@ export default function WorkspaceSelectionPage() {
                             <motion.div
                                 key={membership.id}
                                 variants={itemVariants}
-                                whileHover={{
+                                whileHover={reduceMotion ? undefined : {
                                     y: -4,
                                     transition: {
                                         duration: 0.2,
@@ -115,7 +117,7 @@ export default function WorkspaceSelectionPage() {
 
                         <motion.div
                             variants={itemVariants}
-                            whileHover={{
+                            whileHover={reduceMotion ? undefined : {
                                 y: -4,
                                 transition: {
                                     duration: 0.2,

@@ -10,6 +10,8 @@ import DeveloperDashboardContainer from "@/shared/_components/developer-dashboar
 import { useSystem } from "@/shared/lib/hooks";
 import { useTags } from "@/shared/lib/hooks/tags/use-tag";
 import { SystemReadmeEditor } from "./_components/system-readme-editor";
+import { SystemImageField } from "@/components/systems/system-image-field";
+import { toast } from "sonner";
 
 interface PageProps {
     params: Promise<{
@@ -21,7 +23,7 @@ export default function Page({ params }: PageProps) {
     const t = useTranslations("developerOverview");
     const locale = useLocale();
     const { system_id } = use(params);
-    const { system, isSingleLoading, error } = useSystem(system_id);
+    const { system, isSingleLoading, error, updateSystem, isUpdating } = useSystem(system_id);
     const { data: availableTags = [] } = useTags();
 
     // 1. Loading State
@@ -92,6 +94,37 @@ export default function Page({ params }: PageProps) {
                         </span>
                     </div>
                 </div>
+            </div>
+            <div className="py-6">
+                <SystemImageField
+                    value={system.image_url}
+                    disabled={isUpdating}
+                    onChange={async (imageUrl) => {
+                        try {
+                            await updateSystem({ id: system.id, data: { image_url: imageUrl } });
+                            toast.success(t("image.saved"));
+                        } catch {
+                            toast.error(t("image.saveError"));
+                            throw new Error("Could not save system image");
+                        }
+                    }}
+                    labels={{
+                        label: t("image.label"),
+                        description: t("image.description"),
+                        choose: t("image.choose"),
+                        replace: t("image.replace"),
+                        remove: t("image.remove"),
+                        uploading: t("image.uploading"),
+                        previewAlt: t("image.previewAlt", { name: system.name }),
+                        fallback: t("image.fallback"),
+                        errors: {
+                            invalidType: t("image.errors.invalidType"),
+                            tooLarge: t("image.errors.tooLarge"),
+                            unauthenticated: t("image.errors.unauthenticated"),
+                            uploadFailed: t("image.errors.uploadFailed"),
+                        },
+                    }}
+                />
             </div>
             <SystemReadmeEditor systemId={system.id} initialReadme={system.readme ?? ""} />
         </DeveloperDashboardContainer>

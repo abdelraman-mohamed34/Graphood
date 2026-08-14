@@ -33,10 +33,26 @@
                         "placeholder": "awesome-crm",
                         "description": "Used in public URLs."
                     },
-                    "description": {
-                        "label": "Short Description",
-                        "placeholder": "Describe your system capabilities and features..."
-                    },
+                "description": {
+                    "label": "Short Description",
+                    "placeholder": "Describe your system capabilities and features..."
+                },
+                "image": {
+                    "label": "Cover image",
+                    "description": "Upload a 16:9 JPG, PNG, WEBP, or AVIF image up to 5 MB for Marketplace previews.",
+                    "choose": "Choose image",
+                    "replace": "Replace image",
+                    "remove": "Remove image",
+                    "uploading": "Uploading...",
+                    "previewAlt": "System cover preview",
+                    "fallback": "No cover image selected",
+                    "errors": {
+                        "invalidType": "Choose a JPG, PNG, WEBP, or AVIF image.",
+                        "tooLarge": "The image must not exceed 5 MB.",
+                        "unauthenticated": "Sign in before uploading an image.",
+                        "uploadFailed": "The image could not be uploaded. Please try again."
+                    }
+                },
                     "readme": {
                         "label": "README Documentation",
                         "description": "Markdown documentation displayed on the public Marketplace page.",
@@ -122,6 +138,8 @@
         "details": {
             "loading": "Loading system details",
             "error": "The system could not be loaded.",
+            "imageAlt": "{name} cover image",
+            "imageFallback": "No preview image available",
             "description": "Description",
             "noDescription": "No description has been provided yet.",
             "price": "Price",
@@ -223,7 +241,9 @@
         "card": {
             "badge": "SYSTEM",
             "description": "Enable seamless integration and tools with {name} workspace features.",
-            "viewDetails": "View Details"
+            "viewDetails": "View Details",
+            "imageAlt": "System preview",
+            "imageFallback": "No preview image"
         }
     },
     "help": {
@@ -249,6 +269,24 @@
         "statusActive": "Active",
         "statusInactive": "Inactive",
         "categoryLabel": "Category",
+        "image": {
+            "label": "Marketplace cover image",
+            "description": "Manage the cover shown on the Marketplace card and system details page.",
+            "choose": "Choose image",
+            "replace": "Replace image",
+            "remove": "Remove image",
+            "uploading": "Uploading...",
+            "previewAlt": "Cover preview for {name}",
+            "fallback": "No cover image uploaded",
+            "saved": "System cover image updated.",
+            "saveError": "Could not save the system cover image.",
+            "errors": {
+                "invalidType": "Choose a JPG, PNG, WEBP, or AVIF image.",
+                "tooLarge": "The image must not exceed 5 MB.",
+                "unauthenticated": "Sign in before uploading an image.",
+                "uploadFailed": "The image could not be uploaded. Please try again."
+            }
+        },
         "readme": {
             "title": "README documentation",
             "description": "Write the documentation shown on the public Marketplace page.",
@@ -320,6 +358,31 @@
             "buyNow": "Buy Now ←"
         },
         "landing": {
+            "heroSection": {
+                "eyebrow": "The operating layer for digital businesses",
+                "title": "Build systems. Launch workspaces. Scale without limits.",
+                "description": "Graphood connects modular business systems, tenant workspaces, subscriptions, and developer infrastructure in one coherent ecosystem—so you can launch faster without rebuilding the foundation.",
+                "primaryCta": "Explore the marketplace",
+                "secondaryCta": "View developer docs",
+                "proof": {
+                    "multiTenant": "Tenant-aware by design",
+                    "modular": "Composable systems",
+                    "developerReady": "Developer-ready APIs"
+                },
+                "visual": {
+                    "label": "Graphood modular platform architecture",
+                    "system": "Graphood architecture",
+                    "status": "Connected",
+                    "coreTitle": "One shared platform core",
+                    "coreDescription": "Identity, billing, access, and tenant context remain consistent across every system.",
+                    "modules": {
+                        "commerce": "Commerce system",
+                        "workspace": "Tenant workspace",
+                        "developer": "Developer API layer"
+                    },
+                    "tenant": "Tenant context / active"
+                }
+            },
             "sponsors": {
                 "eyebrow": "Trusted by the most innovative companies in the world"
             },

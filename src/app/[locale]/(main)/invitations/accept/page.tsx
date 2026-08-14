@@ -30,7 +30,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
     if (!invitation) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
+            <div className="flex min-h-screen items-center justify-center bg-background p-4">
                 <div className="max-w-md w-full rounded-lg border border-red-200 bg-white p-6 shadow-sm text-center">
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
                         <span className="text-red-600 text-xl font-bold">!</span>
@@ -57,17 +57,17 @@ export default async function Page({ params, searchParams }: PageProps) {
 
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
+        <div className="flex min-h-screen items-center justify-center bg-background p-4">
             <div className="max-w-md w-full rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="text-center mb-6">
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 mb-4">
-                        <span className="text-indigo-600 text-lg">✉️</span>
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-sm bg-accent">
+                        <span className="text-lg text-teal">✉️</span>
                     </div>
                     <h1 className="text-2xl font-bold text-slate-900">You&apos;re Invited!</h1>
                     <p className="text-sm text-slate-500 mt-1">Join your team workspace</p>
                 </div>
 
-                <div className="rounded-md bg-slate-50 p-4 border border-slate-100 mb-6">
+                <div className="mb-6 rounded-sm border border-border bg-muted p-4">
                     <p className="text-sm text-slate-600">
                         <span className="font-semibold text-slate-800">{inviter?.first_name + ' ' + inviter?.last_name}</span> has invited you to join:
                     </p>

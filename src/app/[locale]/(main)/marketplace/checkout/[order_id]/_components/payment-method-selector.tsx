@@ -47,7 +47,7 @@ export function PaymentMethodSelector({
                         }`}
                 >
                     <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-600">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-muted text-teal">
                             <Wallet className="h-6 w-6 stroke-[2.2]" />
                         </div>
                         <div>
@@ -55,7 +55,7 @@ export function PaymentMethodSelector({
                                 <span className="font-semibold text-foreground">
                                     {t.has("walletsTitle") ? t("walletsTitle") : "المحافظ الإلكترونية"}
                                 </span>
-                                <span className="rounded bg-red-500/10 px-1.5 py-0.5 text-[10px] font-medium text-red-600">
+                                <span className="rounded-sm bg-muted px-1.5 py-0.5 text-[10px] font-medium text-teal">
                                     {t.has("walletsBadge") ? t("walletsBadge") : "فودافون كاش وغيرها"}
                                 </span>
                             </div>

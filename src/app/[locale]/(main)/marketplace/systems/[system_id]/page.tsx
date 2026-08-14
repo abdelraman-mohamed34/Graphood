@@ -1,6 +1,8 @@
 'use client'
 
 import { useMemo } from 'react'
+import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { Building2, CalendarDays, Globe2, Tag } from 'lucide-react'
@@ -14,7 +16,13 @@ import { getSystemById } from '@/shared/lib/supabase/services/systems'
 
 import CheckoutButton from './_components/check-out-btn'
 import { queryKeys } from '@/shared/lib/query'
-import { MarkdownRenderer } from '@/shared/_components/markdown-renderer'
+
+const MarkdownRenderer = dynamic(
+    () => import('@/shared/_components/markdown-renderer').then((module) => module.MarkdownRenderer),
+    {
+        loading: () => <div className="min-h-48 rounded-none border border-border bg-muted" aria-hidden="true" />,
+    },
+)
 
 export default function Page() {
     const params = useParams<{ system_id: string }>()
@@ -69,13 +77,26 @@ export default function Page() {
 
     return (
         <main className="mx-auto min-h-screen w-full max-w-7xl px-4 py-8 text-start sm:px-6 lg:px-8 lg:py-12">
-            <section className="relative overflow-hidden rounded border border-border/70 bg-maroon p-6 sm:p-8">
-                <div className="pointer-events-none absolute -end-20 -top-24 size-64 rounded-full bg-primary blur-3xl" />
-                <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
-                    <div className="group flex size-20 shrink-0 items-center justify-center overflow-hidden border bg-background/80 backdrop-blur transition-shadow hover:shadow-md sm:size-24">
+            <section className="overflow-hidden rounded-sm border border-border bg-white">
+                <div className="relative aspect-[21/8] min-h-48 border-b border-border bg-muted">
+                    {system.image_url ? (
+                        <Image src={system.image_url} alt={t('imageAlt', { name: system.name })} fill sizes="(max-width: 1280px) 100vw, 1280px" className="object-cover" priority />
+                    ) : (
+                        <div className="absolute inset-0 grid place-items-center bg-white/40 text-center backdrop-blur-sm">
+                            <div className="text-muted-foreground"><Building2 className="mx-auto size-10" aria-hidden="true" /><p className="mt-3 text-sm">{t('imageFallback')}</p></div>
+                        </div>
+                    )}
+                </div>
+                <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:gap-6 sm:p-8">
+                    <div className="group relative flex size-20 shrink-0 items-center justify-center overflow-hidden border bg-background/95 transition-shadow hover:shadow-md sm:size-24 md:bg-background/80 md:backdrop-blur">
                         {system.icon_url ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={system.icon_url} alt="" className="size-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                            <Image
+                                src={system.icon_url}
+                                alt=""
+                                fill
+                                sizes="(max-width: 640px) 80px, 96px"
+                                className="object-cover transition-transform duration-200 group-hover:scale-105 motion-reduce:transition-none"
+                            />
                         ) : (
                             <Building2 className="size-10 text-muted-foreground sm:size-11" aria-hidden="true" />
                         )}
@@ -83,7 +104,7 @@ export default function Page() {
 
                     <div className="min-w-0 flex-1 space-y-2 text-start">
                         <div className="flex flex-wrap items-center gap-3">
-                            <h1 className="min-w-0 break-words text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                            <h1 className="min-w-0 break-words text-2xl font-bold tracking-tight text-maroon sm:text-3xl">
                                 {system.name}
                             </h1>
                         </div>

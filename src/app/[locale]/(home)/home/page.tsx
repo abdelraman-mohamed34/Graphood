@@ -12,7 +12,6 @@ export default function Page() {
       <Hero />
       <section className="w-full flex justify-center">
         <HatchedContainer
-          padding="p-8"
           direction="diagonal"
           sides="x"
           className="max-w-6xl w-full"
@@ -24,7 +23,7 @@ export default function Page() {
         </HatchedContainer>
       </section>
       <VisionBanner />
-      <div className="bg-maroon">
+      <div className="bg-[#f4f3f1]">
         <FAQ />
         <Footer />
       </div>

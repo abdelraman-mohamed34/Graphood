@@ -24,7 +24,6 @@ export async function createKashierCheckoutUrl({
     orderId,
     amount,
     currency = "EGP",
-    customer,
 }: CreateKashierOrderInput) {
     const merchantId = (process.env.KASHIER_MERCHANT_ID || "").trim();
     const secretKey = (process.env.KASHIER_SECRET_KEY || "").trim();

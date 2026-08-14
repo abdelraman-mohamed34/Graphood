@@ -16,7 +16,7 @@ export function OrderSummaryCard({ order, system, formatMoney, translateValue }:
     const t = useTranslations("checkout");
 
     return (
-        <section className="rounded border-2 p-6">
+        <section className="rounded-sm border border-neutral-300 bg-white p-6">
             <h2 className="mb-4 text-xl font-semibold">{t("checkoutSummary")}</h2>
             <div className="space-y-2">
                 <p><strong>{t("system")}:</strong> {system?.name}</p>

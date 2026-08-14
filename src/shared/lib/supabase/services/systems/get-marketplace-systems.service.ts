@@ -17,6 +17,7 @@ export interface MarketplaceSystem {
     description: string;
     tags: MarketplaceTag[];
     icon_url: string | null;
+    image_url: string | null;
 }
 
 interface MarketplaceSystemRecord {
@@ -25,6 +26,7 @@ interface MarketplaceSystemRecord {
     description: string;
     tags: string[] | null;
     icon_url: string | null;
+    image_url: string | null;
 }
 
 export async function getMarketplaceSystems(
@@ -33,7 +35,7 @@ export async function getMarketplaceSystems(
     const supabase = client ?? createSupabaseClient();
     const { data, error } = await supabase
         .from("systems")
-        .select("id, name, description, tags, icon_url")
+        .select("id, name, description, tags, icon_url, image_url")
         .eq("is_public", true)
         .eq("status", "ACTIVE")
         .order("created_at", { ascending: false });
@@ -76,6 +78,7 @@ export async function getMarketplaceSystems(
         name: system.name,
         description: system.description,
         icon_url: system.icon_url,
+        image_url: system.image_url,
         tags: (system.tags ?? [])
             .map((tagId) => tagsById.get(tagId))
             .filter((tag): tag is MarketplaceTag => Boolean(tag)),

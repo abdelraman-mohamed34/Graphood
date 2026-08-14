@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { animate, motion, useInView, useReducedMotion } from "framer-motion";
+import { animate, motion, useInView } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { useLightweightMotion } from "@/shared/lib/hooks/use-lightweight-motion";
 
 const stats = [
     { id: "uptime", value: 100, suffix: "%" },
@@ -13,7 +14,7 @@ const stats = [
 function Counter({ value, suffix }: { value: number; suffix: string }) {
     const ref = useRef<HTMLSpanElement>(null);
     const isInView = useInView(ref, { once: true, margin: "-80px" });
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = useLightweightMotion();
     const [displayValue, setDisplayValue] = useState(0);
 
     useEffect(() => {
@@ -29,11 +30,12 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
         return () => controls.stop();
     }, [isInView, reduceMotion, value]);
 
-    return <span ref={ref}>{reduceMotion ? value : displayValue}{suffix}</span>;
+    return <span ref={ref} className="inline-block min-w-[4ch] tabular-nums">{reduceMotion ? value : displayValue}{suffix}</span>;
 }
 
 export default function AboutStats() {
     const t = useTranslations("about.stats");
+    const reduceMotion = useLightweightMotion();
 
     return (
         <section aria-labelledby="about-stats-title" className="border-b border-neutral-300 bg-white px-5 py-20 sm:px-8 lg:px-12">
@@ -50,10 +52,10 @@ export default function AboutStats() {
                     {stats.map((stat, index) => (
                         <motion.article
                             key={stat.id}
-                            initial={{ opacity: 0 }}
+                            initial={reduceMotion ? false : { opacity: 0 }}
                             whileInView={{ opacity: 1 }}
                             viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
+                            transition={reduceMotion ? { duration: 0 } : { delay: index * 0.1 }}
                             className="border-b border-e border-neutral-300 bg-[#f7f6f4] p-8 sm:p-10"
                         >
                             <p className="text-5xl font-semibold tracking-[-0.06em] text-maroon sm:text-6xl" aria-label={`${stat.value}${stat.suffix}`}>

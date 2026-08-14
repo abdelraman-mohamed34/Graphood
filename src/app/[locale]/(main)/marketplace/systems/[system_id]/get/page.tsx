@@ -196,7 +196,7 @@ export default function Page() {
     const pendingOrder = pendingOrderQuery.data;
 
     return (
-        <div className="w-full min-h-screen flex justify-center pt-8 pb-16 bg-black/2">
+        <div className="flex min-h-screen w-full justify-center bg-background pt-8 pb-16">
             <div className="w-full max-w-4xl mx-auto p-6 font-sans">
                 <h2 className="text-2xl font-bold text-neutral-900 mb-6">
                     {t("title")}

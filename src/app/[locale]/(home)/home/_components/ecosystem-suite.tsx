@@ -23,14 +23,14 @@ export default function EcosystemSuite() {
     const currentTab = tabs.find((tab) => tab.id === activeTab) ?? tabs[0];
 
     return (
-        <section className="mx-auto w-full bg-muted/80 px-6 py-10 text-neutral-900 select-none">
+        <section className="mx-auto w-full px-6 py-10 text-neutral-900 select-none">
             <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                 <h2 className="text-3xl font-extrabold tracking-tight text-neutral-900 sm:text-4xl md:text-5xl">
                     {t("title")}
                 </h2>
                 <Link
                     href="/marketplace"
-                    className="self-start border border-neutral-300 bg-white px-5 py-2.5 text-xs font-semibold text-purple-700 shadow-sm transition-all hover:border-neutral-400 hover:bg-neutral-50 active:scale-95 sm:self-auto sm:text-sm"
+                    className="self-start border border-maroon bg-maroon px-5 py-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-teal active:scale-95 sm:self-auto sm:text-sm"
                 >
                     {t("cta")}
                 </Link>
@@ -50,13 +50,12 @@ export default function EcosystemSuite() {
                                 aria-selected={isActive}
                                 aria-controls={`ecosystem-panel-${tab.id}`}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`relative flex cursor-pointer items-center justify-center gap-2.5 px-4 py-4.5 text-xs font-semibold transition-all duration-300 sm:text-sm ${
-                                    isActive
+                                className={`relative flex cursor-pointer items-center justify-center gap-2.5 px-4 py-4.5 text-xs font-semibold transition-all duration-300 sm:text-sm ${isActive
                                         ? "bg-[#ededed] text-neutral-900 shadow-sm"
                                         : "text-neutral-600 hover:bg-white/40 hover:text-neutral-900"
-                                }`}
+                                    }`}
                             >
-                                <Icon className={`size-4 ${isActive ? "text-purple-600" : "text-neutral-500"}`} aria-hidden="true" />
+                                <Icon className={`size-4 ${isActive ? "text-teal" : "text-neutral-500"}`} aria-hidden="true" />
                                 <span>{t(`tabs.${tab.id}.label`)}</span>
                             </button>
                         );
@@ -65,7 +64,7 @@ export default function EcosystemSuite() {
             </div>
 
             <HatchedContainer sides="y">
-                <div className="relative w-full overflow-hidden border border-neutral-200/80 bg-[#fbf9f5] p-6 sm:p-10 md:p-12">
+                <div className="relative w-full overflow-hidden border border-neutral-300 bg-[#f7f6f4] p-6 sm:p-10 md:p-12">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentTab.id}
@@ -78,7 +77,7 @@ export default function EcosystemSuite() {
                             className="items-center gap-8 lg:gap-12"
                         >
                             <div className="flex flex-col items-start pe-0 lg:col-span-6 lg:pe-4">
-                                <span className="mb-3 text-xs font-semibold uppercase tracking-wide text-purple-700">
+                                <span className="mb-3 text-xs font-semibold uppercase tracking-wide text-teal">
                                     {t(`tabs.${currentTab.id}.badge`)}
                                 </span>
                                 <h3 className="mb-4 text-2xl leading-[1.18] font-extrabold tracking-tight text-neutral-900 sm:text-3xl md:text-4xl">
@@ -90,7 +89,7 @@ export default function EcosystemSuite() {
 
                                 <a
                                     href="#"
-                                    className="group mb-8 inline-flex items-center gap-1.5 text-xs font-semibold text-purple-700 underline underline-offset-4 transition-colors hover:text-purple-900 sm:text-sm"
+                                    className="group mb-8 inline-flex items-center gap-1.5 text-xs font-semibold text-teal underline underline-offset-4 transition-colors hover:text-maroon sm:text-sm"
                                 >
                                     <span>{t(`tabs.${currentTab.id}.linkText`)}</span>
                                     <ArrowRight

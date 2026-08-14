@@ -68,7 +68,7 @@ export default function DeveloperDocsPage() {
             </header>
 
             {/* Banner / Welcome Card */}
-            <div className="rounded-2xl border bg-gradient-to-br from-muted/50 via-background to-muted/20 p-6 sm:p-8">
+            <div className="rounded-sm border bg-card p-6 sm:p-8">
                 <div className="max-w-2xl space-y-3">
                     <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                         {t("welcomeBanner.badge")}

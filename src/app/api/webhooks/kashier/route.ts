@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import crypto from "crypto";
-
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 
 export async function POST(request: Request) {

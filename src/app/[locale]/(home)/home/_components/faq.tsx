@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -16,10 +15,9 @@ function FAQ() {
     };
 
     return (
-        <section className="relative flex min-h-[500px] w-full justify-center overflow-hidden px-6 py-16 text-white sm:px-12 md:px-16">
-            <div className="pointer-events-none absolute inset-0 m-auto h-[300px] w-[600px] rounded-full bg-emerald-500/5 blur-[140px]" />
+        <section className="relative flex min-h-[500px] w-full justify-center overflow-hidden border-t border-neutral-300 bg-[#f4f3f1] px-6 py-16 text-[#21181b] sm:px-12 md:px-16">
             <div className="relative z-10 flex w-full max-w-[900px] flex-col items-center">
-                <h2 className="mb-10 text-center text-3xl tracking-tight text-white sm:text-4xl md:text-5xl">
+                <h2 className="mb-10 text-center text-3xl font-semibold tracking-tight text-maroon sm:text-4xl md:text-5xl">
                     {t("title")}
                 </h2>
 
@@ -30,7 +28,7 @@ function FAQ() {
                         return (
                             <div
                                 key={item}
-                                className="w-full overflow-hidden rounded-sm border border-white/10 bg-maroon backdrop-blur-md transition-all duration-300 hover:border-indigo-700"
+                                className="w-full overflow-hidden rounded-sm border border-neutral-300 bg-white transition-all duration-300 hover:border-teal"
                             >
                                 <button
                                     type="button"
@@ -39,21 +37,19 @@ function FAQ() {
                                     aria-controls={`faq-answer-${item}`}
                                     className="group flex w-full cursor-pointer select-none items-center justify-between px-6 py-5 text-start"
                                 >
-                                    <span className={`text-base transition-all duration-300 sm:text-lg ${isOpen ? "text-indigo-700" : "text-white"}`}>
+                                    <span className={`text-base transition-all duration-300 sm:text-lg ${isOpen ? "text-teal" : "text-neutral-900"}`}>
                                         {t(`items.${item}.question`)}
                                     </span>
-                                    <motion.div
-                                        animate={{ rotate: isOpen ? 180 : 0 }}
-                                        transition={{ duration: 0.25 }}
-                                        className="ms-4 shrink-0 text-indigo-600"
+                                    <div
+                                        className={`ms-4 shrink-0 text-teal transition-transform duration-200 motion-reduce:transition-none ${isOpen ? "rotate-180" : "rotate-0"}`}
                                     >
                                         <ChevronDown className="size-4" aria-hidden="true" />
-                                    </motion.div>
+                                    </div>
                                 </button>
 
                                 {isOpen && (
                                     <div id={`faq-answer-${item}`} role="region">
-                                        <div className="px-6 pb-6 pt-1 text-sm font-light leading-relaxed sm:text-base">
+                                        <div className="px-6 pb-6 pt-1 text-sm leading-relaxed text-neutral-600 sm:text-base">
                                             {t(`items.${item}.answer`)}
                                         </div>
                                     </div>

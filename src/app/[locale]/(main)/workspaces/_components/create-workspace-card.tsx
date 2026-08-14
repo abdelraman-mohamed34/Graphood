@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { ChevronLeft, SquarePlus } from "lucide-react";
+import { SquarePlus } from "lucide-react";
 
 export function CreateWorkspaceCard() {
     const t = useTranslations("dashboard.welcome");

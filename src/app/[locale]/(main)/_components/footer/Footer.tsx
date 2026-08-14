@@ -5,10 +5,12 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { FooterBrand, FooterColumn } from "./footer-components";
+import { useLightweightMotion } from "@/shared/lib/hooks/use-lightweight-motion";
 
 export function Footer() {
     const t = useTranslations("footer");
     const currentYear = new Date().getFullYear();
+    const reduceMotion = useLightweightMotion();
 
     const footerSections = [
         {
@@ -49,12 +51,13 @@ export function Footer() {
     };
 
     return (
-        <footer className="relative w-full flex justify-center bg-[oklch(0.25_0.05_15)] text-white border-t border-white/10 transition-colors duration-200 overflow-hidden">
+        <footer className="relative flex w-full justify-center overflow-hidden border-t border-white/10 bg-maroon text-white transition-colors duration-200">
             <div className="w-full mx-auto max-w-7xl px-6 sm:px-8 lg:px-12 pt-12 pb-6">
                 <motion.div
                     className="grid grid-cols-1 gap-12 xl:grid-cols-3 xl:gap-8"
-                    initial="hidden"
+                    initial={reduceMotion ? false : "hidden"}
                     whileInView="visible"
+                    transition={reduceMotion ? { duration: 0 } : undefined}
                     viewport={{ once: true }}
                     variants={containerVariants}
                 >
@@ -74,18 +77,18 @@ export function Footer() {
                 </motion.div>
 
                 {/* Bottom Section - Big Typography Layout */}
-                <div className="w-full flex flex-col items-center justify-center mt-12 pt-8 border-t border-white/10 overflow-hidden select-none">
-                    <h1 className="text-[12vw] sm:text-[140px] md:text-[180px] font-extrabold tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-b from-white/20 via-white/5 to-transparent text-center">
+                <div className="mt-12 flex w-full flex-col items-center justify-center overflow-hidden border-t border-white/10 pt-8 select-none">
+                    <h1 className="text-center text-[12vw] leading-none font-extrabold tracking-tighter text-white/10 sm:text-[140px] md:text-[180px]">
                         GRAPHOOD
                     </h1>
 
-                    <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 text-xs text-white/50">
+                    <div className="mt-6 flex w-full flex-col items-center justify-between gap-4 text-xs text-white/55 sm:flex-row">
                         <p>© {currentYear} Graphood. {t("rights")}</p>
                         <div className="flex gap-6">
-                            <Link href="/privacy" className="hover:text-white transition-colors">
+                            <Link href="/privacy" className="transition-colors hover:text-white">
                                 {t("links.privacy")}
                             </Link>
-                            <Link href="/terms" className="hover:text-white transition-colors">
+                            <Link href="/terms" className="transition-colors hover:text-white">
                                 {t("links.terms")}
                             </Link>
                         </div>

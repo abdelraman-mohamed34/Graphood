@@ -1,12 +1,13 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { MoveDown } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useLightweightMotion } from "@/shared/lib/hooks/use-lightweight-motion";
 
 export default function AboutHero() {
     const t = useTranslations("about.hero");
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = useLightweightMotion();
 
     return (
         <section aria-labelledby="about-hero-title" className="relative min-h-[760px] border-b border-neutral-300 bg-white px-5 sm:px-8 lg:px-12">

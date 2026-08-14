@@ -26,7 +26,7 @@ export default function NavbarSearch({
                     value={value}
                     onChange={onChange}
                     placeholder={placeholder}
-                    className="w-full h-10 pl-10 pr-4 rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-gray-700 dark:text-gray-200 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 transition-colors"
+                    className="h-10 w-full rounded-sm border border-border bg-white ps-10 pe-4 text-sm text-neutral-700 transition-colors placeholder:text-neutral-400 focus:border-teal focus:outline-none"
                 />
             </div>
         </div>

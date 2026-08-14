@@ -50,6 +50,7 @@ export const systemSchema = z.object({
         .array(z.string().uuid("Invalid Tag ID"))
         .min(1, "Select at least one tag/category"),
     icon_url: z.string().url().optional(),
+    image_url: z.string().url().optional().or(z.literal("")),
     is_public: z.boolean().default(true),
 
     created_at: z.coerce.date(),

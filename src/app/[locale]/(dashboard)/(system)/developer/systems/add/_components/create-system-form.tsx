@@ -13,11 +13,7 @@ import { useSystem } from "@/shared/lib/hooks";
 import { useTags } from "@/shared/lib/hooks/tags/use-tag";
 
 import {
-    Card,
     CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +32,7 @@ import {
     type CreateSystemInput,
 } from "@/shared/lib/schemas/systems.schema";
 import { MarkdownEditor } from "@/shared/_components/markdown-editor";
+import { SystemImageField } from "@/components/systems/system-image-field";
 
 export default function CreateSystemForm() {
     const router = useRouter();
@@ -60,6 +57,7 @@ export default function CreateSystemForm() {
             name: "",
             slug: "",
             description: "",
+            image_url: "",
             readme: "",
             tags: [],
             starter_price: 0,
@@ -77,6 +75,16 @@ export default function CreateSystemForm() {
         control: form.control,
         name: "tags",
         defaultValue: form.getValues("tags"),
+    });
+    const imageUrl = useWatch({
+        control: form.control,
+        name: "image_url",
+        defaultValue: form.getValues("image_url"),
+    });
+    const readme = useWatch({
+        control: form.control,
+        name: "readme",
+        defaultValue: form.getValues("readme"),
     });
     const selectedTags = useMemo(
         () => selectedTagIds
@@ -166,11 +174,33 @@ export default function CreateSystemForm() {
                             <FieldError errors={[form.formState.errors.description]} />
                         </Field>
 
+                        <SystemImageField
+                            value={imageUrl}
+                            onChange={(url) => form.setValue("image_url", url, { shouldDirty: true, shouldValidate: true })}
+                            disabled={isCreating}
+                            labels={{
+                                label: t("fields.image.label"),
+                                description: t("fields.image.description"),
+                                choose: t("fields.image.choose"),
+                                replace: t("fields.image.replace"),
+                                remove: t("fields.image.remove"),
+                                uploading: t("fields.image.uploading"),
+                                previewAlt: t("fields.image.previewAlt"),
+                                fallback: t("fields.image.fallback"),
+                                errors: {
+                                    invalidType: t("fields.image.errors.invalidType"),
+                                    tooLarge: t("fields.image.errors.tooLarge"),
+                                    unauthenticated: t("fields.image.errors.unauthenticated"),
+                                    uploadFailed: t("fields.image.errors.uploadFailed"),
+                                },
+                            }}
+                        />
+
                         <Field>
                             <FieldLabel>{t("fields.readme.label")}</FieldLabel>
                             <FieldDescription>{t("fields.readme.description")}</FieldDescription>
                             <MarkdownEditor
-                                value={form.watch("readme") ?? ""}
+                                value={readme ?? ""}
                                 onChange={(value) => form.setValue("readme", value, { shouldDirty: true, shouldValidate: true })}
                                 labels={{ write: t("fields.readme.write"), preview: t("fields.readme.preview"), placeholder: t("fields.readme.placeholder"), empty: t("fields.readme.empty") }}
                             />

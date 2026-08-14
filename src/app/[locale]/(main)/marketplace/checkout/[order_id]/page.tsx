@@ -85,29 +85,31 @@ export default function Page({ params }: PageProps) {
     };
 
     return (
-        <div className="mx-auto max-w-4xl space-y-4 p-6">
-            <h1 className="text-3xl font-bold">{t("title")}</h1>
+        <div className="min-h-screen px-4 py-8 sm:px-6">
+            <div className="mx-auto max-w-4xl space-y-4">
+                <h1 className="text-3xl font-bold text-maroon">{t("title")}</h1>
 
-            <OrderSummaryCard
-                order={order}
-                system={system}
-                formatMoney={formatMoney}
-                translateValue={translateValue}
-            />
+                <OrderSummaryCard
+                    order={order}
+                    system={system}
+                    formatMoney={formatMoney}
+                    translateValue={translateValue}
+                />
 
-            <PriceBreakdownCard
-                pricing={pricing}
-                formatMoney={formatMoney}
-            />
+                <PriceBreakdownCard
+                    pricing={pricing}
+                    formatMoney={formatMoney}
+                />
 
-            <button
-                type="button"
-                onClick={handleCompletePayment}
-                disabled={isInitiating}
-                className="w-full rounded bg-black px-4 py-3 font-medium text-white transition-opacity disabled:opacity-50 dark:bg-white dark:text-black"
-            >
-                {isInitiating ? t("processing") : t("completePayment")}
-            </button>
+                <button
+                    type="button"
+                    onClick={handleCompletePayment}
+                    disabled={isInitiating}
+                    className="w-full rounded-sm bg-maroon px-4 py-3 font-medium text-white transition-colors hover:bg-teal disabled:opacity-50"
+                >
+                    {isInitiating ? t("processing") : t("completePayment")}
+                </button>
+            </div>
         </div>
     );
 }

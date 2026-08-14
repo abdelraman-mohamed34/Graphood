@@ -15,7 +15,7 @@ export default function Navbar() {
 
     return (
         <header
-            className="flex h-14 w-full items-center justify-between gap-3 border-b border-gray-100 bg-white px-4 transition-colors dark:border-zinc-800 dark:bg-zinc-900 md:px-6"
+            className="flex h-14 w-full items-center justify-between gap-3 border-b border-border bg-white px-4 transition-colors md:px-6"
         >
             <div className="flex min-w-0 items-center gap-2 md:gap-3">
                 {systemNavigation && (
@@ -31,7 +31,7 @@ export default function Navbar() {
                 )}
                 <NavbarLogo />
             </div>
-            <div className="flex shrink-0 items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 md:gap-3">
+            <div className="flex shrink-0 items-center gap-2 text-sm font-medium text-neutral-700 md:gap-3">
                 <nav aria-label={t("primary_navigation")} className="flex items-center gap-1">
                     <Link href="/marketplace" className="flex items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted hover:text-foreground sm:px-3" aria-label={t("marketplace")}>
                         <Store className="size-4" aria-hidden="true" />
@@ -43,7 +43,7 @@ export default function Navbar() {
                     </Link>
                 </nav>
                 <LanguageMenu />
-                <div className="h-5 w-px shrink-0 bg-gray-200 dark:bg-zinc-700" />
+                <div className="h-5 w-px shrink-0 bg-border" />
                 <UserMenu />
             </div>
         </header>

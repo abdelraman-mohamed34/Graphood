@@ -57,8 +57,14 @@ export function useOAuth() {
                     `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=no`
                 );
 
+                if (!popup) {
+                    toast.error(t("errors.generic_login_error"));
+                    setIsOAuthLoading(false);
+                    return;
+                }
+
                 const timer = setInterval(() => {
-                    if (popup?.closed) {
+                    if (popup.closed) {
                         clearInterval(timer);
                         setIsOAuthLoading(false);
                     }
@@ -66,8 +72,6 @@ export function useOAuth() {
             }
 
         } catch (error) {
-            console.error("OAuth Error:", error);
-
             toast.error(
                 error instanceof Error
                     ? error.message

@@ -1,8 +1,9 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Blocks, CodeXml, Gauge, Globe2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useLightweightMotion } from "@/shared/lib/hooks/use-lightweight-motion";
 
 const principles = [
     { id: "modular", icon: Blocks, span: "lg:col-span-2" },
@@ -13,7 +14,7 @@ const principles = [
 
 export default function AboutGrid() {
     const t = useTranslations("about.principles");
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = useLightweightMotion();
 
     return (
         <section aria-labelledby="about-principles-title" className="border-b border-neutral-300 bg-[#f4f3f1] px-5 py-24 sm:px-8 lg:px-12 lg:py-32">

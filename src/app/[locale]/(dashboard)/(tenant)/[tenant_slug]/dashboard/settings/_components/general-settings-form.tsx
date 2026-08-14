@@ -244,6 +244,7 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
                                             src={preview}
                                             alt={t("logo.alt")}
                                             fill
+                                            sizes="96px"
                                             className="object-cover"
                                         />
                                     ) : (

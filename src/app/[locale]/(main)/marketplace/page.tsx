@@ -28,6 +28,8 @@ export default async function MarketplacePage() {
                 emptyDescription: t("empty.description"),
                 cardBadge: t("card.badge"),
                 cardViewDetails: t("card.viewDetails"),
+                cardImageAlt: t("card.imageAlt"),
+                cardImageFallback: t("card.imageFallback"),
             }}
         />
     );
