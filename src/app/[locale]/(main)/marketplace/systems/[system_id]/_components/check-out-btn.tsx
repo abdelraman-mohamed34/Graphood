@@ -16,7 +16,7 @@ export default function CheckoutButton({ systemId }: { systemId: string }) {
             <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="group relative flex w-full items-center justify-center overflow-hidden rounded-xl bg-neutral-900 px-6 py-3.5 text-sm font-medium text-white shadow-md transition-all duration-200 hover:bg-black hover:shadow-xl dark:bg-white dark:text-black dark:hover:bg-neutral-100"
+                className="group relative flex w-full items-center justify-center overflow-hidden rounded bg-primary px-6 py-3.5 text-sm font-medium text-white shadow-md transition-all duration-200 hover:shadow-xl dark:bg-white dark:text-black dark:hover:bg-neutral-100"
             >
                 <div className="flex items-center gap-2.5 z-10">
                     <ShoppingBag className="w-4 h-4 text-neutral-400 dark:text-neutral-600 group-hover:scale-110 transition-transform duration-200" />

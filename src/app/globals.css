@@ -9,6 +9,10 @@
   --font-mono: "Roboto Mono", monospace;
   --font-heading: "Roboto", system-ui, -apple-system, sans-serif;
 
+  --color-maroon: var(--maroon);
+  --color-teal: var(--teal);
+  --color-dark-strip: var(--dark-strip);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -50,13 +54,17 @@
 }
 
 :root {
+  --maroon: oklch(0.25 0.05 15);
+  --teal: oklch(0.33 0.06 200);
+  --dark-strip: oklch(0.18 0.01 240);
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --primary: oklch(0.25 0.05 15);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -143,6 +151,10 @@
   }
 }
 
+.font-arabic {
+  font-family: "Cairo", system-ui, sans-serif;
+}
+
 /* Responsive documentation shell. Page-level spacing is centralized here so
    every documentation route shares one viewport-safe content boundary. */
 .docs-content>div {
@@ -191,18 +203,97 @@
     line-height: 2.5rem;
   }
 }
+
 /* Sanitized system README content. */
-.markdown-body h1 { font-size: 1.875rem; font-weight: 700; margin: 1.5rem 0 .75rem; }
-.markdown-body h2 { font-size: 1.5rem; font-weight: 650; margin: 1.4rem 0 .7rem; border-bottom: 1px solid var(--border); padding-bottom: .35rem; }
-.markdown-body h3 { font-size: 1.25rem; font-weight: 600; margin: 1.2rem 0 .6rem; }
-.markdown-body p, .markdown-body ul, .markdown-body ol, .markdown-body pre, .markdown-body table, .markdown-body blockquote { margin: .8rem 0; }
-.markdown-body ul { list-style: disc; padding-inline-start: 1.5rem; }
-.markdown-body ol { list-style: decimal; padding-inline-start: 1.5rem; }
-.markdown-body a { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
-.markdown-body blockquote { border-inline-start: 3px solid var(--border); padding-inline-start: 1rem; color: var(--muted-foreground); }
-.markdown-body pre { overflow-x: auto; border-radius: .5rem; background: #111827; color: #e5e7eb; padding: 1rem; }
-.markdown-body :not(pre) > code { border-radius: .25rem; background: var(--muted); padding: .1rem .3rem; font-family: var(--font-mono); }
-.markdown-body table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; }
-.markdown-body th, .markdown-body td { border: 1px solid var(--border); padding: .5rem .75rem; text-align: start; }
-.markdown-body th { background: var(--muted); font-weight: 600; }
-.markdown-body img { display: block; max-width: 100%; height: auto; margin: 1rem 0; border-radius: .5rem; }
+.markdown-body h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin: 1.5rem 0 .75rem;
+}
+
+.markdown-body h2 {
+  font-size: 1.5rem;
+  font-weight: 650;
+  margin: 1.4rem 0 .7rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: .35rem;
+}
+
+.markdown-body h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1.2rem 0 .6rem;
+}
+
+.markdown-body p,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body pre,
+.markdown-body table,
+.markdown-body blockquote {
+  margin: .8rem 0;
+}
+
+.markdown-body ul {
+  list-style: disc;
+  padding-inline-start: 1.5rem;
+}
+
+.markdown-body ol {
+  list-style: decimal;
+  padding-inline-start: 1.5rem;
+}
+
+.markdown-body a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.markdown-body blockquote {
+  border-inline-start: 3px solid var(--border);
+  padding-inline-start: 1rem;
+  color: var(--muted-foreground);
+}
+
+.markdown-body pre {
+  overflow-x: auto;
+  border-radius: .5rem;
+  background: #111827;
+  color: #e5e7eb;
+  padding: 1rem;
+}
+
+.markdown-body :not(pre)>code {
+  border-radius: .25rem;
+  background: var(--muted);
+  padding: .1rem .3rem;
+  font-family: var(--font-mono);
+}
+
+.markdown-body table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--border);
+  padding: .5rem .75rem;
+  text-align: start;
+}
+
+.markdown-body th {
+  background: var(--muted);
+  font-weight: 600;
+}
+
+.markdown-body img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+  border-radius: .5rem;
+}

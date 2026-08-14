@@ -246,8 +246,6 @@ export default function MarketplaceExplorer({ labels }: MarketplaceExplorerProps
                     </div>
                 </div>
             </section>
-
-
         </main>
     );
 }

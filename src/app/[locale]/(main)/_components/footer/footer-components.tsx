@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 const SOCIAL_SVGS = {
     github: (
@@ -23,6 +23,8 @@ const SOCIAL_SVGS = {
 
 // 1. مكون الهوية والبراند (Brand Block)
 export function FooterBrand({ description }: { description: string }) {
+    const t = useTranslations("footer.social");
+
     return (
         <div className="space-y-6">
             <span className="text-xl font-bold tracking-tight text-white block">
@@ -32,13 +34,13 @@ export function FooterBrand({ description }: { description: string }) {
                 {description}
             </p>
             <div className="flex gap-4 text-[#777777]">
-                <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+                <a href="https://github.com" target="_blank" rel="noreferrer" aria-label={t("github")} className="hover:text-white transition-colors">
                     {SOCIAL_SVGS.github}
                 </a>
-                <a href="https://twitter.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+                <a href="https://twitter.com" target="_blank" rel="noreferrer" aria-label={t("twitter")} className="hover:text-white transition-colors">
                     {SOCIAL_SVGS.twitter}
                 </a>
-                <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+                <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label={t("linkedin")} className="hover:text-white transition-colors">
                     {SOCIAL_SVGS.linkedin}
                 </a>
             </div>

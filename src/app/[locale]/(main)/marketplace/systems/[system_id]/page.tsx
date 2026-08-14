@@ -39,7 +39,7 @@ export default function Page() {
                 role="status"
                 aria-label={label('loading', 'Loading system details', 'جارٍ تحميل تفاصيل النظام')}
             >
-                <div className="size-9 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
+                <div className="size-9 animate-spin rounded-full border-2 border-primary border-t-primary" />
             </div>
         )
     }
@@ -69,10 +69,10 @@ export default function Page() {
 
     return (
         <main className="mx-auto min-h-screen w-full max-w-7xl px-4 py-8 text-start sm:px-6 lg:px-8 lg:py-12">
-            <section className="relative overflow-hidden rounded-3xl border border-border/70 bg-gradient-to-br from-card via-card to-primary/5 p-6 shadow-sm sm:p-8">
-                <div className="pointer-events-none absolute -end-20 -top-24 size-64 rounded-full bg-primary/10 blur-3xl" />
+            <section className="relative overflow-hidden rounded border border-border/70 bg-maroon p-6 sm:p-8">
+                <div className="pointer-events-none absolute -end-20 -top-24 size-64 rounded-full bg-primary blur-3xl" />
                 <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
-                    <div className="group flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border bg-background/80 shadow-sm backdrop-blur transition-shadow hover:shadow-md sm:size-24">
+                    <div className="group flex size-20 shrink-0 items-center justify-center overflow-hidden border bg-background/80 backdrop-blur transition-shadow hover:shadow-md sm:size-24">
                         {system.icon_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={system.icon_url} alt="" className="size-full object-cover transition-transform duration-300 group-hover:scale-105" />
@@ -83,20 +83,9 @@ export default function Page() {
 
                     <div className="min-w-0 flex-1 space-y-2 text-start">
                         <div className="flex flex-wrap items-center gap-3">
-                            <h1 className="min-w-0 break-words text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                            <h1 className="min-w-0 break-words text-2xl font-bold tracking-tight text-white sm:text-3xl">
                                 {system.name}
                             </h1>
-                            <Badge
-                                variant="outline"
-                                className={system.status === 'ACTIVE'
-                                    ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
-                                    : 'bg-muted text-muted-foreground'}
-                            >
-                                <span className={`me-1.5 size-1.5 shrink-0 rounded-full ${system.status === 'ACTIVE' ? 'bg-emerald-500' : 'bg-muted-foreground'}`} />
-                                {system.status === 'ACTIVE'
-                                    ? label('active', 'Active', 'نشط')
-                                    : label('inactive', 'Inactive', 'غير نشط')}
-                            </Badge>
                         </div>
                         <p className="break-all font-mono text-xs text-muted-foreground sm:text-sm">
                             <span className="font-sans font-medium">{label('slug', 'Slug', 'الرابط المختصر')}:</span>{' '}
@@ -106,10 +95,10 @@ export default function Page() {
                 </div>
             </section>
 
-            <div className="mt-8 grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-8">
+            <div className="mt-8 grid min-w-0 items-start lg:grid-cols-[minmax(0,1fr)_24rem] gap-4">
                 <div className="min-w-0">
-                    <Card className="overflow-hidden border-border/70 bg-card shadow-sm pt-0">
-                        <CardHeader className="border-b bg-muted/80 px-6 py-5 sm:px-8">
+                    <Card className="overflow-hidden border-border/70 bg-card pt-0 rounded">
+                        <CardHeader className="border-b bg-muted/80 px-6 py-5 sm:px-8 rounded-t">
                             <CardTitle className="text-lg font-semibold">
                                 {label('readme', 'README', 'نظرة عامة')}
                             </CardTitle>
@@ -118,7 +107,7 @@ export default function Page() {
                             {system.readme?.trim() ? (
                                 <MarkdownRenderer markdown={system.readme} />
                             ) : (
-                                <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+                                <div className="rounded border border-dashed p-8 text-center text-sm text-muted-foreground">
                                     {label('noReadme', 'No README documentation has been provided yet.', 'لم تتم إضافة توثيق README بعد.')}
                                 </div>
                             )}
@@ -126,8 +115,8 @@ export default function Page() {
                     </Card>
                 </div>
 
-                <aside className="min-w-0 space-y-5 lg:sticky lg:top-8">
-                    <Card className="overflow-hidden border-primary/15 shadow-md shadow-primary/5">
+                <aside className="min-w-0 space-y-4 lg:sticky lg:top-8">
+                    <Card className="overflow-hidden border-primary rounded">
                         <CardContent className="space-y-5 p-6 text-start">
                             <div className="space-y-1">
                                 <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -141,7 +130,7 @@ export default function Page() {
                         </CardContent>
                     </Card>
 
-                    <Card className="overflow-hidden border-border/70 shadow-sm lg:flex hidden">
+                    <Card className="overflow-hidden border-border/70 lg:flex hidden rounded">
                         <CardHeader className="border-b bg-muted/20 px-5 py-4">
                             <CardTitle className="text-base font-semibold">
                                 {label('systemOverview', 'System overview', 'نظرة عامة على النظام')}
@@ -155,7 +144,7 @@ export default function Page() {
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     {systemTags.length > 0 ? systemTags.map((tag) => (
-                                        <Badge key={tag.id} variant="secondary" className="max-w-full whitespace-normal break-words rounded-lg px-2.5 py-1 text-start text-xs font-medium">
+                                        <Badge key={tag.id} variant="secondary" className="max-w-full whitespace-normal break-words rounded px-2.5 py-1 text-start text-xs font-medium">
                                             {locale === 'ar' ? tag.name_ar : tag.name_en}
                                         </Badge>
                                     )) : (

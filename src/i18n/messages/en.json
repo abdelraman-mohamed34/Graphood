@@ -318,6 +318,98 @@
         },
         "cta": {
             "buyNow": "Buy Now ←"
+        },
+        "landing": {
+            "sponsors": {
+                "eyebrow": "Trusted by the most innovative companies in the world"
+            },
+            "ecosystem": {
+                "title": "Your Graphood suite",
+                "cta": "Get Graphood",
+                "tabsLabel": "Graphood ecosystem products",
+                "tabs": {
+                    "studio": {
+                        "label": "Studio & Booking",
+                        "badge": "Outwin Ecosystem",
+                        "title": "The ultimate hub for studio & photography management",
+                        "description": "Effortlessly manage outdoor photo sessions, automate invoice terms, and deliver raw media to your clients with unmatched speed.",
+                        "linkText": "Learn more about Studio System",
+                        "features": {
+                            "0": "Automated invoice & custom terms generation",
+                            "1": "Seamless raw media delivery selection",
+                            "2": "Real-time outdoor booking calendar"
+                        }
+                    },
+                    "ecommerce": {
+                        "label": "E-Commerce Hub",
+                        "badge": "Multi-Tenant Engine",
+                        "title": "Launch high-performance multi-tenant digital stores",
+                        "description": "Scalable infrastructure designed to handle thousands of isolated storefronts with instant subdomain routing and automated database sync.",
+                        "linkText": "Explore E-Commerce Architecture",
+                        "features": {
+                            "0": "Subdomain auto-routing (tenant.graphood.com)",
+                            "1": "Instant Supabase & DB schema migrations",
+                            "2": "Centralized CORS & API security handling"
+                        }
+                    },
+                    "security": {
+                        "label": "Tenant Auth",
+                        "badge": "Security & Access",
+                        "title": "Enterprise-grade security built for multi-tenancy",
+                        "description": "Keep tenant data strictly isolated with automated JWT validation, role-based access control, and centralized API guardrails.",
+                        "linkText": "Read Security Specifications",
+                        "features": {
+                            "0": "Isolated row-level database security",
+                            "1": "Custom domain & SSL provisioning",
+                            "2": "Structured runtime JSON error handling"
+                        }
+                    },
+                    "developer": {
+                        "label": "Developer SDK",
+                        "badge": "Developer Tools",
+                        "title": "Build, extend, and deploy Graphood modules",
+                        "description": "Full-featured React starter templates, hooks, and clean APIs to build custom extensions for the Graphood ecosystem.",
+                        "linkText": "Browse Developer Docs",
+                        "features": {
+                            "0": "Type-safe custom React hooks (useGraphood)",
+                            "1": "Pre-configured Tailwind & Framer Motion UI",
+                            "2": "One-click deployment pipeline"
+                        }
+                    }
+                }
+            },
+            "vision": {
+                "backgroundText": "For the past 10 years, software built for productivity has focused on incremental improvements...",
+                "quote": "To the builders, the creators, and those shaping the future...",
+                "title": "Becoming Graphood.",
+                "description": "When modular systems work everywhere you work, it starts to change <emphasis>how</emphasis> you build. At first, you launch faster and more seamlessly. Before you know it, you have the time to be more creative, strategic, and impactful—free to do what only you can do.",
+                "cta": "Read our announcement"
+            },
+            "faq": {
+                "title": "Frequently Asked Questions",
+                "items": {
+                    "platform": {
+                        "question": "What makes Graphood different from traditional web platforms?",
+                        "answer": "Graphood is built as a modular ecosystem. Instead of rigid templates, it seamlessly combines multi-tenant e-commerce hubs, studio booking services, and developer SDKs into one unified architecture."
+                    },
+                    "outwin": {
+                        "question": "How does the Studio & Booking system (Outwin) integrate?",
+                        "answer": "Outwin is built directly into the Graphood ecosystem. It handles outdoor session scheduling, automated invoice generation, and raw media delivery workflows out of the box."
+                    },
+                    "subdomains": {
+                        "question": "Can I use custom subdomains for my tenant store?",
+                        "answer": "Yes! Every tenant gets automatic subdomain routing (e.g., store.graphood.com) along with SSL provisioning and isolated Row-Level Security for maximum performance and protection."
+                    },
+                    "developers": {
+                        "question": "How can developers build and deploy custom modules?",
+                        "answer": "Developers can leverage our Graphood SDK, which includes type-safe React hooks, pre-configured Framer Motion UI patterns, and simple APIs to publish modules directly to the marketplace."
+                    },
+                    "trial": {
+                        "question": "Is there a free trial or starter plan available?",
+                        "answer": "Absolutely. You can start exploring the marketplace and building your setup for free before scaling to higher multi-tenant tiers."
+                    }
+                }
+            }
         }
     },
     "auth": {
@@ -587,6 +679,11 @@
     "footer": {
         "description": "The ultimate global ecosystem to discover, compare, and instantly deploy enterprise-grade SaaS solutions.",
         "rights": "All rights reserved.",
+        "social": {
+            "github": "Graphood on GitHub",
+            "twitter": "Graphood on X",
+            "linkedin": "Graphood on LinkedIn"
+        },
         "categories": {
             "platform": "Platform",
             "marketplace": "Marketplace",

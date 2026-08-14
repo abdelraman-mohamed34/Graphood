@@ -12,8 +12,7 @@ import { Tenant } from "@/shared/lib/schemas/tenants.schema";
 import { WorkspaceCard } from "./_components/workspace-card";
 import { CreateWorkspaceCard } from "./_components/create-workspace-card";
 
-const DEFAULT_WORKSPACE_LOGO =
-    "https://avatar.vercel.sh/shadcn1";
+const DEFAULT_WORKSPACE_LOGO = "https://avatar.vercel.sh/shadcn1";
 
 function getTenantLogo(tenant: Tenant) {
     return tenant.logo_url ?? DEFAULT_WORKSPACE_LOGO;

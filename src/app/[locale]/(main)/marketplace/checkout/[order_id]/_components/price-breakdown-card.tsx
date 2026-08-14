@@ -15,7 +15,7 @@ export function PriceBreakdownCard({ pricing, formatMoney }: PriceBreakdownCardP
     const t = useTranslations("checkout");
 
     return (
-        <section className="rounded-lg border p-6">
+        <section className="rounded border-2 p-6">
             <h2 className="mb-4 text-xl font-semibold">{t("orderSummary")}</h2>
             <div className="space-y-2">
                 <div className="flex justify-between"><span>{t("subtotal")}</span><span>{formatMoney(pricing.subtotal)}</span></div>

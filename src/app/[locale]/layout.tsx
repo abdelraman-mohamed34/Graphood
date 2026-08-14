@@ -65,7 +65,7 @@ export default async function LocaleLayout({
         <div
             lang={locale}
             dir={dir}
-            className="font-sans"
+            className={locale === "ar" ? "font-arabic" : "font-sans"}
         >
             <NextIntlClientProvider messages={messages}>
                 <AppProvider

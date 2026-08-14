@@ -64,7 +64,6 @@ export default function CyberXHeroSection() {
                     keeping your systems secure long before attacks even begin.
                 </motion.p>
 
-                {/* زر Activate Shield Now */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -84,14 +83,12 @@ export default function CyberXHeroSection() {
                 </motion.div>
             </div>
 
-            {/* 4. عناصر الفوتر في الأسفل (يمين وشمال) */}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1, delay: 0.4 }}
                 className="relative z-10 w-full max-w-[1400px] mx-auto px-8 pb-10 flex flex-row items-end justify-between text-xs sm:text-sm"
             >
-                {/* أقصى الشمال الأسفل */}
                 <div className="flex flex-col gap-1 tracking-[0.25em] font-medium text-neutral-300 uppercase leading-snug">
                     <span>A D A P T I V E</span>
                     <span>S E C U R I T Y</span>

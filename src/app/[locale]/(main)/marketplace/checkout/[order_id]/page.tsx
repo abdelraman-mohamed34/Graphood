@@ -1,12 +1,11 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useOrder } from "@/features/billing/use-order";
 import { useInitiatePayment } from "@/features/billing/use-initiate-payment";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { PaymentMethodSelector } from "./_components/payment-method-selector";
 import { OrderSummaryCard } from "./_components/order-summary-card";
 import { PriceBreakdownCard } from "./_components/price-breakdown-card";
 
@@ -23,7 +22,6 @@ export default function Page({ params }: PageProps) {
     const { order_id } = use(params);
     const { order, isLoading, error } = useOrder(order_id);
 
-    const [selectedMethod, setSelectedMethod] = useState<"wallet" | "instapay">("wallet");
     const { mutate: initiatePayment, isPending: isInitiating } = useInitiatePayment();
 
     const isPaid = order?.status === "PAID";
@@ -82,12 +80,12 @@ export default function Page({ params }: PageProps) {
     const handleCompletePayment = () => {
         initiatePayment({
             orderId: order.id,
-            paymentMethod: selectedMethod,
+            paymentMethod: "wallet",
         });
     };
 
     return (
-        <div className="mx-auto max-w-4xl space-y-6 p-6">
+        <div className="mx-auto max-w-4xl space-y-4 p-6">
             <h1 className="text-3xl font-bold">{t("title")}</h1>
 
             <OrderSummaryCard
@@ -102,17 +100,11 @@ export default function Page({ params }: PageProps) {
                 formatMoney={formatMoney}
             />
 
-            <PaymentMethodSelector
-                selectedMethod={selectedMethod}
-                onSelectMethod={setSelectedMethod}
-                disabled={isInitiating}
-            />
-
             <button
                 type="button"
                 onClick={handleCompletePayment}
                 disabled={isInitiating}
-                className="w-full rounded-lg bg-black px-4 py-3 font-medium text-white transition-opacity disabled:opacity-50 dark:bg-white dark:text-black"
+                className="w-full rounded bg-black px-4 py-3 font-medium text-white transition-opacity disabled:opacity-50 dark:bg-white dark:text-black"
             >
                 {isInitiating ? t("processing") : t("completePayment")}
             </button>
