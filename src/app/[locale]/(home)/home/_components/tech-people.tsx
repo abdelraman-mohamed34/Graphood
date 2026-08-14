@@ -15,7 +15,7 @@ const logos = [
     { name: "Coinbase", opacity: "opacity-40" },
 ];
 
-export default function TechPeopleSection() {
+export default function TechPeople() {
     return (
         <section className="w-full bg-white text-black flex flex-col gap-5 pt-20 items-center justify-center [contain:content]">
             <motion.div

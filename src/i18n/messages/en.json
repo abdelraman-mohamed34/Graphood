@@ -330,7 +330,7 @@
                 "tabs": {
                     "studio": {
                         "label": "Studio & Booking",
-                        "badge": "Outwin Ecosystem",
+                        "badge": "Studio Operations",
                         "title": "The ultimate hub for studio & photography management",
                         "description": "Effortlessly manage outdoor photo sessions, automate invoice terms, and deliver raw media to your clients with unmatched speed.",
                         "linkText": "Learn more about Studio System",
@@ -389,27 +389,83 @@
                 "title": "Frequently Asked Questions",
                 "items": {
                     "platform": {
-                        "question": "What makes Graphood different from traditional web platforms?",
-                        "answer": "Graphood is built as a modular ecosystem. Instead of rigid templates, it seamlessly combines multi-tenant e-commerce hubs, studio booking services, and developer SDKs into one unified architecture."
+                        "question": "What makes Graphood’s modular ecosystem different from a traditional SaaS platform?",
+                        "answer": "Graphood treats each business system as a deployable module rather than forcing every team into one rigid product. Clients can choose the systems and license model that fit their operation, while shared tenant, membership, billing, and developer services provide a consistent foundation as the workspace grows."
                     },
                     "outwin": {
-                        "question": "How does the Studio & Booking system (Outwin) integrate?",
-                        "answer": "Outwin is built directly into the Graphood ecosystem. It handles outdoor session scheduling, automated invoice generation, and raw media delivery workflows out of the box."
+                        "question": "What happens after I purchase or subscribe to a system?",
+                        "answer": "Once payment is confirmed, Graphood provisions a dedicated workspace linked to your selected system, account, and subscription. You can then manage workspace details, invite team members, assign roles and permissions, monitor plan usage, and access the capabilities included with your license from one tenant dashboard."
                     },
                     "subdomains": {
-                        "question": "Can I use custom subdomains for my tenant store?",
-                        "answer": "Yes! Every tenant gets automatic subdomain routing (e.g., store.graphood.com) along with SSL provisioning and isolated Row-Level Security for maximum performance and protection."
+                        "question": "How are tenant workspaces, subdomains, and custom domains handled?",
+                        "answer": "Each workspace has a unique tenant slug and is linked to its own system, owner, subscription, members, roles, and branding. Graphood’s tenant model also stores a validated subdomain identifier for domain-based deployments. Custom-domain routing, DNS, and SSL requirements depend on the selected system and deployment setup and should be confirmed during onboarding."
                     },
                     "developers": {
-                        "question": "How can developers build and deploy custom modules?",
-                        "answer": "Developers can leverage our Graphood SDK, which includes type-safe React hooks, pre-configured Framer Motion UI patterns, and simple APIs to publish modules directly to the marketplace."
+                        "question": "How can developers extend Graphood or integrate their own systems?",
+                        "answer": "Developers can build on reusable React components, typed hooks, tenant-aware APIs, and API-key authentication instead of recreating platform infrastructure. The developer API exposes verified context for the current system, tenant, memberships, and subscription capabilities, with sandbox support for integration testing before a module is connected to production data."
                     },
                     "trial": {
-                        "question": "Is there a free trial or starter plan available?",
-                        "answer": "Absolutely. You can start exploring the marketplace and building your setup for free before scaling to higher multi-tenant tiers."
+                        "question": "What are the plan boundaries, licensing options, and trial terms?",
+                        "answer": "Starter is the entry tier with 1 administrator, up to 100 members, 5 GB of storage, and no developer API access. Pro increases those limits to 5 administrators, 500 members, and 50 GB while enabling reports, assisted writing, and API access. Business supports 10 administrators, 5,000 members, and 500 GB with the same advanced capabilities. Systems may be offered as a recurring subscription, a reseller license, or an exclusive buyout; current prices and any trial terms are shown for the selected system before checkout."
                     }
                 }
             }
+        }
+    },
+    "about": {
+        "hero": {
+            "eyebrow": "The Graphood Manifesto",
+            "title": "Building the Modular Ecosystem for Digital Builders",
+            "description": "Graphood brings systems, workspaces, teams, and developer infrastructure into one extensible platform—so ambitious products can move from idea to operation without rebuilding the foundation every time.",
+            "scroll": "Explore the architecture"
+        },
+        "principles": {
+            "eyebrow": "Core principles",
+            "title": "One foundation. Infinite directions.",
+            "description": "Every layer is designed to stay composable, tenant-aware, and ready for the next system, team, or market.",
+            "items": {
+                "modular": {
+                    "title": "Modular First",
+                    "description": "Choose, combine, and evolve independent business systems without forcing every workflow into a monolith. Shared platform services keep identity, billing, and operations coherent."
+                },
+                "speed": {
+                    "title": "Symmetry & Speed",
+                    "description": "Consistent contracts across dashboards, APIs, and modules reduce integration friction and help teams ship with confidence."
+                },
+                "domains": {
+                    "title": "Tenant Identity",
+                    "description": "Unique workspace slugs, validated subdomain identifiers, branding, memberships, and roles give every tenant a clear operational boundary."
+                },
+                "sdk": {
+                    "title": "Developer SDK",
+                    "description": "Typed hooks, reusable React components, API-key authentication, sandbox contexts, and tenant-aware endpoints turn platform primitives into a practical extension surface."
+                }
+            }
+        },
+        "stats": {
+            "eyebrow": "Built for momentum",
+            "title": "Infrastructure that scales with the idea",
+            "liveLabel": "Ecosystem signals",
+            "items": {
+                "uptime": {
+                    "label": "Platform uptime target",
+                    "description": "An always-on foundation for connected systems and workspaces."
+                },
+                "modules": {
+                    "label": "Modular capabilities",
+                    "description": "Composable building blocks spanning operations, commerce, tenancy, and developer tooling."
+                },
+                "builders": {
+                    "label": "Builders in our vision",
+                    "description": "A growing ecosystem designed for creators, studios, teams, and software companies."
+                }
+            }
+        },
+        "cta": {
+            "eyebrow": "Build on Graphood",
+            "title": "The foundation is ready. Build what comes next.",
+            "description": "Explore the developer documentation to understand authentication, tenant context, memberships, subscriptions, response contracts, and the APIs behind the ecosystem.",
+            "button": "Explore developer docs"
         }
     },
     "auth": {

@@ -27,7 +27,7 @@ export default function LanguageMenu() {
                 align={locale === "ar" ? "start" : "end"}
                 side="bottom"
                 sideOffset={6}
-                className="w-36 min-w-[9rem]"
+                className="w-36 min-w-[9rem] rounded shadow-sm"
             >
                 <DropdownMenuItem
                     onClick={() => changeLocale("en")}
@@ -35,7 +35,7 @@ export default function LanguageMenu() {
                     className="flex items-center justify-between cursor-pointer"
                 >
                     <span>English</span>
-                    {locale === "en" && <Check className="w-4 h-4 text-blue-500" />}
+                    {locale === "en" && <Check className="w-4 h-4 text-primary" />}
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
@@ -44,7 +44,7 @@ export default function LanguageMenu() {
                     className="flex items-center justify-between cursor-pointer"
                 >
                     <span>العربية</span>
-                    {locale === "ar" && <Check className="w-4 h-4 text-blue-500" />}
+                    {locale === "ar" && <Check className="w-4 h-4 text-primary" />}
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

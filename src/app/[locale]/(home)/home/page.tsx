@@ -4,11 +4,12 @@ import EcosystemSuite from "./_components/ecosystem-suite";
 import VisionBanner from "./_components/vision-banner";
 import FAQ from "./_components/faq";
 import Footer from "../../(main)/_components/footer/Footer";
+import Hero from "../../(main)/_components/hero";
 
 export default function Page() {
   return (
     <main className="min-h-screen ">
-      <div className="min-h-screen w-full flex bg-maroon"></div>
+      <Hero />
       <section className="w-full flex justify-center">
         <HatchedContainer
           padding="p-8"

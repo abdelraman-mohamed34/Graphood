@@ -76,8 +76,7 @@ export default function UserMenu() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: -6 }}
                         transition={{ duration: 0.15, ease: "easeOut" }}
-                        className={`absolute end-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-800 ${isRtl ? "origin-top-left" : "origin-top-right"
-                            }`}
+                        className={`absolute end-0 z-50 mt-2 w-56 overflow-hidden rounded border border-gray-100 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-800 ${isRtl ? "origin-top-left" : "origin-top-right"}`}
                     >
                         <div className="border-b border-gray-100 px-4 py-3 dark:border-zinc-700">
                             <p className="truncate font-semibold text-sm mt-0.5">
