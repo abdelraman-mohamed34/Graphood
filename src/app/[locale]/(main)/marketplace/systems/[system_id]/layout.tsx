@@ -1,7 +1,6 @@
 // src/app/[locale]/(main)/marketplace/[system_id]/layout.tsx
 'use server'
 
-import { requireUser } from '@/shared/lib/auth/requires/require-user';
 import { createAdminClient } from '@/shared/lib/supabase/admin';
 import { getSystemById } from '@/shared/lib/supabase/services/systems';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
@@ -13,6 +12,7 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { JsonLd } from '@/shared/_components/json-ld';
 import { absoluteUrl, isAppLocale, privateMetadata, publicMetadata, SITE_NAME } from '@/shared/lib/seo';
+import { fetchUser } from '@/shared/lib/supabase/services/auth/user/fetch-user.service';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; system_id: string }> }): Promise<Metadata> {
     const { locale, system_id } = await params;
@@ -39,8 +39,8 @@ export default async function SystemDetailsLayout({
     const queryClient = createQueryClient();
     const supabase = await createAdminClient();
 
-    const [{ user }, system] = await Promise.all([
-        requireUser(locale),
+    const [user, system] = await Promise.all([
+        fetchUser(supabase),
         queryClient.fetchQuery({
             queryKey: queryKeys.systems.detail(system_id),
             queryFn: () => getSystemById(system_id, supabase),
@@ -62,7 +62,7 @@ export default async function SystemDetailsLayout({
         dateModified: system.updated_at, programmingLanguage: "TypeScript",
         offers: [["Starter", system.starter_price], ["Pro", system.pro_price], ["Business", system.business_price], ["Reseller", system.reseller_price], ["Exclusive", system.exclusive_price]]
             .filter((entry): entry is [string, number] => typeof entry[1] === 'number')
-            .map(([name, price]) => ({ "@type": "Offer", name, price, priceCurrency: system.currency || 'EGP', availability: "https://schema.org/InStock", url: absoluteUrl(appLocale, `/marketplace/systems/${system_id}`) })),
+            .map(([name, price]) => ({ "@type": "Offer", name, price, priceCurrency: system.currency || 'EGP', url: absoluteUrl(appLocale, `/marketplace/systems/${system_id}`) })),
     } : null;
 
     return (

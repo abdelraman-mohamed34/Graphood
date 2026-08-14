@@ -16,6 +16,7 @@ import {
 import { createClient } from "../../supabase/client";
 
 import { queryKeys } from "@/shared/lib/query";
+import { queryCachePolicy } from "@/shared/lib/query/query-client";
 
 export function useSystem(systemId?: string) {
     const queryClient = useQueryClient();
@@ -29,6 +30,7 @@ export function useSystem(systemId?: string) {
             return getPublicSystemAction(systemId, supabase);
         },
         enabled: !!systemId,
+        ...queryCachePolicy.standard,
     });
 
     const createMutation = useMutation<

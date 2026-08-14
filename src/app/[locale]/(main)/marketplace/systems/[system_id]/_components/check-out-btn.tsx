@@ -1,25 +1,38 @@
-// src/app/[locale]/(main)/marketplace/systems/[system_id]/_components/check-out-btn.tsx
 "use client";
 
 import { ShoppingBag } from "lucide-react";
-import { Link } from "@/i18n/navigation";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
+import { useRouter } from "@/i18n/navigation";
+import { useAuth } from "@/shared/lib/auth/auth-context";
 
 export default function CheckoutButton({ systemId }: { systemId: string }) {
     const t = useTranslations("marketplace.details");
-    const locale = useLocale();
+    const router = useRouter();
+    const { user, isLoading } = useAuth();
+
+    const handleClick = () => {
+        if (!user) {
+            toast.error(t("signInRequired"));
+            return;
+        }
+
+        router.push(`/marketplace/systems/${systemId}/get`);
+    };
 
     return (
-        <Link href={`/marketplace/systems/${systemId}/get`} className="block w-full">
-            <button
-                className="group relative flex w-full items-center justify-center overflow-hidden rounded bg-primary px-6 py-3.5 text-sm font-medium text-white shadow-md transition-[background-color,box-shadow,transform] duration-150 hover:shadow-xl active:scale-[0.98] motion-reduce:transition-none dark:bg-white dark:text-black dark:hover:bg-neutral-100"
-            >
-                <div className="flex items-center gap-2.5 z-10">
-                    <ShoppingBag className="w-4 h-4 text-neutral-400 dark:text-neutral-600 group-hover:scale-110 transition-transform duration-200" />
-                    <span>{t.has("getNow") ? t("getNow") : locale === "ar" ? "احصل عليه الآن" : "Get now"}</span>
-                </div>
-            </button>
-        </Link>
+        <button
+            type="button"
+            onClick={handleClick}
+            disabled={isLoading}
+            aria-disabled={isLoading}
+            className="group relative flex w-full items-center justify-center overflow-hidden rounded bg-primary px-6 py-3.5 text-sm font-medium text-white shadow-md transition-[background-color,box-shadow,transform] duration-150 hover:shadow-xl active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none dark:bg-white dark:text-black dark:hover:bg-neutral-100"
+        >
+            <span className="z-10 flex items-center gap-2.5">
+                <ShoppingBag className="size-4 text-neutral-400 transition-transform duration-200 group-hover:scale-110 dark:text-neutral-600" aria-hidden="true" />
+                <span>{t("getNow")}</span>
+            </span>
+        </button>
     );
 }

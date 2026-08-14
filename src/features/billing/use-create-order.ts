@@ -35,6 +35,12 @@ export function useCreateOrder() {
         },
         onSuccess: async (result, variables) => {
             await queryClient.invalidateQueries({
+                queryKey: queryKeys.systems.all(),
+            });
+            await queryClient.invalidateQueries({
+                queryKey: queryKeys.systems.detail(variables.systemId),
+            });
+            await queryClient.invalidateQueries({
                 queryKey: queryKeys.orders.pendingForSystem(variables.systemId),
             });
             await queryClient.invalidateQueries({
@@ -50,6 +56,8 @@ export function useCreateOrder() {
             return result;
         },
         onSuccess: async (_, { systemId }) => {
+            await queryClient.invalidateQueries({ queryKey: queryKeys.systems.all() });
+            await queryClient.invalidateQueries({ queryKey: queryKeys.systems.detail(systemId) });
             await queryClient.invalidateQueries({
                 queryKey: queryKeys.orders.pendingForSystem(systemId),
             });

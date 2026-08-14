@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/sheet";
 import { useSystemNavigation } from "@/shared/_components/system-navigation-provider";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 
 export default function SystemSidebar() {
     const params = useParams();
@@ -25,6 +26,12 @@ export default function SystemSidebar() {
     const t = useTranslations("systemSidebar");
     const locale = useLocale();
     const systemNavigation = useSystemNavigation();
+    const setNavigationAvailable = systemNavigation?.setAvailable;
+
+    useEffect(() => {
+        setNavigationAvailable?.(true);
+        return () => setNavigationAvailable?.(false);
+    }, [setNavigationAvailable]);
 
     const navItems: SidebarItem[] = [
         {

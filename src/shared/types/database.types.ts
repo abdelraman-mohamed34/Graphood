@@ -889,6 +889,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      checkout_system_atomic: {
+        Args: {
+          p_amount: number
+          p_coupon_id: string | null
+          p_currency: string
+          p_description: string | null
+          p_discount_amount: number
+          p_discount_percentage: number | null
+          p_license_type: string
+          p_original_amount: number
+          p_plan: string | null
+          p_profile_id: string
+          p_provider: Database["public"]["Enums"]["payment_provider"]
+          p_system_id: string
+        }
+        Returns: { is_existing: boolean; order_id: string; payment_id: string }[]
+      }
       confirm_paymob_payment: {
         Args: {
           p_amount_cents: number

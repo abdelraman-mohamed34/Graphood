@@ -72,60 +72,30 @@ export async function createPendingOrder({
         throw new Error("Invalid coupon percentage.");
     }
 
-    const { data: order, error: orderError } = await supabase
-        .from("orders")
-        .insert({
-            profile_id: profileId,
-            system_id: systemId,
+    const { data, error } = await supabase.rpc("checkout_system_atomic", {
+        p_profile_id: profileId,
+        p_system_id: systemId,
+        p_plan: plan ?? null,
+        p_license_type: licenseType,
+        p_original_amount: normalizedOriginalAmount,
+        p_discount_amount: normalizedDiscountAmount,
+        p_discount_percentage: discountPercentage ?? null,
+        p_coupon_id: couponId ?? null,
+        p_amount: normalizedAmount,
+        p_currency: currency,
+        p_provider: provider,
+        p_description: description ?? null,
+    });
 
-            plan,
-            license_type: licenseType,
-
-            original_amount: normalizedOriginalAmount,
-            discount_amount: normalizedDiscountAmount,
-            discount_percentage: discountPercentage ?? null,
-            coupon_id: couponId ?? null,
-
-            amount: normalizedAmount,
-            currency,
-
-            status: "PENDING",
-
-            description,
-        })
-        .select("id")
-        .single();
-
-    if (orderError) {
-        throw orderError;
-    }
-
-    const { data: payment, error: paymentError } = await supabase
-        .from("payments")
-        .insert({
-            order_id: order.id,
-
-            provider,
-
-            amount: normalizedAmount,
-            currency,
-
-            status: "PENDING",
-        })
-        .select("id")
-        .single();
-
-    if (paymentError) {
-        await supabase
-            .from("orders")
-            .delete()
-            .eq("id", order.id);
-
-        throw paymentError;
+    if (error) throw error;
+    const reservation = data?.[0];
+    if (!reservation?.order_id || !reservation.payment_id) {
+        throw new Error("ATOMIC_CHECKOUT_FAILED");
     }
 
     return {
-        order,
-        payment,
+        order: { id: reservation.order_id },
+        payment: { id: reservation.payment_id },
+        isExisting: reservation.is_existing,
     };
 }

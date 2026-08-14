@@ -23,13 +23,6 @@ export default function Page() {
                         {t("dashboardSubtitle")}
                     </p>
                 </div>
-
-                <Link href="/developer/systems/add">
-                    <Button className="w-full sm:w-auto shadow-sm">
-                        <Plus className="me-2 h-4 w-4" />
-                        {t("newSystemBtn")}
-                    </Button>
-                </Link>
             </div>
 
             {/* Content Area */}

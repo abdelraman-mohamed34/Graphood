@@ -81,11 +81,14 @@ export default async function LocaleLayout({
                 <Toaster
                     dir={dir}
                     richColors
-                    position={dir === "rtl" ? "bottom-left" : "bottom-right"}
+                    position="bottom-center"
+                    mobileOffset="1rem"
                     toastOptions={{
                         classNames: {
-                            toast: "group toast border-muted bg-background text-foreground shadow-xl rounded-xl border p-4 flex gap-3 w-full max-w-sm",
-                            description: "text-muted-foreground text-xs",
+                            toast: "group toast border-muted bg-background text-foreground shadow-xl rounded-xl border p-4 flex min-w-0 max-w-full gap-3 overflow-hidden",
+                            content: "min-w-0 flex-1 text-center sm:text-start",
+                            title: "break-words [overflow-wrap:anywhere]",
+                            description: "text-muted-foreground text-xs break-words [overflow-wrap:anywhere]",
                             error: "bg-destructive/5 text-destructive border-destructive/20",
                             success: "bg-emerald-500/5 text-emerald-500 border-emerald-500/20",
                             warning: "bg-amber-500/5 text-amber-500 border-amber-500/20",

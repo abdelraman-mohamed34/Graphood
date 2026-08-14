@@ -161,7 +161,8 @@
             "slug": "الرابط المختصر",
             "active": "نشط",
             "inactive": "غير نشط",
-            "getNow": "احصل عليه الآن"
+            "getNow": "احصل عليه الآن",
+            "signInRequired": "يرجى تسجيل الدخول قبل المتابعة إلى إتمام الشراء."
         },
         "purchase": {
             "title": "اختر خطة",
@@ -233,7 +234,7 @@
                 "orderCreated": "تم إنشاء الطلب بنجاح.",
                 "genericError": "حدث خطأ ما.",
                 "invalidCoupon": "الكوبون غير صالح.",
-                "couponApplied": "تم تطبيق الكوبون."
+            "couponApplied": "تم تطبيق الكوبون."
             },
             "pendingOrder": {
                 "title": "طلب غير مكتمل",

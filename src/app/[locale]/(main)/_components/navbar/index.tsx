@@ -18,7 +18,7 @@ export default function Navbar() {
             className="flex h-14 w-full items-center justify-between gap-3 border-b border-border bg-white px-4 transition-colors md:px-6"
         >
             <div className="flex min-w-0 items-center gap-2 md:gap-3">
-                {systemNavigation && (
+                {systemNavigation?.available && (
                     <button
                         type="button"
                         onClick={systemNavigation.toggle}

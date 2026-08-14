@@ -29,8 +29,7 @@ export default function Page() {
     const systemId = params.system_id
     const locale = useLocale()
     const t = useTranslations('marketplace.details')
-    const label = (key: string, english: string, arabic: string) =>
-        t.has(key) ? t(key) : locale === 'ar' ? arabic : english
+    const label = (key: string, english: string, arabic: string) => t.has(key) ? t(key) : locale === 'ar' ? arabic : english
     const { data: availableTags = [] } = useTags()
     const supabase = useMemo(() => createClient(), [])
 

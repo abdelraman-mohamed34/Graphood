@@ -15,7 +15,7 @@ import { queryCachePolicy, queryKeys } from "@/shared/lib/query";
 export const systemsQueryOptions = queryOptions({
     queryKey: queryKeys.systems.marketplace(),
     queryFn: () => getMarketplaceSystems(),
-    ...queryCachePolicy.longLived,
+    ...queryCachePolicy.standard,
 });
 
 export function useSystems(): UseQueryResult<MarketplaceSystem[], Error> {

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 import { AvatarPreview } from "./avatar-preview";
 import { AvatarActions } from "./avatar-actions";
-import { AvatarCardSkeleton } from "./avatar-card-skeleton"; // 👈 تم الاستيراد هنا
+import { AvatarCardSkeleton } from "./avatar-card-skeleton";
 
 import { useProfile } from "@/shared/lib/hooks/profile/use-profile";
 

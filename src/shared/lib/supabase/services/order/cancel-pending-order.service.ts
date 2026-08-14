@@ -11,11 +11,7 @@ export async function cancelPendingOrder(
 ) {
     const { data, error } = await supabase
         .from("orders")
-        // Orders use CANCELED; CANCELLED is the invitation-status spelling.
-        .update({
-            status: "CANCELED",
-            updated_at: new Date().toISOString(),
-        })
+        .update({ status: "CANCELED", updated_at: new Date().toISOString() })
         .eq("id", orderId)
         .eq("profile_id", profileId)
         .eq("status", "PENDING")

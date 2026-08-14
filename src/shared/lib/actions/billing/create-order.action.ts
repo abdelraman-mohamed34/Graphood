@@ -242,7 +242,7 @@ export async function createOrderAction(
 
     //-> do action
     try {
-        const { order, payment } = await createPendingOrder({
+        const { order, payment, isExisting } = await createPendingOrder({
             supabase,
             profileId: user.id,
             systemId: system.id,
@@ -273,7 +273,7 @@ export async function createOrderAction(
 
         return {
             success: true,
-            isExisting: false,
+            isExisting,
 
             orderId: order.id,
             paymentId: payment.id,
@@ -305,10 +305,7 @@ export async function createOrderAction(
 
         return {
             success: false,
-            error:
-                error instanceof Error
-                    ? error.message
-                    : "Failed to create order.",
+            error: error instanceof Error ? error.message : "Failed to create order.",
         };
     }
 }

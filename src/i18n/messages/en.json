@@ -161,7 +161,8 @@
             "slug": "Slug",
             "active": "Active",
             "inactive": "Inactive",
-            "getNow": "Get now"
+            "getNow": "Get now",
+            "signInRequired": "Please sign in before continuing to checkout."
         },
         "purchase": {
             "title": "Select a plan",
@@ -233,7 +234,7 @@
                 "orderCreated": "Order created successfully.",
                 "genericError": "Something went wrong.",
                 "invalidCoupon": "Invalid coupon.",
-                "couponApplied": "Coupon applied."
+            "couponApplied": "Coupon applied."
             },
             "pendingOrder": {
                 "title": "Incomplete order",
