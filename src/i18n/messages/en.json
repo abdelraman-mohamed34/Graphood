@@ -1,4 +1,12 @@
 {
+    "seo": {
+        "site": { "name": "Graphood", "title": "Graphood", "description": "A modular marketplace and multi-system SaaS platform for teams and developers." },
+        "home": { "title": "Modular business systems for ambitious teams", "description": "Discover, license, and operate modular business software in secure Graphood workspaces." },
+        "about": { "title": "About Graphood", "description": "Learn how Graphood connects modular software, developers, and business teams in one scalable ecosystem." },
+        "faq": { "title": "Frequently Asked Questions", "description": "Answers about Graphood systems, workspaces, licensing, domains, and developer integrations." },
+        "marketplace": { "title": "Software Marketplace", "description": "Explore production-ready business systems and choose a Graphood license that fits your team." },
+        "system": { "fallbackTitle": "System details", "fallbackDescription": "View system details, documentation, features, and pricing on Graphood." }
+    },
     "global": {
         "name_error": "Name must be at least 3 characters",
         "phone_error": "Phone number is too short",

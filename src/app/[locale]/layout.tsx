@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -14,10 +15,12 @@ import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { fetchProfile } from "@/shared/lib/supabase/services/profile";
 import type { MembershipWithTenant } from "@/shared/lib/supabase/services/auth/membership/get-memberships-by-profile-id.service";
 
-export const metadata: Metadata = {
-    title: "Graphood",
-    description: "Multi-System SaaS Platform",
-};
+export async function generateMetadata({ params }: Pick<LocaleLayoutProps, "params">): Promise<Metadata> {
+    const { locale } = await params;
+    if (!locales.includes(locale)) return {};
+    const t = await getTranslations({ locale, namespace: "seo.site" });
+    return { title: { default: t("title"), template: `%s | ${t("name")}` }, description: t("description") };
+}
 
 interface LocaleLayoutProps {
     children: React.ReactNode;

@@ -24,9 +24,9 @@ export default async function MainLayout({
     <NextIntlClientProvider messages={messages}>
       <div className="min-h-screen bg-background text-foreground flex flex-col">
         <Navbar />
-        <main className="flex-1 w-full mx-auto">
+        <div className="flex-1 w-full mx-auto">
           {children}
-        </main>
+        </div>
         <Footer />
       </div>
     </NextIntlClientProvider>

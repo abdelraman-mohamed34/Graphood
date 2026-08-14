@@ -1,6 +1,7 @@
-"use server";
-
 import React from "react";
+import type { Metadata } from "next";
+import { privateMetadata } from "@/shared/lib/seo";
+export const metadata: Metadata = privateMetadata;
 import { redirect, notFound } from "next/navigation";
 import {
     HydrationBoundary,

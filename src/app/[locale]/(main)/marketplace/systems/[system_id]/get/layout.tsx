@@ -1,7 +1,8 @@
 // src/app/[locale]/(main)/marketplace/[system_id]/get/layout.tsx
-'use server'
-
 import { requireUser } from '@/shared/lib/auth/requires/require-user';
+import type { Metadata } from 'next';
+import { privateMetadata } from '@/shared/lib/seo';
+export const metadata: Metadata = privateMetadata;
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import React from 'react';
 import { createQueryClient } from '@/shared/lib/query';

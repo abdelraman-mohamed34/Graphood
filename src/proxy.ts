@@ -69,8 +69,6 @@ export async function proxy(req: NextRequest) {
     return addDeveloperCorsHeaders(NextResponse.next(), origin);
   }
 
-  const response = handleI18nRouting(req);
-
   const locales = routing.locales;
   type Locale = (typeof locales)[number];
 
@@ -85,11 +83,12 @@ export async function proxy(req: NextRequest) {
     ? pathLocale
     : routing.defaultLocale;
 
-  if (cleanPath === "/") {
-    return createRedirect(
-      new URL(`/${locale}/home`, req.url),
-      response
-    );
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-graphood-locale", locale);
+  const response = handleI18nRouting(new NextRequest(req, { headers: requestHeaders }));
+
+  if (cleanPath === "/home") {
+    return createRedirect(new URL(`/${locale}`, req.url), response, 308);
   }
 
   const isPublic = PUBLIC_ROUTES.some((route) =>
@@ -205,9 +204,10 @@ export async function proxy(req: NextRequest) {
 
 function createRedirect(
   url: URL,
-  originalResponse: NextResponse
+  originalResponse: NextResponse,
+  status: 307 | 308 = 307,
 ) {
-  const redirectResponse = NextResponse.redirect(url);
+  const redirectResponse = NextResponse.redirect(url, status);
 
   for (const cookie of originalResponse.cookies.getAll()) {
     redirectResponse.cookies.set(cookie);

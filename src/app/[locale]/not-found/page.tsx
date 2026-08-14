@@ -2,6 +2,10 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { FileQuestionIcon } from "lucide-react";
+import type { Metadata } from "next";
+import { privateMetadata } from "@/shared/lib/seo";
+
+export const metadata: Metadata = privateMetadata;
 
 export default function NotFound() {
     const t = useTranslations("NotFoundPage");

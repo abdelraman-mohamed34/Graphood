@@ -78,9 +78,9 @@ export function Footer() {
 
                 {/* Bottom Section - Big Typography Layout */}
                 <div className="mt-12 flex w-full flex-col items-center justify-center overflow-hidden border-t border-white/10 pt-8 select-none">
-                    <h1 className="text-center text-[12vw] leading-none font-extrabold tracking-tighter text-white/10 sm:text-[140px] md:text-[180px]">
+                    <div aria-hidden="true" className="text-center text-[12vw] leading-none font-extrabold tracking-tighter text-white/10 sm:text-[140px] md:text-[180px]">
                         GRAPHOOD
-                    </h1>
+                    </div>
 
                     <div className="mt-6 flex w-full flex-col items-center justify-between gap-4 text-xs text-white/55 sm:flex-row">
                         <p>© {currentYear} Graphood. {t("rights")}</p>

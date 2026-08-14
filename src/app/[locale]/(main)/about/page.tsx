@@ -2,6 +2,15 @@ import { ArrowUpRight, Terminal } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import AboutExperience from "@/components/about/AboutExperience";
+import type { Metadata } from "next";
+import { isAppLocale, publicMetadata } from "@/shared/lib/seo";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    const { locale } = await params;
+    if (!isAppLocale(locale)) return {};
+    const t = await getTranslations({ locale, namespace: "seo.about" });
+    return publicMetadata({ locale, path: "/about", title: t("title"), description: t("description") });
+}
 
 
 export default async function AboutPage() {

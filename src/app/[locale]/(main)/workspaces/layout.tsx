@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import { getMembershipsByProfileId } from "@/shared/lib/supabase/services/auth/membership/get-memberships-by-profile-id.service";
 import { OnboardingProvider } from "@/shared/lib/providers/onboarding-provider";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
+import type { Metadata } from "next";
+import { privateMetadata } from "@/shared/lib/seo";
+export const metadata: Metadata = privateMetadata;
 
 interface WorkSpacesLayoutProps {
     children: React.ReactNode;
