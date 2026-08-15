@@ -9,7 +9,8 @@ export const PLAN_LIMITS = {
 
         hasReports: false,
         hasWordAssistant: false,
-        api: false,
+        // Tenant metadata/data hydration is a core capability for every plan.
+        api: true,
     },
 
     PRO: {

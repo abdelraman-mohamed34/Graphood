@@ -25,10 +25,9 @@ export function requireApiAccess(
     }
 
 
-    if (!capabilities.limits.api) {
-        throw new Error(DeveloperApiErrorCodes.API_ACCESS_DENIED);
-    }
-
-
+    // Resolving an authenticated tenant and reading its essential data is
+    // available to every active plan. Feature-specific entitlements should
+    // be enforced by the endpoint that owns that feature, rather than by the
+    // tenant context guard.
     return capabilities;
 }
