@@ -324,6 +324,51 @@
   border-radius: .5rem;
 }
 
+/* Developer reference pages own their outer spacing in the docs layout. */
+.docs-content > div {
+  min-width: 0;
+  max-width: 100%;
+  padding-inline: 0;
+}
+
+.docs-content section,
+.docs-content header {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.docs-content h1,
+.docs-content h2,
+.docs-content h3,
+.docs-content p,
+.docs-content code {
+  overflow-wrap: anywhere;
+}
+
+/* Keep wide API tables usable without allowing them to widen the viewport. */
+.docs-content div:has(> table) {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+
+.docs-content table {
+  min-width: 36rem;
+}
+
+@media (max-width: 639px) {
+  .docs-content table {
+    min-width: 32rem;
+    font-size: .75rem;
+  }
+
+  .docs-content th,
+  .docs-content td {
+    padding: .75rem;
+  }
+}
+
 @media (max-width: 767px) {
   [class*="backdrop-blur"] {
     -webkit-backdrop-filter: none !important;
