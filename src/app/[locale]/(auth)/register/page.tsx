@@ -5,7 +5,7 @@ export default function page() {
     return (
         <main
             dir="ltr"
-            className="grid h-screen w-full grid-cols-1 lg:grid-cols-2"
+            className="grid min-h-svh w-full grid-cols-1 lg:grid-cols-2"
         >
             <RegisterForm />
             <RegisterHero />

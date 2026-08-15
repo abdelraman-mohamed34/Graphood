@@ -811,26 +811,21 @@
             "linkedin": "Graphood on LinkedIn"
         },
         "categories": {
-            "platform": "Platform",
-            "marketplace": "Marketplace",
-            "resources": "Resources",
+            "product": "Product / Marketplace",
+            "developers": "Developers & API",
             "company": "Company"
         },
         "links": {
-            "features": "Features",
-            "pricing": "Pricing",
-            "explore": "Explore Software",
-            "trending": "Trending SaaS",
-            "bundles": "SaaS Bundles",
+            "systems": "Explore systems",
+            "workspaces": "Your workspaces",
+            "developerPortal": "Developer Portal",
             "docs": "Documentation",
-            "api": "API Integration",
-            "status": "System Status",
+            "quickStart": "Quick Start",
+            "apiReference": "API Reference",
+            "statusSandbox": "Status & Sandbox",
             "about": "About Graphood",
-            "blog": "Blog",
-            "careers": "Careers",
-            "contact": "Contact Sales",
-            "privacy": "Privacy Policy",
-            "terms": "Terms of Service"
+            "changelog": "Changelog",
+            "support": "Contact & Support"
         }
     },
     "settings": {

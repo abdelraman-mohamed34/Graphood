@@ -811,26 +811,21 @@
             "linkedin": "جرافهود على LinkedIn"
         },
         "categories": {
-            "platform": "المنصة",
-            "marketplace": "سوق البرمجيات",
-            "resources": "المصادر",
+            "product": "المنتج / سوق البرمجيات",
+            "developers": "المطورون وواجهة API",
             "company": "الشركة"
         },
         "links": {
-            "features": "المميزات",
-            "pricing": "الأسعار",
-            "explore": "تصفح البرامج",
-            "trending": "الأكثر رواجاً",
-            "bundles": "حزم الـ SaaS",
+            "systems": "استكشف الأنظمة",
+            "workspaces": "مساحات العمل",
+            "developerPortal": "بوابة المطورين",
             "docs": "مركز التوثيق",
-            "api": "ربط الـ API",
-            "status": "حالة النظام",
+            "quickStart": "البداية السريعة",
+            "apiReference": "مرجع API",
+            "statusSandbox": "الحالة وSandbox",
             "about": "عن جرافهود",
-            "blog": "المدونة",
-            "careers": "الوظائف",
-            "contact": "التواصل مع المبيعات",
-            "privacy": "سياسة الخصوصية",
-            "terms": "شروط الاستخدام"
+            "changelog": "سجل التغييرات",
+            "support": "التواصل والدعم"
         }
     },
     "settings": {

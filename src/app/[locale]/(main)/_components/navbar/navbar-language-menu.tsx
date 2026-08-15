@@ -27,7 +27,7 @@ export default function LanguageMenu() {
                 align={locale === "ar" ? "start" : "end"}
                 side="bottom"
                 sideOffset={6}
-                className="w-36 min-w-[9rem] rounded shadow-sm"
+                className="w-36 min-w-[9rem] rounded shadow-sm max-sm:duration-0 max-sm:data-open:animate-none max-sm:data-closed:animate-none"
             >
                 <DropdownMenuItem
                     onClick={() => changeLocale("en")}

@@ -38,7 +38,8 @@ function RegisterForm() {
     };
 
     return (
-        <div className="w-full p-35">
+        <div className="flex w-full items-center justify-center px-4 py-8 sm:px-6 sm:py-10 lg:px-12 lg:py-14 xl:px-20">
+            <div className="w-full max-w-md">
             <div className="mb-6">
                 <h1 className="text-2xl font-bold">
                     Create a Graphood account
@@ -137,7 +138,7 @@ function RegisterForm() {
                 disabled={isOAuthLoading}
                 onClick={() => signInWithProvider("google")}
             />
-
+            </div>
         </div>
     );
 }

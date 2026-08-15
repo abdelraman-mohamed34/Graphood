@@ -77,12 +77,12 @@ export default function Page() {
     return (
         <main className="mx-auto min-h-screen w-full max-w-7xl px-4 py-8 text-start sm:px-6 lg:px-8 lg:py-12">
             <section className="overflow-hidden rounded-sm border border-border bg-white">
-                <div className="relative aspect-[21/8] min-h-48 border-b border-border bg-muted">
+                <div className="relative sm:aspect-[21/8] min-h-48 border-b border-border bg-muted">
                     {system.image_url ? (
                         <Image src={system.image_url} alt={t('imageAlt', { name: system.name })} fill sizes="(max-width: 1280px) 100vw, 1280px" className="object-cover" priority />
                     ) : (
-                        <div className="absolute inset-0 grid place-items-center bg-white/40 text-center backdrop-blur-sm">
-                            <div className="text-muted-foreground"><Building2 className="mx-auto size-10" aria-hidden="true" /><p className="mt-3 text-sm">{t('imageFallback')}</p></div>
+                        <div className="flex absolute w-full h-full items-center justify-center backdrop-blur-sm">
+                            <Building2 className="size-10 text-muted-foreground" aria-hidden="true" />
                         </div>
                     )}
                 </div>

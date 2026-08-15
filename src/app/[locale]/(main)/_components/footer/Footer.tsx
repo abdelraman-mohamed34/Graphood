@@ -1,98 +1,62 @@
 "use client";
 
-import React from "react";
-import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
+
+import LanguageMenu from "../navbar/navbar-language-menu";
 import { FooterBrand, FooterColumn } from "./footer-components";
-import { useLightweightMotion } from "@/shared/lib/hooks/use-lightweight-motion";
 
 export function Footer() {
     const t = useTranslations("footer");
-    const currentYear = new Date().getFullYear();
-    const reduceMotion = useLightweightMotion();
 
     const footerSections = [
         {
-            title: t("categories.platform"),
+            title: t("categories.product"),
             links: [
-                { label: t("links.features"), href: "#features" },
-                { label: t("links.pricing"), href: "#pricing" },
+                { label: t("links.systems"), href: "/marketplace" },
+                { label: t("links.workspaces"), href: "/workspaces" },
             ],
         },
         {
-            title: t("categories.resources"),
+            title: t("categories.developers"),
             links: [
-                { label: t("links.docs"), href: "/docs" },
-                { label: t("links.api"), href: "/api-reference" },
+                { label: t("links.developerPortal"), href: "/developer/systems" },
+                { label: t("links.docs"), href: "/developer/docs" },
+                { label: t("links.quickStart"), href: "/developer/docs/quick-start" },
+                { label: t("links.apiReference"), href: "/developer/docs/endpoints" },
+                { label: t("links.statusSandbox"), href: "/developer/docs/endpoints/health" },
             ],
         },
         {
             title: t("categories.company"),
             links: [
                 { label: t("links.about"), href: "/about" },
-                { label: t("links.blog"), href: "/blog" },
+                { label: t("links.changelog"), href: "/developer/docs/changelog" },
+                { label: t("links.support"), href: "/faq" },
             ],
         },
     ];
 
-    const containerVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.6, staggerChildren: 0.1 },
-        },
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 10 },
-        visible: { opacity: 1, y: 0 },
-    };
-
     return (
-        <footer className="relative flex w-full justify-center overflow-hidden border-t border-white/10 bg-maroon text-white transition-colors duration-200">
-            <div className="w-full mx-auto max-w-7xl px-6 sm:px-8 lg:px-12 pt-12 pb-6">
-                <motion.div
-                    className="grid grid-cols-1 gap-12 xl:grid-cols-3 xl:gap-8"
-                    initial={reduceMotion ? false : "hidden"}
-                    whileInView="visible"
-                    transition={reduceMotion ? { duration: 0 } : undefined}
-                    viewport={{ once: true }}
-                    variants={containerVariants}
-                >
-                    {/* Brand Section */}
-                    <div className="xl:col-span-1">
-                        <FooterBrand description={t("description")} />
-                    </div>
+        <footer className="w-full border-t border-white/10 bg-maroon text-white">
+            <div className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-8 sm:py-12 lg:px-12">
+                <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+                    <FooterBrand
+                        description={t("description")}
+                        githubLabel={t("social.github")}
+                    />
 
-                    {/* Links Sections Grid */}
-                    <div className="grid grid-cols-2 gap-8 md:grid-cols-3 xl:col-span-2">
-                        {footerSections.map((section) => (
-                            <motion.div key={section.title} variants={itemVariants}>
-                                <FooterColumn title={section.title} links={section.links} />
-                            </motion.div>
-                        ))}
-                    </div>
-                </motion.div>
+                    {footerSections.map((section) => (
+                        <FooterColumn
+                            key={section.title}
+                            title={section.title}
+                            links={section.links}
+                        />
+                    ))}
+                </div>
 
-                {/* Bottom Section - Big Typography Layout */}
-                <div className="mt-12 flex w-full flex-col items-center justify-center overflow-hidden border-t border-white/10 pt-8 select-none">
-                    <div aria-hidden="true" className="text-center text-[12vw] leading-none font-extrabold tracking-tighter text-white/10 sm:text-[140px] md:text-[180px]">
-                        GRAPHOOD
-                    </div>
-
-                    <div className="mt-6 flex w-full flex-col items-center justify-between gap-4 text-xs text-white/55 sm:flex-row">
-                        <p>© {currentYear} Graphood. {t("rights")}</p>
-                        <div className="flex gap-6">
-                            <Link href="/privacy" className="transition-colors hover:text-white">
-                                {t("links.privacy")}
-                            </Link>
-                            <Link href="/terms" className="transition-colors hover:text-white">
-                                {t("links.terms")}
-                            </Link>
-                        </div>
-                    </div>
+                <div className="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
+                    <p>© 2026 Graphood. {t("rights")}</p>
+                    <LanguageMenu />
                 </div>
             </div>
         </footer>
