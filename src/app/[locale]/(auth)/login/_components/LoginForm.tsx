@@ -178,12 +178,6 @@ export function LoginForm({
           </div>
         </CardContent>
       </Card>
-
-      <FieldDescription className="px-6 text-center text-xs">
-        {t("termsPrefix")}{" "}
-        <a href="#" className="underline underline-offset-2">{t("termsLink")}</a> {t("andText")}{" "}
-        <a href="#" className="underline underline-offset-2">{t("privacyLink")}</a>.
-      </FieldDescription>
     </div>
   );
 }
