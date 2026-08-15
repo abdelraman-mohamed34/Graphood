@@ -3,7 +3,10 @@
 import { useTranslations } from "next-intl";
 import { CodeBlock } from "@/shared/_components/code-block";
 import { InlineCode } from "@/shared/_components/inline-code";
-import { DEVELOPER_API_BASE_URL } from "@/shared/lib/api/developer/base-url";
+import {
+    DEVELOPER_API_BASE_URL,
+    DEVELOPER_SANDBOX_API_BASE_URL,
+} from "@/shared/lib/api/developer/base-url";
 
 export default function AuthenticationPage() {
     const t = useTranslations("AuthenticationPage");
@@ -55,6 +58,29 @@ export default function AuthenticationPage() {
                 <CodeBlock language="text" code="Authorization: Bearer YOUR_API_KEY" />
             </section>
 
+            {/* Test API Keys */}
+            <section className="space-y-4">
+                <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
+                    {t("testKeys.title")}
+                </h2>
+
+                <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-5 dark:bg-sky-500/10">
+                    <div className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                        {t("testKeys.description")}
+                    </div>
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                        <div className="rounded-lg border bg-background/70 p-3">
+                            <div className="text-xs font-medium text-muted-foreground">{t("testKeys.production")}</div>
+                            <code className="mt-1 block text-sm font-semibold text-emerald-600 dark:text-emerald-400">gh_live_...</code>
+                        </div>
+                        <div className="rounded-lg border bg-background/70 p-3">
+                            <div className="text-xs font-medium text-muted-foreground">{t("testKeys.sandbox")}</div>
+                            <code className="mt-1 block text-sm font-semibold text-sky-600 dark:text-sky-400">gh_test_...</code>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Generating an API Key */}
             <section className="space-y-4">
                 <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
@@ -93,6 +119,14 @@ export default function AuthenticationPage() {
                     code={`curl --request GET \\
   --url ${DEVELOPER_API_BASE_URL}/me?tenantSlug=workspace-slug \\
   --header "Authorization: Bearer YOUR_API_KEY"`}
+                />
+
+                <h3 className="font-semibold text-foreground">{t("example.sandboxTitle")}</h3>
+                <CodeBlock
+                    language="bash"
+                    code={`curl --request GET \\
+  --url ${DEVELOPER_SANDBOX_API_BASE_URL}/me?tenantSlug=sandbox \\
+  --header "Authorization: Bearer gh_test_YOUR_API_KEY"`}
                 />
             </section>
 

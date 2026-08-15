@@ -69,5 +69,13 @@ export default function DocsSidebar({ className }: DocsSidebarProps) {
         },
     ];
 
-    return <ReusableSidebar items={items} className={cn(className)} />;
+    return (
+        <ReusableSidebar
+            items={items}
+            className={cn(
+                "sticky top-20 h-[calc(100vh-5rem)] self-start overflow-y-auto",
+                className,
+            )}
+        />
+    );
 }

@@ -1265,6 +1265,12 @@
             "title": "طريقة المصادقة",
             "description": "تستخدم Graphood مصادقة Bearer Token. يجب أن يتضمن كل طلب محمي مفتاح API في ترويسة <code1>Authorization</code1>."
         },
+        "testKeys": {
+            "title": "مفاتيح API التجريبية",
+            "description": "استخدم مفتاح API تجريبيًا أثناء بناء التكامل. تعيد طلبات Sandbox بيانات محاكاة ولا تنشئ رسوم فوترة أو معاملات فعلية في قاعدة البيانات.",
+            "production": "مفتاح الإنتاج",
+            "sandbox": "مفتاح الاختبار / Sandbox"
+        },
         "generate": {
             "title": "إنشاء مفتاح API",
             "description": "قم بإنشاء مفتاح API من لوحة تحكم المطورين الخاصة بك:",
@@ -1277,7 +1283,8 @@
             }
         },
         "example": {
-            "title": "مثال على الطلب"
+            "title": "مثال على الطلب",
+            "sandboxTitle": "طلب Sandbox"
         },
         "errors": {
             "title": "أخطاء المصادقة",
@@ -1306,6 +1313,14 @@
     "QuickStartPage": {
         "title": "البداية السريعة",
         "description": "تعلم كيفية المصادقة مع Graphood Developer API وإجراء أول طلب بنجاح في بضع دقائق فقط.",
+        "cli": {
+            "title": "أنشئ تطبيق Graphood",
+            "description": "ابدأ مشروعًا جديدًا باستخدام أداة create-graphood-app الرسمية ومدير الحزم المفضل لديك.",
+            "run": {
+                "title": "شغّل مشروعك",
+                "description": "انتقل إلى مجلد المشروع الذي تم إنشاؤه ثم شغّل خادم التطوير."
+            }
+        },
         "prerequisites": {
             "title": "المتطلبات الأساسية",
             "item1": "حساب مطور في Graphood.",
@@ -1317,6 +1332,21 @@
             "title": "الرابط الأساسي (Base URL)",
             "description": "جميع نقاط النهاية الخاصة بـ Developer API متاحة تحت الرابط الأساسي التالي:",
             "localDev": "أثناء التطوير المحلي:"
+        },
+        "environments": {
+            "title": "البيئات والروابط الأساسية",
+            "description": "تستخدم بيئتا الإنتاج وSandbox بوابة API للإصدار v1. تحدد بادئة مفتاح API ومستأجر Sandbox بيئة الطلب.",
+            "production": "الإنتاج",
+            "sandbox": "Sandbox / الاختبار",
+            "table": {
+                "environment": "البيئة",
+                "baseUrl": "الرابط الأساسي",
+                "keyPrefix": "بادئة المفتاح"
+            },
+            "note": {
+                "title": "اختبار آمن في Sandbox",
+                "description": "استخدم مفتاحًا يبدأ بـ gh_test_ مع tenantSlug=sandbox. تستخدم جميع الاستجابات بيانات محاكاة، ولن يؤدي أي طلب إلى فوترة أو معاملات فعلية في قاعدة البيانات."
+            }
         },
         "auth": {
             "title": "المصادقة",

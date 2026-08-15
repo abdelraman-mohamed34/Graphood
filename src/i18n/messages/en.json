@@ -1265,6 +1265,12 @@
             "title": "Authentication Method",
             "description": "Graphood uses Bearer Token authentication. Every protected request must include your API key in the <code1>Authorization</code1> header."
         },
+        "testKeys": {
+            "title": "Test API Keys",
+            "description": "Use a Test API Key while building your integration. Sandbox requests return simulated data and never create real billing charges or database transactions.",
+            "production": "Production key",
+            "sandbox": "Test / Sandbox key"
+        },
         "generate": {
             "title": "Generate an API Key",
             "description": "Create an API key from your developer dashboard:",
@@ -1277,7 +1283,8 @@
             }
         },
         "example": {
-            "title": "Example Request"
+            "title": "Example Request",
+            "sandboxTitle": "Sandbox request"
         },
         "errors": {
             "title": "Authentication Errors",
@@ -1306,6 +1313,14 @@
     "QuickStartPage": {
         "title": "Quick Start",
         "description": "Learn how to authenticate with the Graphood Developer API and make your first successful request in just a few minutes.",
+        "cli": {
+            "title": "Create a Graphood App",
+            "description": "Initialize a new project with the official create-graphood-app CLI using your preferred package manager.",
+            "run": {
+                "title": "Start your project",
+                "description": "Move into the generated project directory and start the development server."
+            }
+        },
         "prerequisites": {
             "title": "Prerequisites",
             "item1": "A developer account in Graphood.",
@@ -1317,6 +1332,21 @@
             "title": "Base URL",
             "description": "All Developer API endpoints are available under the following base URL:",
             "localDev": "For local development:"
+        },
+        "environments": {
+            "title": "Environments & Base URLs",
+            "description": "Production and Sandbox use the v1 API gateway. The API key prefix and sandbox tenant select the request environment.",
+            "production": "Production",
+            "sandbox": "Sandbox / Test",
+            "table": {
+                "environment": "Environment",
+                "baseUrl": "Base URL",
+                "keyPrefix": "Key prefix"
+            },
+            "note": {
+                "title": "Safe sandbox testing",
+                "description": "Use a gh_test_ key with tenantSlug=sandbox. Every response uses simulated data and no request will trigger real billing or database transactions."
+            }
         },
         "auth": {
             "title": "Authentication",

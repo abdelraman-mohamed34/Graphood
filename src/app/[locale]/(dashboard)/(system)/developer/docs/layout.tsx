@@ -11,7 +11,7 @@ export default function DocsLayout({
     children,
 }: DeveloperLayoutProps) {
     return (
-        <div className="flex w-full min-w-0 flex-col md:flex-row">
+        <div className="flex w-full min-w-0 flex-col items-start md:flex-row">
             <MobileDocsNav />
             <DocsSidebar />
             <main className="min-w-0 flex-1">

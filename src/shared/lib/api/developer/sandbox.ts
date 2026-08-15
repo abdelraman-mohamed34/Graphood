@@ -98,6 +98,6 @@ export const MOCK_MEMBERSHIPS: DeveloperMembershipResponse[] = [
 ];
 
 export function isSandboxRequest(apiKey: string, tenantSlug?: string) {
-    return apiKey === "sk_test_sandbox" &&
+    return (apiKey.startsWith("gh_test_") || apiKey === "sk_test_sandbox") &&
         tenantSlug === MOCK_DEVELOPER_CONTEXT.tenantSlug;
 }
