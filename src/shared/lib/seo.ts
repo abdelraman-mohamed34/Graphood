@@ -4,7 +4,7 @@ export const SUPPORTED_LOCALES = ["ar", "en"] as const;
 export type AppLocale = (typeof SUPPORTED_LOCALES)[number];
 
 export const SITE_NAME = "Graphood";
-export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL || "https://graphood.com").replace(/\/+$/, "");
+export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL || "https://www.graphood.com").replace(/\/+$/, "");
 export const DEFAULT_OG_IMAGE = "/og.png";
 
 export function isAppLocale(locale: string): locale is AppLocale {

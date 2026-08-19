@@ -1,5 +1,5 @@
 ### Test Graphood Sandbox API
 
-GET http://localhost:3000/api/developer/v1/me
+GET https://www.graphood.com/api/developer/v1/me
 Authorization: Bearer gh_test_sandbox
 X-Tenant-Slug: sandbox
