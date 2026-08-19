@@ -1,1 +1,1 @@
-export { useLocaleSwitcher } from "@/shared/lib/hooks/locale/use-locale-switcher";
+export * from "@/shared/lib/hooks/locale/use-locale-switcher";
