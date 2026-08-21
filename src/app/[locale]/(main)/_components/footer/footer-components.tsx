@@ -19,7 +19,7 @@ interface FooterBrandProps {
 const DEFAULT_SOCIAL_LINKS: SocialLink[] = [
     {
         label: "Instagram",
-        href: "https://instagram.com/_graphood",
+        href: "https://instagram.com/graphoodhq",
         icon: "instagram",
     },
     {
@@ -29,7 +29,7 @@ const DEFAULT_SOCIAL_LINKS: SocialLink[] = [
     },
     {
         label: "Gmail",
-        href: "mailto:contact@graphood.com",
+        href: "https://mail.google.com/mail/?view=cm&fs=1&to=contact@graphood.com",
         icon: "gmail",
     },
 ];
