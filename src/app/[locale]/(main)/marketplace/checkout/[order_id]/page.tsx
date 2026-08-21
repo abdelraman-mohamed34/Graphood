@@ -67,7 +67,7 @@ export default function Page({ params }: PageProps) {
                 maximumFractionDigits: 2,
             }).format(amount);
         } catch {
-            return `${new Intl.NumberFormat(locale).format(amount)} ${order.currency}`;
+            return `${new Intl.NumberFormat(locale).format(amount)} ${order.currency || "EGP"}`;
         }
     };
 

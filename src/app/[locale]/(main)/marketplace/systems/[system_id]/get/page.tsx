@@ -349,15 +349,36 @@ export default function Page() {
                 {/* Reseller Details */}
                 {selectedLicense === "RESELLER" && (
                     <div className="mb-8">
-                        <div className="rounded border border-neutral-200 dark:border-neutral-800 p-6 bg-white dark:bg-neutral-900">
-                            <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
-                                {licenseLabel("RESELLER")}
-                            </h3>
-                            <p className="text-xs text-neutral-500 mt-1">
-                                {licenseShortDescription("RESELLER")}
-                            </p>
-                            <div className="mt-6 text-3xl font-bold text-neutral-900 dark:text-white">
-                                ${(Number(system.reseller_price) || 0).toFixed(2)}
+                        <div className="relative rounded border border-white/10 dark:border-neutral-800 p-8 bg-white dark:bg-neutral-900 shadow transition-all overflow-hidden">
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                                <div className="md:col-span-2 space-y-2">
+                                    <h3 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                                        {licenseLabel("RESELLER")}
+                                    </h3>
+                                    <p className="text-sm text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+                                        {licenseShortDescription("RESELLER")}
+                                    </p>
+
+                                    <ul className="pt-3 flex flex-col gap-2 text-xs text-neutral-600 dark:text-neutral-300">
+                                        <li className="flex items-center gap-2">
+                                            <Check className="w-4 h-4 text-primary shrink-0" />
+                                            <span>حقوق إعادة البيع الكاملة</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <Check className="w-4 h-4 text-primary shrink-0" />
+                                            <span>دفع مرة واحدة بدون اشتراك</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div className="flex flex-col items-start md:items-end justify-center border-t md:border-t-0 md:border-s border-neutral-100 dark:border-neutral-800 pt-4 md:pt-0 md:ps-6">
+                                    <span className="text-xs text-neutral-400 font-medium">السعر الكلي</span>
+                                    <div className="text-3xl sm:text-4xl font-extrabold text-neutral-900 dark:text-white mt-1">
+                                        {(Number(system.reseller_price) || 0).toFixed(0)}{" "}
+                                        <span className="text-base font-normal text-neutral-400">EGP</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -366,15 +387,35 @@ export default function Page() {
                 {/* Exclusive Details */}
                 {selectedLicense === "EXCLUSIVE" && (
                     <div className="mb-8">
-                        <div className="rounded border border-neutral-200 dark:border-neutral-800 p-6 bg-white dark:bg-neutral-900">
-                            <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
-                                {licenseLabel("EXCLUSIVE")}
-                            </h3>
-                            <p className="text-xs text-neutral-500 mt-1">
-                                {licenseShortDescription("EXCLUSIVE")}
-                            </p>
-                            <div className="mt-6 text-3xl font-bold text-neutral-900 dark:text-white">
-                                ${(Number(system.exclusive_price) || 0).toFixed(2)}
+                        <div className="relative rounded border border-white/10 dark:border-neutral-800 p-8 bg-white dark:bg-neutral-900 shadow transition-all overflow-hidden">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                                <div className="md:col-span-2 space-y-2">
+                                    <h3 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                                        {licenseLabel("EXCLUSIVE")}
+                                    </h3>
+                                    <p className="text-sm text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+                                        {licenseShortDescription("EXCLUSIVE")}
+                                    </p>
+
+                                    <ul className="pt-3 flex flex-col gap-2 text-xs text-neutral-600 dark:text-neutral-300">
+                                        <li className="flex items-center gap-2">
+                                            <Check className="w-4 h-4 text-primary shrink-0" />
+                                            <span>ملكية حصرية بالكامل</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <Check className="w-4 h-4 text-primary shrink-0" />
+                                            <span>إزالة النظام من المعرض</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div className="flex flex-col items-start md:items-end justify-center border-t md:border-t-0 md:border-s border-neutral-100 dark:border-neutral-800 pt-4 md:pt-0 md:ps-6">
+                                    <span className="text-xs text-neutral-400 font-medium">السعر الكلي</span>
+                                    <div className="text-3xl sm:text-4xl font-extrabold text-neutral-900 dark:text-white mt-1">
+                                        {(Number(system.exclusive_price) || 0).toFixed(0)}{" "}
+                                        <span className="text-base font-normal text-neutral-400">EGP</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
