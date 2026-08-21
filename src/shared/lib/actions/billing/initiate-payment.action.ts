@@ -86,25 +86,55 @@ export async function initiatePaymentAction(
             locale: parsed.data.locale,
         });
 
-        const { data: payment, error: paymentUpdateError } = await supabase
+        const { data: existingPayment, error: existingPaymentError } = await supabase
             .from("payments")
-            .update({
-                provider: "KASHIER",
-                provider_reference: order.id,
-                updated_at: new Date().toISOString(),
-            })
-            .eq("order_id", order.id)
-            .eq("provider", "KASHIER")
-            .eq("status", "PENDING")
             .select("id")
+            .eq("order_id", order.id)
             .maybeSingle();
 
-        if (paymentUpdateError) throw paymentUpdateError;
-        if (!payment) return { success: false, error: "Pending Kashier payment not found." };
+        if (existingPaymentError) {
+            console.error("Error fetching existing payment:", existingPaymentError);
+            throw existingPaymentError;
+        }
+
+        if (existingPayment) {
+            const { error: updateError } = await supabase
+                .from("payments")
+                .update({
+                    provider: "KASHIER",
+                    provider_reference: order.id,
+                    amount: order.amount,
+                    currency: order.currency || "EGP",
+                    status: "PENDING",
+                    updated_at: new Date().toISOString(),
+                })
+                .eq("id", existingPayment.id);
+
+            if (updateError) {
+                console.error("Payment Update Error:", updateError);
+                throw updateError;
+            }
+        } else {
+            const { error: insertError } = await supabase
+                .from("payments")
+                .insert({
+                    order_id: order.id,
+                    provider: "KASHIER",
+                    provider_reference: order.id,
+                    amount: order.amount,
+                    currency: order.currency || "EGP",
+                    status: "PENDING",
+                });
+
+            if (insertError) {
+                console.error("Payment Insert Error:", insertError);
+                throw insertError;
+            }
+        }
 
         return { success: true, iframeUrl: checkoutUrl };
     } catch (error) {
-        console.error("Failed to initiate Kashier payment", error);
+        console.error("Failed to initiate Kashier payment:", error);
 
         return {
             success: false,

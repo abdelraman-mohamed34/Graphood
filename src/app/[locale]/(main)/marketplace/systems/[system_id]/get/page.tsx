@@ -124,21 +124,21 @@ export default function Page() {
 
     const handleOrder = async () => {
         try {
-            const payload =
-                selectedLicense === "SUBSCRIPTION"
-                    ? {
-                        systemId,
-                        licenseType: "SUBSCRIPTION" as const,
-                        plan: selectedPlan,
-                        couponCode: couponCode.trim() || undefined,
-                    }
-                    : {
-                        systemId,
-                        licenseType: selectedLicense,
-                        couponCode: couponCode.trim() || undefined,
-                    };
+            const payload = selectedLicense === "SUBSCRIPTION"
+                ? {
+                    systemId,
+                    licenseType: "SUBSCRIPTION" as const,
+                    plan: selectedPlan,
+                    couponCode: couponCode.trim() || undefined,
+                }
+                : {
+                    systemId,
+                    licenseType: selectedLicense,
+                    couponCode: couponCode.trim() || undefined,
+                };
 
             const result = await createOrder(payload);
+            console.log(result)
 
             if (!result?.success) {
                 toast.error(t("feedback.orderFailed"));
@@ -151,7 +151,8 @@ export default function Page() {
                 toast.success(t("feedback.orderCreated"));
             }
             router.push(`/marketplace/checkout/${result.orderId}`);
-        } catch {
+        } catch (error) {
+            console.error("Order Creation Error:", error);
             toast.error(t("feedback.genericError"));
         }
     };
