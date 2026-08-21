@@ -14,7 +14,6 @@ export interface SocialLink {
 
 interface FooterBrandProps {
     description: string;
-    socialLinks?: SocialLink[];
 }
 
 const DEFAULT_SOCIAL_LINKS: SocialLink[] = [
@@ -47,7 +46,7 @@ function SocialIcon({ icon }: { icon: SocialLink["icon"] }) {
     return <Mail className="size-4" />;
 }
 
-export function FooterBrand({ description, socialLinks = DEFAULT_SOCIAL_LINKS }: FooterBrandProps) {
+export function FooterBrand({ description }: FooterBrandProps) {
     return (
         <div className="space-y-5">
             <Link href="/" className="inline-flex items-center gap-3" aria-label="Graphood home">
@@ -60,7 +59,7 @@ export function FooterBrand({ description, socialLinks = DEFAULT_SOCIAL_LINKS }:
             </p>
 
             <div className="flex items-center gap-2">
-                {socialLinks.map((item) => (
+                {DEFAULT_SOCIAL_LINKS.map((item) => (
                     <a
                         key={item.href}
                         href={item.href}

@@ -42,7 +42,6 @@ export function Footer() {
                 <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
                     <FooterBrand
                         description={t("description")}
-                        githubLabel={t("social.github")}
                     />
 
                     {footerSections.map((section) => (
