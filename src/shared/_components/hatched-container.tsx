@@ -7,7 +7,6 @@ interface HatchedContainerProps extends React.HTMLAttributes<HTMLDivElement> {
     children?: React.ReactNode;
     direction?: Direction;
     sides?: BorderSides;
-    /** سمك البوردر نفسه من الحواف (مثال: "p-4", "p-8", "p-[20px]") */
     padding?: string;
     stripeColor?: string;
     bgColor?: string;
@@ -79,7 +78,7 @@ export const HatchedContainer: React.FC<HatchedContainerProps> = ({
 
     return (
         <div
-            className={`relative overflow-hidden ${className}`}
+            className={`relative overflow-clip ${className}`}
             style={backgroundStyle}
             {...props}
         >

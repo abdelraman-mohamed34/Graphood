@@ -21,8 +21,9 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
   const { locale: rawLocale } = await params;
   const locale = isAppLocale(rawLocale) ? rawLocale : "en";
   const t = await getTranslations({ locale, namespace: "seo.home" });
+
   return (
-    <main className="min-h-screen ">
+    <main className="min-h-screen">
       <JsonLd data={[
         { "@context": "https://schema.org", "@type": "Organization", name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/icon.svg` },
         { "@context": "https://schema.org", "@type": "WebSite", name: SITE_NAME, url: absoluteUrl(locale), inLanguage: locale },
@@ -35,7 +36,7 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
           sides="x"
           className="max-w-6xl w-full"
         >
-          <div className="bg-white min-h-screen">
+          <div className="bg-white">
             <Sponsors />
             <EcosystemSuite />
           </div>
