@@ -1,71 +1,6 @@
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
-// import { Resend } from 'resend'
-
-// const resend = new Resend(process.env.RESEND_API_KEY)
-
-// type Props = {
-//     email: string
-//     token: string
-//     locale: string
-//     tenantSlug: string
-//     tenantName?: string
-//     inviterName: string
-//     message?: string | null
-// }
-
-// export async function sendInvitationEmail({
-//     email,
-//     token,
-//     locale,
-//     tenantSlug,
-//     tenantName = 'Graphood',
-//     inviterName,
-//     message,
-// }: Props) {
-//     const acceptUrl =
-//         `${process.env.NEXT_PUBLIC_APP_URL}` +
-//         `/${locale}/invitations/accept?token=${token}&tenant=${tenantSlug}`
-
-//     const { data, error } = await resend.emails.send({
-//         from: 'Graphood <onboarding@resend.dev>',
-//         to: email,
-//         subject: `You're invited to join ${tenantName}`,
-//         html: `
-//             <h2>You've been invited to join ${tenantName}</h2>
-
-//             <p>${inviterName} invited you to collaborate.</p>
-
-//             ${message
-//                 ? `<p><strong>Message:</strong> ${message}</p>`
-//                 : ''
-//             }
-
-//             <p>
-//                 <a href="${acceptUrl}">
-//                     Accept Invitation
-//                 </a>
-//             </p>
-
-//             <p>This invitation expires in 7 days.</p>
-//         `,
-//     })
-
-
-//     if (error) {
-//         throw new Error(error.message)
-//     }
-
-//     return data
-// }
-
-
-
-const transporter = nodemailer.createTransport({
-    host: '127.0.0.1',
-    port: 1025,
-    secure: false,
-})
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 type Props = {
     email: string
@@ -90,9 +25,8 @@ export async function sendInvitationEmail({
         `${process.env.NEXT_PUBLIC_APP_URL}` +
         `/${locale}/invitations/accept?token=${token}&tenant=${tenantSlug}`
 
-
-    await transporter.sendMail({
-        from: 'Graphood <no-reply@graphhood.local>',
+    const { data, error } = await resend.emails.send({
+        from: 'Graphood <onboarding@resend.dev>',
         to: email,
         subject: `You're invited to join ${tenantName}`,
         html: `
@@ -103,7 +37,6 @@ export async function sendInvitationEmail({
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invitation to join ${tenantName}</title>
     <style>
-        /* إعادة تهيئة وتنسيق الخطوط */
         body {
             margin: 0;
             padding: 0;
@@ -132,7 +65,6 @@ export async function sendInvitationEmail({
         .content {
             padding: 40px;
         }
-        /* الهيدر والشعار */
         .logo-placeholder {
             font-size: 20px;
             font-weight: 700;
@@ -140,7 +72,6 @@ export async function sendInvitationEmail({
             margin-bottom: 24px;
             letter-spacing: -0.025em;
         }
-        /* العناوين والفقرات */
         h2 {
             color: #0f172a;
             font-size: 22px;
@@ -148,23 +79,22 @@ export async function sendInvitationEmail({
             line-height: 1.3;
             margin: 0 0 16px 0;
             letter-spacing: -0.025em;
-            text-align: center; /* توسيط العنوان الرئيسي أيضاً */
+            text-align: center;
         }
         p {
             color: #475569;
             font-size: 15px;
             line-height: 1.6;
             margin: 0 0 24px 0;
-            text-align: center; /* توسيط نصوص الفقرات ليتماشى مع التنسيق الجديد */
+            text-align: center;
         }
-        /* صندوق الرسالة الاختيارية */
         .message-box {
             background-color: #f1f5f9;
             border-left: 4px solid #6366f1;
             padding: 16px;
             border-radius: 0 8px 8px 0;
             margin-bottom: 32px;
-            text-align: left; /* الحفاظ على محاذاة النص لليسار داخل صندوق الرسالة */
+            text-align: left;
         }
         .message-title {
             font-size: 12px;
@@ -183,7 +113,6 @@ export async function sendInvitationEmail({
             font-style: italic;
             text-align: left;
         }
-        /* زر الأكشن الاحترافي الموسط */
         .btn-container {
             padding: 10px 0 32px 0;
             text-align: center;
@@ -201,7 +130,6 @@ export async function sendInvitationEmail({
             transition: background-color 0.2s ease;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
-        /* تذييل البريد */
         .footer {
             padding: 0 40px 40px 40px;
             border-top: 1px solid #f1f5f9;
@@ -218,7 +146,6 @@ export async function sendInvitationEmail({
             text-decoration: underline;
         }
     </style>
-    <!-- استدعاء خط Inter الشهير -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -228,13 +155,11 @@ export async function sendInvitationEmail({
                 <table role="presentation" class="container" cellspacing="0" cellpadding="0">
                     <tr>
                         <td class="content">
-                            <!-- يمكنك استبدال اسم التينانت هنا بشعار شركتك إن وجد -->
                             <div class="logo-placeholder" style="text-align: center;">${tenantName}</div>
                             
                             <h2>You've been invited to join ${tenantName}</h2>
                             <p>Hi there! <strong>${inviterName}</strong> has invited you to collaborate and build together. Click below to accept the invitation and get started.</p>
 
-                            <!-- عرض الرسالة الاختيارية إذا كانت موجودة بشكل أنيق -->
                             ${message ? `
                             <div class="message-box">
                                 <p class="message-title">Personal Note</p>
@@ -242,7 +167,6 @@ export async function sendInvitationEmail({
                             </div>
                             ` : ''}
 
-                            <!-- جدول مخصص لتوسيط زر قبول الدعوة بشكل مضمون بنسبة 100% -->
                             <div class="btn-container">
                                 <table role="presentation" cellspacing="0" cellpadding="0" align="center" style="margin: 0 auto;">
                                     <tr>
@@ -275,7 +199,12 @@ export async function sendInvitationEmail({
     </table>
 </body>
 </html>
-`
+`,
     })
 
+    if (error) {
+        throw new Error(error.message)
+    }
+
+    return data
 }
