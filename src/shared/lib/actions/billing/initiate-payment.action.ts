@@ -72,7 +72,7 @@ export async function initiatePaymentAction(
             return { success: false, error: "A billing email is required." };
         }
 
-        const { checkoutUrl } = await createKashierCheckoutUrl({
+        const { checkoutUrl, sessionId } = await createKashierCheckoutUrl({
             orderId: order.id,
             amount: order.amount,
             currency: "EGP",
@@ -85,6 +85,8 @@ export async function initiatePaymentAction(
             systemId: order.system_id,
             locale: parsed.data.locale,
         });
+
+        const providerReference = sessionId || order.id;
 
         const { data: existingPayment, error: existingPaymentError } = await supabase
             .from("payments")
@@ -102,7 +104,7 @@ export async function initiatePaymentAction(
                 .from("payments")
                 .update({
                     provider: "KASHIER",
-                    provider_reference: order.id,
+                    provider_reference: providerReference,
                     amount: order.amount,
                     currency: order.currency || "EGP",
                     status: "PENDING",
@@ -120,7 +122,7 @@ export async function initiatePaymentAction(
                 .insert({
                     order_id: order.id,
                     provider: "KASHIER",
-                    provider_reference: order.id,
+                    provider_reference: providerReference,
                     amount: order.amount,
                     currency: order.currency || "EGP",
                     status: "PENDING",
@@ -140,7 +142,7 @@ export async function initiatePaymentAction(
             success: false,
             error:
                 error instanceof KashierError
-                    ? "Unable to create the payment session. Please try again."
+                    ? error.message
                     : "Failed to initiate payment.",
         };
     }
