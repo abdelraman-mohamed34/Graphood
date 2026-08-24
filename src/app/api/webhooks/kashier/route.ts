@@ -14,7 +14,7 @@ const payloadSchema = z.object({
     paymentStatus: z.string().optional(),
     amount: z.coerce.number().positive(),
     currency: z.string().trim().length(3),
-    metaData: z.record(z.any()).optional(),
+    metaData: z.record(z.string(), z.any()).optional(),
 }).passthrough();
 
 const acceptedStatuses = new Set<KashierPaymentStatus>(["SUCCESS", "PAID", "COMPLETED", "FAILED", "CANCELED", "CANCELLED"]);
@@ -22,11 +22,11 @@ const acceptedStatuses = new Set<KashierPaymentStatus>(["SUCCESS", "PAID", "COMP
 function verifySignature(rawBody: string, signature: string, secret: string): boolean {
     const expected = createHmac("sha256", secret).update(rawBody, "utf8").digest();
     const normalized = signature.trim().replace(/^sha256=/i, "");
-    
+
     let received: Buffer;
     try {
-        received = /^[a-f\d]{64}$/i.test(normalized) 
-            ? Buffer.from(normalized, "hex") 
+        received = /^[a-f\d]{64}$/i.test(normalized)
+            ? Buffer.from(normalized, "hex")
             : Buffer.from(normalized, "base64");
     } catch {
         return false;
@@ -104,7 +104,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ received: true, orderId, status });
     } catch (error) {
         console.error(`Kashier webhook processing failed for order ${orderId}:`, error);
-        return NextResponse.json({ 
+        return NextResponse.json({
             error: "Webhook processing failed.",
             message: error instanceof Error ? error.message : "Unknown error"
         }, { status: 500 });
