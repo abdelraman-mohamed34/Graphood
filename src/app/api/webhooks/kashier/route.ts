@@ -2,12 +2,15 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { processKashierPayment, provisionOrder, type KashierPaymentStatus } from "@/shared/lib/supabase/services/billing";
+import { createAdminClient } from "@/shared/lib/supabase/admin";
 
 export const runtime = "nodejs";
 
 const payloadSchema = z.object({
-    merchantOrderId: z.string().uuid().optional(),
-    orderId: z.string().uuid().optional(),
+    merchantOrderId: z.union([z.string(), z.number()]).optional(),
+    orderId: z.union([z.string(), z.number()]).optional(),
+    order: z.union([z.string(), z.number()]).optional(),
+    sessionId: z.union([z.string(), z.number()]).optional(),
     transactionId: z.union([z.string(), z.number()]).optional(),
     transactionRef: z.union([z.string(), z.number()]).optional(),
     status: z.string().optional(),
@@ -18,6 +21,42 @@ const payloadSchema = z.object({
 }).passthrough();
 
 const acceptedStatuses = new Set<KashierPaymentStatus>(["SUCCESS", "PAID", "COMPLETED", "FAILED", "CANCELED", "CANCELLED"]);
+const uuidSchema = z.string().uuid();
+
+function stringValue(value: unknown) {
+    const result = typeof value === "string" || typeof value === "number" ? String(value).trim() : "";
+    return result && result !== "NA" ? result : null;
+}
+
+async function resolveInternalOrderId(payload: z.infer<typeof payloadSchema>) {
+    const metadata = payload.metaData;
+    const candidates = [
+        payload.merchantOrderId,
+        payload.orderId,
+        payload.order,
+        metadata && typeof metadata.orderId === "string" ? metadata.orderId : undefined,
+    ].map(stringValue).filter((value): value is string => Boolean(value));
+
+    const admin = createAdminClient();
+    for (const candidate of candidates) {
+        if (uuidSchema.safeParse(candidate).success) {
+            const { data, error } = await admin.from("orders").select("id").eq("id", candidate).maybeSingle();
+            if (error) throw error;
+            if (data?.id) return data.id;
+        }
+
+        const { data, error } = await admin
+            .from("payments")
+            .select("order_id")
+            .eq("provider", "KASHIER")
+            .eq("provider_reference", candidate)
+            .maybeSingle();
+        if (error) throw error;
+        if (data?.order_id) return data.order_id;
+    }
+
+    return null;
+}
 
 function verifySignature(rawBody: string, signature: string, secret: string): boolean {
     const expected = createHmac("sha256", secret).update(rawBody, "utf8").digest();
@@ -71,11 +110,17 @@ export async function POST(request: Request) {
     }
 
     const payload = parsed.data;
-    const orderId = payload.merchantOrderId ?? payload.orderId;
+    const orderId = await resolveInternalOrderId(payload);
     const status = (payload.status ?? payload.paymentStatus ?? "").toUpperCase() as KashierPaymentStatus;
     const transactionRef = String(payload.transactionId ?? payload.transactionRef ?? "").trim();
 
     if (!orderId || !acceptedStatuses.has(status)) {
+        console.error("Kashier webhook order could not be matched to an internal order.", {
+            merchantOrderId: payload.merchantOrderId,
+            orderId: payload.orderId,
+            order: payload.order,
+            sessionId: payload.sessionId,
+        });
         return NextResponse.json({ error: "Missing payment identifiers." }, { status: 400 });
     }
 
