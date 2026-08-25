@@ -906,6 +906,29 @@ export type Database = {
         }
         Returns: Json
       }
+      record_payment_webhook_event: {
+        Args: {
+          p_event_key: string
+          p_order_id: string
+          p_payload: Json
+          p_provider: PaymentProvider
+          p_status: string
+          p_transaction_ref: string | null
+        }
+        Returns: { event_id: string; is_duplicate: boolean; processed_at: string | null }[]
+      }
+      mark_payment_webhook_event_processed: {
+        Args: { p_event_id: string }
+        Returns: undefined
+      }
+      mark_payment_webhook_event_failed: {
+        Args: { p_event_id: string; p_error: string }
+        Returns: undefined
+      }
+      provision_paid_order_atomic: {
+        Args: { p_order_id: string; p_webhook_event_id: string | null }
+        Returns: { subscription_id: string; tenant_id: string; membership_id: string; is_existing: boolean }[]
+      }
       cleanup_expired_invitations: { Args: never; Returns: undefined }
       is_tenant_member: { Args: { target_tenant_id: string }; Returns: boolean }
       transfer_workspace_ownership: {

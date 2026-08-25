@@ -1,27 +1,16 @@
-import { createMembershipFromTenant } from "../billing/create-membership-from-tenant.service";
-import { createSubscription } from "../billing/create-subscription.service";
-import { createTenantFromSubscription } from "../billing/create-tenant-from-subscription.service";
+import { createAdminClient } from "../../admin";
 
 export async function provisionOrder({
     orderId,
+    webhookEventId = null,
 }: {
     orderId: string;
+    webhookEventId?: string | null;
 }) {
-    const subscription = await createSubscription({
-        orderId,
+    const { data, error } = await createAdminClient().rpc("provision_paid_order_atomic", {
+        p_order_id: orderId,
+        p_webhook_event_id: webhookEventId,
     });
-
-    const tenant = await createTenantFromSubscription({
-        subscriptionId: subscription.id,
-    });
-
-    const membership = await createMembershipFromTenant({
-        tenantId: tenant.id,
-    });
-
-    return {
-        subscription,
-        tenant,
-        membership,
-    };
+    if (error) throw error;
+    return data?.[0] ?? null;
 }

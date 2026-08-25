@@ -1,8 +1,10 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { processKashierPayment, provisionOrder, type KashierPaymentStatus } from "@/shared/lib/supabase/services/billing";
+import { processKashierPayment, type KashierPaymentStatus } from "@/shared/lib/supabase/services/billing";
+import { provisionOrder } from "@/shared/lib/supabase/services/order/provision-order.service";
 import { createAdminClient } from "@/shared/lib/supabase/admin";
+import type { Json } from "@/shared/types/database.types";
 
 export const runtime = "nodejs";
 
@@ -13,11 +15,13 @@ const payloadSchema = z.object({
     sessionId: z.union([z.string(), z.number()]).optional(),
     transactionId: z.union([z.string(), z.number()]).optional(),
     transactionRef: z.union([z.string(), z.number()]).optional(),
+    transactionReference: z.union([z.string(), z.number()]).optional(),
+    reference: z.union([z.string(), z.number()]).optional(),
     status: z.string().optional(),
     paymentStatus: z.string().optional(),
     amount: z.coerce.number().positive(),
     currency: z.string().trim().length(3),
-    metaData: z.record(z.any()).optional(),
+    metaData: z.record(z.string(), z.any()).optional(),
 }).passthrough();
 
 const acceptedStatuses = new Set<KashierPaymentStatus>(["SUCCESS", "PAID", "COMPLETED", "FAILED", "CANCELED", "CANCELLED"]);
@@ -74,8 +78,13 @@ function verifySignature(rawBody: string, signature: string, secret: string): bo
     return received.length === expected.length && timingSafeEqual(received, expected);
 }
 
+function eventKey(payload: z.infer<typeof payloadSchema>, rawBody: string) {
+    const value = payload.sessionId ?? payload.transactionId ?? payload.transactionRef;
+    return value ? String(value).trim() : `payload:${createHash("sha256").update(rawBody).digest("hex")}`;
+}
+
 export async function POST(request: Request) {
-    const secret = process.env.KASHIER_WEBHOOK_SECRET?.trim();
+    const secret = process.env.KASHIER_SECRET_KEY?.trim();
     if (!secret) {
         console.error("Kashier webhook secret is not configured.");
         return NextResponse.json({ error: "Webhook is not configured." }, { status: 503 });
@@ -112,7 +121,7 @@ export async function POST(request: Request) {
     const payload = parsed.data;
     const orderId = await resolveInternalOrderId(payload);
     const status = (payload.status ?? payload.paymentStatus ?? "").toUpperCase() as KashierPaymentStatus;
-    const transactionRef = String(payload.transactionId ?? payload.transactionRef ?? "").trim();
+    const transactionRef = stringValue(payload.transactionId ?? payload.transactionRef ?? payload.transactionReference ?? payload.reference) ?? "";
 
     if (!orderId || !acceptedStatuses.has(status)) {
         console.error("Kashier webhook order could not be matched to an internal order.", {
@@ -130,9 +139,23 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Missing transaction reference." }, { status: 400 });
     }
 
+    let webhookEventId: string | null = null;
     try {
+        const { data: eventData, error: eventError } = await createAdminClient().rpc("record_payment_webhook_event", {
+            p_provider: "KASHIER",
+            p_event_key: eventKey(payload, rawBody),
+            p_order_id: orderId,
+            p_transaction_ref: transactionRef || null,
+            p_status: status,
+            p_payload: json as Json,
+        });
+        if (eventError) throw eventError;
+        const event = z.object({ event_id: z.string().uuid(), is_duplicate: z.boolean(), processed_at: z.string().nullable() }).parse(eventData?.[0]);
+        webhookEventId = event.event_id;
+        if (event.is_duplicate && event.processed_at) return NextResponse.json({ received: true, duplicate: true, orderId, status });
+
         // 1. Update order/payment status in Supabase
-        const data = await processKashierPayment({
+        await processKashierPayment({
             orderId,
             transactionRef,
             amount: payload.amount,
@@ -143,12 +166,18 @@ export async function POST(request: Request) {
         // 2. If payment was successful, trigger provisioning (tenant, subscription, membership)
         if (isSuccess) {
             console.log(`Triggering provisioning for order ${orderId}...`);
-            await provisionOrder({ orderId });
+            await provisionOrder({ orderId, webhookEventId });
         }
+
+        const { error: processedError } = await createAdminClient().rpc("mark_payment_webhook_event_processed", { p_event_id: webhookEventId });
+        if (processedError) throw processedError;
 
         return NextResponse.json({ received: true, orderId, status });
     } catch (error) {
         console.error(`Kashier webhook processing failed for order ${orderId}:`, error);
+        if (webhookEventId) {
+            await createAdminClient().rpc("mark_payment_webhook_event_failed", { p_event_id: webhookEventId, p_error: error instanceof Error ? error.message : JSON.stringify(error) });
+        }
         return NextResponse.json({ 
             error: "Webhook processing failed.",
             message: error instanceof Error ? error.message : "Unknown error"

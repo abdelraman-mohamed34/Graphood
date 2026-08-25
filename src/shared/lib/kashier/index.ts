@@ -24,13 +24,14 @@ export async function createKashierCheckoutUrl({
     const merchantId = process.env.KASHIER_MERCHANT_ID?.trim() ?? "";
     const secretKey = process.env.KASHIER_SECRET_KEY?.trim() ?? "";
     const apiKey = process.env.KASHIER_API_KEY?.trim() ?? "";
-    const mode = process.env.KASHIER_MODE?.trim().toLowerCase();
+    const mode = process.env.KASHIER_MODE?.trim().toLowerCase() || "test";
 
     if (!merchantId || !secretKey || !apiKey || (mode !== "test" && mode !== "live")) {
         throw new KashierError("Kashier credentials or mode are invalid.");
     }
 
     const redirectBase = (process.env.KASHIER_REDIRECT_URL || process.env.NEXT_PUBLIC_APP_URL || "").trim();
+    const webhookUrl = process.env.KASHIER_WEBHOOK_URL?.trim() || "";
     if (!redirectBase) throw new KashierError("Kashier redirect URL is missing.");
 
     let siteUrl: URL;
@@ -38,6 +39,18 @@ export async function createKashierCheckoutUrl({
         siteUrl = new URL(redirectBase);
     } catch {
         throw new KashierError("Kashier redirect URL is invalid.");
+    }
+
+    if (webhookUrl) {
+        try {
+            const parsedWebhookUrl = new URL(webhookUrl);
+            if (parsedWebhookUrl.protocol !== "https:") {
+                throw new KashierError("Kashier webhook URL must use HTTPS.");
+            }
+        } catch (error) {
+            if (error instanceof KashierError) throw error;
+            throw new KashierError("Kashier webhook URL is invalid.");
+        }
     }
 
     if (mode === "live" && siteUrl.protocol !== "https:") {
@@ -72,9 +85,8 @@ export async function createKashierCheckoutUrl({
             profileId,
             systemId,
         },
+        ...(webhookUrl ? { serverWebhook: webhookUrl } : {}),
     };
-
-    console.log("SENDING TO KASHIER -> Auth Header:", JSON.stringify(secretKey));
 
     try {
         const response = await fetch(baseUrl, {
@@ -87,19 +99,34 @@ export async function createKashierCheckoutUrl({
             body: JSON.stringify(payload),
         });
 
-        const data = await response.json();
+        const responseText = await response.text();
+        const contentType = response.headers.get("content-type") ?? "";
+        let data: Record<string, unknown>;
+
+        try {
+            data = JSON.parse(responseText) as Record<string, unknown>;
+        } catch {
+            const preview = responseText.replace(/\s+/g, " ").trim().slice(0, 300);
+            throw new KashierError(
+                `Kashier returned non-JSON response (HTTP ${response.status}, ${contentType || "unknown content type"}): ${preview}`
+            );
+        }
 
         if (!response.ok) {
-            const errorMsg = data?.error?.message || data?.message || JSON.stringify(data) || "Kashier payment session creation failed";
+            const errorMsg = typeof data.error === "object" && data.error !== null && "message" in data.error
+                ? String((data.error as { message?: unknown }).message)
+                : typeof data.message === "string"
+                    ? data.message
+                    : JSON.stringify(data) || "Kashier payment session creation failed";
             throw new KashierError(errorMsg);
         }
 
-        const checkoutUrl = data.sessionUrl;
+        const checkoutUrl = typeof data.sessionUrl === "string" ? data.sessionUrl : undefined;
         if (!checkoutUrl) {
             throw new KashierError("Invalid response payload from Kashier API (no sessionUrl found).");
         }
 
-        return { checkoutUrl, sessionId: data._id };
+        return { checkoutUrl, sessionId: typeof data._id === "string" ? data._id : undefined };
     } catch (error) {
         if (error instanceof KashierError) {
             throw error;
