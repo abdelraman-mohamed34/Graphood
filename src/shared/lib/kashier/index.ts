@@ -23,13 +23,17 @@ export async function createKashierCheckoutUrl({
     locale,
     customer,
 }: CreateKashierOrderInput): Promise<{ checkoutUrl: string; sessionId?: string }> {
-    const env = getKashierCheckoutEnv();
-    const merchantId = env.KASHIER_MERCHANT_ID;
-    const secretKey = env.KASHIER_SECRET_KEY;
-    const apiKey = env.KASHIER_API_KEY;
-    const mode = env.KASHIER_MODE;
+    const merchantId = process.env.KASHIER_MERCHANT_ID?.trim() ?? "";
+    const secretKey = process.env.KASHIER_SECRET_KEY?.trim() ?? "";
+    const apiKey = process.env.KASHIER_API_KEY?.trim() ?? "";
+    const mode = process.env.KASHIER_MODE?.trim().toLowerCase() || "test";
 
-    const redirectBase = env.KASHIER_REDIRECT_URL || env.NEXT_PUBLIC_APP_URL || "";
+    if (!merchantId || !secretKey || !apiKey || (mode !== "test" && mode !== "live")) {
+        throw new KashierError("Kashier credentials or mode are invalid.");
+    }
+
+    const redirectBase = (process.env.KASHIER_REDIRECT_URL || process.env.NEXT_PUBLIC_APP_URL || "").trim();
+    const webhookUrl = process.env.KASHIER_WEBHOOK_URL?.trim() || "";
     if (!redirectBase) throw new KashierError("Kashier redirect URL is missing.");
 
     let siteUrl: URL;

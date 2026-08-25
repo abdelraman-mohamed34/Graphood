@@ -229,7 +229,7 @@ export async function POST(request: Request) {
         if (isSuccess) {
             await provisionOrder({ orderId, webhookEventId });
         }
-        
+
         if (!isSuccess) {
             const { error } = await createAdminClient().rpc("mark_payment_webhook_event_processed", {
                 p_event_id: webhookEventId,
