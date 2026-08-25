@@ -1,13 +1,19 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getKashierCheckoutEnv } from "@/shared/lib/env/server";
 import { processKashierPayment, provisionOrder, type KashierPaymentStatus } from "@/shared/lib/supabase/services/billing";
+import { createAdminClient } from "@/shared/lib/supabase/admin";
+import type { Json } from "@/shared/types/database.types";
 
 export const runtime = "nodejs";
 
 const payloadSchema = z.object({
-    merchantOrderId: z.string().uuid().optional(),
-    orderId: z.string().uuid().optional(),
+    id: z.union([z.string(), z.number()]).optional(),
+    eventId: z.union([z.string(), z.number()]).optional(),
+    merchantOrderId: z.string().trim().min(1).optional(),
+    orderId: z.string().trim().min(1).optional(),
+    order: z.string().trim().min(1).optional(),
     transactionId: z.union([z.string(), z.number()]).optional(),
     transactionRef: z.union([z.string(), z.number()]).optional(),
     status: z.string().optional(),
@@ -18,6 +24,14 @@ const payloadSchema = z.object({
 }).passthrough();
 
 const acceptedStatuses = new Set<KashierPaymentStatus>(["SUCCESS", "PAID", "COMPLETED", "FAILED", "CANCELED", "CANCELLED"]);
+const orderIdSchema = z.string().uuid();
+
+function getOrderReference(payload: z.infer<typeof payloadSchema>) {
+    return payload.merchantOrderId
+        ?? payload.orderId
+        ?? payload.order
+        ?? (typeof payload.metaData?.orderId === "string" ? payload.metaData.orderId : undefined);
+}
 
 function verifySignature(rawBody: string, signature: string, secret: string): boolean {
     const expected = createHmac("sha256", secret).update(rawBody, "utf8").digest();
@@ -35,19 +49,85 @@ function verifySignature(rawBody: string, signature: string, secret: string): bo
     return received.length === expected.length && timingSafeEqual(received, expected);
 }
 
+function getWebhookEventKey(payload: z.infer<typeof payloadSchema>, rawBody: string) {
+    const gatewayEventId = payload.eventId ?? payload.id;
+    const transactionRef = payload.transactionId ?? payload.transactionRef;
+
+    if (gatewayEventId != null && String(gatewayEventId).trim()) {
+        return String(gatewayEventId).trim();
+    }
+
+    if (transactionRef != null && String(transactionRef).trim()) {
+        return `transaction:${String(transactionRef).trim()}`;
+    }
+
+    return `payload:${createHash("sha256").update(rawBody, "utf8").digest("hex")}`;
+}
+
+async function recordWebhookEvent(input: {
+    eventKey: string;
+    orderId: string;
+    transactionRef: string | null;
+    status: KashierPaymentStatus;
+    payload: Json;
+}) {
+    const { data, error } = await createAdminClient().rpc("record_payment_webhook_event", {
+        p_provider: "KASHIER",
+        p_event_key: input.eventKey,
+        p_order_id: input.orderId,
+        p_transaction_ref: input.transactionRef,
+        p_status: input.status,
+        p_payload: input.payload,
+    });
+
+    if (error) throw error;
+
+    const event = z.object({
+        event_id: z.string().uuid(),
+        is_duplicate: z.boolean(),
+        processed_at: z.string().nullable(),
+    }).parse(data?.[0]);
+
+    return {
+        eventId: event.event_id,
+        isDuplicate: event.is_duplicate,
+        processedAt: event.processed_at,
+    };
+}
+
+async function markWebhookEventFailed(eventId: string, error: unknown) {
+    const message = error instanceof Error
+        ? error.message
+        : typeof error === "object" && error !== null
+            ? JSON.stringify(error)
+            : String(error);
+    const { error: markError } = await createAdminClient().rpc("mark_payment_webhook_event_failed", {
+        p_event_id: eventId,
+        p_error: message,
+    });
+
+    if (markError) {
+        console.error(`Failed to persist Kashier webhook failure for event ${eventId}:`, markError);
+    }
+}
+
 export async function POST(request: Request) {
-    const secret = process.env.KASHIER_WEBHOOK_SECRET?.trim();
-    if (!secret) {
+    let secret: string;
+    try {
+        // Kashier signs notifications with the same secret key used by checkout.
+        const env = getKashierCheckoutEnv();
+        secret = env.KASHIER_SECRET_KEY;
+    } catch {
         console.error("Kashier webhook secret is not configured.");
         return NextResponse.json({ error: "Webhook is not configured." }, { status: 503 });
     }
 
     const signature = request.headers.get("x-kashier-signature") ?? request.headers.get("x-kashier-hmac-sha256");
+    const rawBody = await request.text();
     if (!signature) {
         return NextResponse.json({ error: "Missing signature." }, { status: 401 });
     }
 
-    const rawBody = await request.text();
     if (!verifySignature(rawBody, signature, secret)) {
         console.error("Kashier webhook signature verification failed.");
         return NextResponse.json({ error: "Invalid signature." }, { status: 401 });
@@ -71,11 +151,17 @@ export async function POST(request: Request) {
     }
 
     const payload = parsed.data;
-    const orderId = payload.merchantOrderId ?? payload.orderId;
+    const orderReference = getOrderReference(payload);
+    const orderId = orderIdSchema.safeParse(orderReference).success ? orderReference : null;
     const status = (payload.status ?? payload.paymentStatus ?? "").toUpperCase() as KashierPaymentStatus;
     const transactionRef = String(payload.transactionId ?? payload.transactionRef ?? "").trim();
+    const eventKey = getWebhookEventKey(payload, rawBody);
 
     if (!orderId || !acceptedStatuses.has(status)) {
+        console.error("Kashier webhook did not contain a valid internal order UUID.", {
+            orderReference,
+            status,
+        });
         return NextResponse.json({ error: "Missing payment identifiers." }, { status: 400 });
     }
 
@@ -85,9 +171,24 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Missing transaction reference." }, { status: 400 });
     }
 
+    let webhookEventId: string | null = null;
+
     try {
-        // 1. Update order/payment status in Supabase
-        const data = await processKashierPayment({
+        const webhookEvent = await recordWebhookEvent({
+            eventKey,
+            orderId,
+            transactionRef: transactionRef || null,
+            status,
+            payload: json as Json,
+        });
+
+        webhookEventId = webhookEvent.eventId;
+
+        if (webhookEvent.isDuplicate && webhookEvent.processedAt) {
+            return NextResponse.json({ received: true, duplicate: true, orderId, status });
+        }
+
+        await processKashierPayment({
             orderId,
             transactionRef,
             amount: payload.amount,
@@ -95,18 +196,30 @@ export async function POST(request: Request) {
             status
         });
 
-        // 2. If payment was successful, trigger provisioning (tenant, subscription, membership)
         if (isSuccess) {
-            console.log(`Triggering provisioning for order ${orderId}...`);
-            await provisionOrder({ orderId });
+            await provisionOrder({ orderId, webhookEventId });
+        }
+        
+        if (!isSuccess) {
+            const { error } = await createAdminClient().rpc("mark_payment_webhook_event_processed", {
+                p_event_id: webhookEventId,
+            });
+            if (error) throw error;
         }
 
         return NextResponse.json({ received: true, orderId, status });
     } catch (error) {
         console.error(`Kashier webhook processing failed for order ${orderId}:`, error);
+        if (webhookEventId) {
+            await markWebhookEventFailed(webhookEventId, error);
+        }
         return NextResponse.json({
             error: "Webhook processing failed.",
-            message: error instanceof Error ? error.message : "Unknown error"
+            message: error instanceof Error
+                ? error.message
+                : typeof error === "object" && error !== null
+                    ? JSON.stringify(error)
+                    : String(error)
         }, { status: 500 });
     }
 }

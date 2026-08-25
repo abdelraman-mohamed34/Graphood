@@ -518,6 +518,56 @@ export type Database = {
           },
         ]
       }
+      payment_webhook_events: {
+        Row: {
+          created_at: string
+          error: string | null
+          event_key: string
+          id: string
+          order_id: string | null
+          payload: Json
+          processed_at: string | null
+          provider: Database["public"]["Enums"]["payment_provider"]
+          status: string
+          transaction_ref: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          event_key: string
+          id?: string
+          order_id?: string | null
+          payload?: Json
+          processed_at?: string | null
+          provider: Database["public"]["Enums"]["payment_provider"]
+          status: string
+          transaction_ref?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          event_key?: string
+          id?: string
+          order_id?: string | null
+          payload?: Json
+          processed_at?: string | null
+          provider?: Database["public"]["Enums"]["payment_provider"]
+          status?: string
+          transaction_ref?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_webhook_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       platform_staff: {
         Row: {
           audit_logs_last_viewed_at: string
@@ -905,6 +955,46 @@ export type Database = {
           p_transaction_ref: string
         }
         Returns: Json
+      }
+      provision_paid_order_atomic: {
+        Args: {
+          p_order_id: string
+          p_webhook_event_id?: string | null
+        }
+        Returns: {
+          subscription_id: string
+          tenant_id: string
+          membership_id: string
+          is_existing: boolean
+        }[]
+      }
+      record_payment_webhook_event: {
+        Args: {
+          p_provider: Database["public"]["Enums"]["payment_provider"]
+          p_event_key: string
+          p_order_id: string | null
+          p_transaction_ref: string | null
+          p_status: string
+          p_payload: Json
+        }
+        Returns: {
+          event_id: string
+          is_duplicate: boolean
+          processed_at: string | null
+        }[]
+      }
+      mark_payment_webhook_event_processed: {
+        Args: {
+          p_event_id: string
+        }
+        Returns: undefined
+      }
+      mark_payment_webhook_event_failed: {
+        Args: {
+          p_event_id: string
+          p_error: string
+        }
+        Returns: undefined
       }
       cleanup_expired_invitations: { Args: never; Returns: undefined }
       is_tenant_member: { Args: { target_tenant_id: string }; Returns: boolean }

@@ -1,3 +1,5 @@
+import { getKashierCheckoutEnv } from "@/shared/lib/env/server";
+
 export class KashierError extends Error {
     constructor(message: string) { super(message); this.name = "KashierError"; }
 }
@@ -21,16 +23,13 @@ export async function createKashierCheckoutUrl({
     locale,
     customer,
 }: CreateKashierOrderInput): Promise<{ checkoutUrl: string; sessionId?: string }> {
-    const merchantId = process.env.KASHIER_MERCHANT_ID?.trim() ?? "";
-    const secretKey = process.env.KASHIER_SECRET_KEY?.trim() ?? "";
-    const apiKey = process.env.KASHIER_API_KEY?.trim() ?? "";
-    const mode = process.env.KASHIER_MODE?.trim().toLowerCase();
+    const env = getKashierCheckoutEnv();
+    const merchantId = env.KASHIER_MERCHANT_ID;
+    const secretKey = env.KASHIER_SECRET_KEY;
+    const apiKey = env.KASHIER_API_KEY;
+    const mode = env.KASHIER_MODE;
 
-    if (!merchantId || !secretKey || !apiKey || (mode !== "test" && mode !== "live")) {
-        throw new KashierError("Kashier credentials or mode are invalid.");
-    }
-
-    const redirectBase = (process.env.KASHIER_REDIRECT_URL || process.env.NEXT_PUBLIC_APP_URL || "").trim();
+    const redirectBase = env.KASHIER_REDIRECT_URL || env.NEXT_PUBLIC_APP_URL || "";
     if (!redirectBase) throw new KashierError("Kashier redirect URL is missing.");
 
     let siteUrl: URL;
@@ -52,7 +51,11 @@ export async function createKashierCheckoutUrl({
         ? "https://api.kashier.io/v3/payment/sessions"
         : "https://test-api.kashier.io/v3/payment/sessions";
 
-    const cleanOrigin = siteUrl.origin.replace(/\/+$/, "");
+    let cleanOrigin = siteUrl.origin.replace(/\/+$/, "");
+
+    if (cleanOrigin.includes("localhost") || cleanOrigin.includes("127.0.0.1")) {
+        cleanOrigin = "https://sour-streets-matter.loca.lt";
+    }
 
     const payload = {
         amount: Number(amount).toFixed(2),
@@ -73,8 +76,6 @@ export async function createKashierCheckoutUrl({
             systemId,
         },
     };
-
-    console.log("SENDING TO KASHIER -> Auth Header:", JSON.stringify(secretKey));
 
     try {
         const response = await fetch(baseUrl, {

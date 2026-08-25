@@ -1,27 +1,39 @@
-import { createMembershipFromTenant } from "../billing/create-membership-from-tenant.service";
-import { createSubscription } from "../billing/create-subscription.service";
-import { createTenantFromSubscription } from "../billing/create-tenant-from-subscription.service";
+import "server-only";
+
+import { z } from "zod";
+
+import { createAdminClient } from "../../admin";
+
+const provisionOrderResultSchema = z.object({
+    subscription_id: z.string().uuid(),
+    tenant_id: z.string().uuid(),
+    membership_id: z.string().uuid(),
+    is_existing: z.boolean(),
+});
 
 export async function provisionOrder({
     orderId,
+    webhookEventId,
 }: {
     orderId: string;
+    webhookEventId?: string | null;
 }) {
-    const subscription = await createSubscription({
-        orderId,
+    const { data, error } = await createAdminClient().rpc("provision_paid_order_atomic", {
+        p_order_id: orderId,
+        p_webhook_event_id: webhookEventId ?? null,
     });
 
-    const tenant = await createTenantFromSubscription({
-        subscriptionId: subscription.id,
-    });
+    if (error) throw error;
 
-    const membership = await createMembershipFromTenant({
-        tenantId: tenant.id,
-    });
+    const parsed = provisionOrderResultSchema.safeParse(data?.[0]);
+    if (!parsed.success) {
+        throw new Error("Invalid provisioning response from database.");
+    }
 
     return {
-        subscription,
-        tenant,
-        membership,
+        subscription: { id: parsed.data.subscription_id },
+        tenant: { id: parsed.data.tenant_id },
+        membership: { id: parsed.data.membership_id },
+        isExisting: parsed.data.is_existing,
     };
 }

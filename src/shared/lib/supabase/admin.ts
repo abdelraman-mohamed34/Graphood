@@ -2,18 +2,14 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/shared/types/database.types";
+import { getSupabaseAdminEnv } from "@/shared/lib/env/server";
 
 export function createAdminClient() {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !supabaseServiceKey) {
-        throw new Error("Missing Supabase Admin Environment Variables");
-    }
+    const env = getSupabaseAdminEnv();
 
     return createClient<Database>(
-        supabaseUrl,
-        supabaseServiceKey,
+        env.NEXT_PUBLIC_SUPABASE_URL,
+        env.SUPABASE_SERVICE_ROLE_KEY,
         {
             auth: {
                 persistSession: false,
