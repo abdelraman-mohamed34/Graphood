@@ -17,6 +17,8 @@ const payloadSchema = z.object({
     sessionId: z.union([z.string(), z.number()]).optional(),
     transactionId: z.union([z.string(), z.number()]).optional(),
     transactionRef: z.union([z.string(), z.number()]).optional(),
+    transactionReference: z.union([z.string(), z.number()]).optional(),
+    reference: z.union([z.string(), z.number()]).optional(),
     status: z.string().optional(),
     paymentStatus: z.string().optional(),
     amount: z.coerce.number().positive(),
@@ -80,7 +82,7 @@ function verifySignature(rawBody: string, signature: string, secret: string): bo
 
 function getWebhookEventKey(payload: z.infer<typeof payloadSchema>, rawBody: string) {
     const gatewayEventId = payload.eventId ?? payload.id;
-    const transactionRef = payload.transactionId ?? payload.transactionRef;
+    const transactionRef = payload.transactionId ?? payload.transactionRef ?? payload.transactionReference ?? payload.reference;
 
     if (gatewayEventId != null && String(gatewayEventId).trim()) {
         return String(gatewayEventId).trim();
@@ -182,7 +184,7 @@ export async function POST(request: Request) {
     const payload = parsed.data;
     const orderId = await resolveInternalOrderId(payload);
     const status = (payload.status ?? payload.paymentStatus ?? "").toUpperCase() as KashierPaymentStatus;
-    const transactionRef = String(payload.transactionId ?? payload.transactionRef ?? "").trim();
+    const transactionRef = stringValue(payload.transactionId ?? payload.transactionRef ?? payload.transactionReference ?? payload.reference) ?? "";
     const eventKey = getWebhookEventKey(payload, rawBody);
 
     if (!orderId || !acceptedStatuses.has(status)) {
