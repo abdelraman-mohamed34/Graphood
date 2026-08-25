@@ -1,3 +1,5 @@
+import { getKashierCheckoutEnv } from "@/shared/lib/env/server";
+
 export class KashierError extends Error {
     constructor(message: string) { super(message); this.name = "KashierError"; }
 }
@@ -65,7 +67,11 @@ export async function createKashierCheckoutUrl({
         ? "https://api.kashier.io/v3/payment/sessions"
         : "https://test-api.kashier.io/v3/payment/sessions";
 
-    const cleanOrigin = siteUrl.origin.replace(/\/+$/, "");
+    let cleanOrigin = siteUrl.origin.replace(/\/+$/, "");
+
+    if (cleanOrigin.includes("localhost") || cleanOrigin.includes("127.0.0.1")) {
+        cleanOrigin = "https://sour-streets-matter.loca.lt";
+    }
 
     const payload = {
         amount: Number(amount).toFixed(2),

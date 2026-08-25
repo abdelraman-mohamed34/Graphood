@@ -1,14 +1,16 @@
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { processKashierPayment, type KashierPaymentStatus } from "@/shared/lib/supabase/services/billing";
-import { provisionOrder } from "@/shared/lib/supabase/services/order/provision-order.service";
+import { getKashierCheckoutEnv } from "@/shared/lib/env/server";
+import { processKashierPayment, provisionOrder, type KashierPaymentStatus } from "@/shared/lib/supabase/services/billing";
 import { createAdminClient } from "@/shared/lib/supabase/admin";
 import type { Json } from "@/shared/types/database.types";
 
 export const runtime = "nodejs";
 
 const payloadSchema = z.object({
+    id: z.union([z.string(), z.number()]).optional(),
+    eventId: z.union([z.string(), z.number()]).optional(),
     merchantOrderId: z.union([z.string(), z.number()]).optional(),
     orderId: z.union([z.string(), z.number()]).optional(),
     order: z.union([z.string(), z.number()]).optional(),
@@ -65,11 +67,11 @@ async function resolveInternalOrderId(payload: z.infer<typeof payloadSchema>) {
 function verifySignature(rawBody: string, signature: string, secret: string): boolean {
     const expected = createHmac("sha256", secret).update(rawBody, "utf8").digest();
     const normalized = signature.trim().replace(/^sha256=/i, "");
-    
+
     let received: Buffer;
     try {
-        received = /^[a-f\d]{64}$/i.test(normalized) 
-            ? Buffer.from(normalized, "hex") 
+        received = /^[a-f\d]{64}$/i.test(normalized)
+            ? Buffer.from(normalized, "hex")
             : Buffer.from(normalized, "base64");
     } catch {
         return false;
@@ -78,24 +80,85 @@ function verifySignature(rawBody: string, signature: string, secret: string): bo
     return received.length === expected.length && timingSafeEqual(received, expected);
 }
 
-function eventKey(payload: z.infer<typeof payloadSchema>, rawBody: string) {
-    const value = payload.sessionId ?? payload.transactionId ?? payload.transactionRef;
-    return value ? String(value).trim() : `payload:${createHash("sha256").update(rawBody).digest("hex")}`;
+function getWebhookEventKey(payload: z.infer<typeof payloadSchema>, rawBody: string) {
+    const gatewayEventId = payload.eventId ?? payload.id;
+    const transactionRef = payload.transactionId ?? payload.transactionRef;
+
+    if (gatewayEventId != null && String(gatewayEventId).trim()) {
+        return String(gatewayEventId).trim();
+    }
+
+    if (transactionRef != null && String(transactionRef).trim()) {
+        return `transaction:${String(transactionRef).trim()}`;
+    }
+
+    return `payload:${createHash("sha256").update(rawBody, "utf8").digest("hex")}`;
+}
+
+async function recordWebhookEvent(input: {
+    eventKey: string;
+    orderId: string;
+    transactionRef: string | null;
+    status: KashierPaymentStatus;
+    payload: Json;
+}) {
+    const { data, error } = await createAdminClient().rpc("record_payment_webhook_event", {
+        p_provider: "KASHIER",
+        p_event_key: input.eventKey,
+        p_order_id: input.orderId,
+        p_transaction_ref: input.transactionRef,
+        p_status: input.status,
+        p_payload: input.payload,
+    });
+
+    if (error) throw error;
+
+    const event = z.object({
+        event_id: z.string().uuid(),
+        is_duplicate: z.boolean(),
+        processed_at: z.string().nullable(),
+    }).parse(data?.[0]);
+
+    return {
+        eventId: event.event_id,
+        isDuplicate: event.is_duplicate,
+        processedAt: event.processed_at,
+    };
+}
+
+async function markWebhookEventFailed(eventId: string, error: unknown) {
+    const message = error instanceof Error
+        ? error.message
+        : typeof error === "object" && error !== null
+            ? JSON.stringify(error)
+            : String(error);
+    const { error: markError } = await createAdminClient().rpc("mark_payment_webhook_event_failed", {
+        p_event_id: eventId,
+        p_error: message,
+    });
+
+    if (markError) {
+        console.error(`Failed to persist Kashier webhook failure for event ${eventId}:`, markError);
+    }
 }
 
 export async function POST(request: Request) {
-    const secret = process.env.KASHIER_SECRET_KEY?.trim();
-    if (!secret) {
+    let secret: string;
+    try {
+        // Kashier signs notifications with the same secret key used by checkout.
+        const env = getKashierCheckoutEnv();
+        secret = env.KASHIER_SECRET_KEY;
+    } catch {
         console.error("Kashier webhook secret is not configured.");
         return NextResponse.json({ error: "Webhook is not configured." }, { status: 503 });
     }
 
     const signature = request.headers.get("x-kashier-signature") ?? request.headers.get("x-kashier-hmac-sha256");
+    const rawBody = await request.text();
     if (!signature) {
         return NextResponse.json({ error: "Missing signature." }, { status: 401 });
     }
 
-    const rawBody = await request.text();
     if (!verifySignature(rawBody, signature, secret)) {
         console.error("Kashier webhook signature verification failed.");
         return NextResponse.json({ error: "Invalid signature." }, { status: 401 });
@@ -121,7 +184,8 @@ export async function POST(request: Request) {
     const payload = parsed.data;
     const orderId = await resolveInternalOrderId(payload);
     const status = (payload.status ?? payload.paymentStatus ?? "").toUpperCase() as KashierPaymentStatus;
-    const transactionRef = stringValue(payload.transactionId ?? payload.transactionRef ?? payload.transactionReference ?? payload.reference) ?? "";
+    const transactionRef = String(payload.transactionId ?? payload.transactionRef ?? "").trim();
+    const eventKey = getWebhookEventKey(payload, rawBody);
 
     if (!orderId || !acceptedStatuses.has(status)) {
         console.error("Kashier webhook order could not be matched to an internal order.", {
@@ -140,21 +204,22 @@ export async function POST(request: Request) {
     }
 
     let webhookEventId: string | null = null;
-    try {
-        const { data: eventData, error: eventError } = await createAdminClient().rpc("record_payment_webhook_event", {
-            p_provider: "KASHIER",
-            p_event_key: eventKey(payload, rawBody),
-            p_order_id: orderId,
-            p_transaction_ref: transactionRef || null,
-            p_status: status,
-            p_payload: json as Json,
-        });
-        if (eventError) throw eventError;
-        const event = z.object({ event_id: z.string().uuid(), is_duplicate: z.boolean(), processed_at: z.string().nullable() }).parse(eventData?.[0]);
-        webhookEventId = event.event_id;
-        if (event.is_duplicate && event.processed_at) return NextResponse.json({ received: true, duplicate: true, orderId, status });
 
-        // 1. Update order/payment status in Supabase
+    try {
+        const webhookEvent = await recordWebhookEvent({
+            eventKey,
+            orderId,
+            transactionRef: transactionRef || null,
+            status,
+            payload: json as Json,
+        });
+
+        webhookEventId = webhookEvent.eventId;
+
+        if (webhookEvent.isDuplicate && webhookEvent.processedAt) {
+            return NextResponse.json({ received: true, duplicate: true, orderId, status });
+        }
+
         await processKashierPayment({
             orderId,
             transactionRef,
@@ -163,10 +228,15 @@ export async function POST(request: Request) {
             status
         });
 
-        // 2. If payment was successful, trigger provisioning (tenant, subscription, membership)
         if (isSuccess) {
-            console.log(`Triggering provisioning for order ${orderId}...`);
             await provisionOrder({ orderId, webhookEventId });
+        }
+
+        if (!isSuccess) {
+            const { error } = await createAdminClient().rpc("mark_payment_webhook_event_processed", {
+                p_event_id: webhookEventId,
+            });
+            if (error) throw error;
         }
 
         const { error: processedError } = await createAdminClient().rpc("mark_payment_webhook_event_processed", { p_event_id: webhookEventId });
@@ -176,11 +246,15 @@ export async function POST(request: Request) {
     } catch (error) {
         console.error(`Kashier webhook processing failed for order ${orderId}:`, error);
         if (webhookEventId) {
-            await createAdminClient().rpc("mark_payment_webhook_event_failed", { p_event_id: webhookEventId, p_error: error instanceof Error ? error.message : JSON.stringify(error) });
+            await markWebhookEventFailed(webhookEventId, error);
         }
-        return NextResponse.json({ 
+        return NextResponse.json({
             error: "Webhook processing failed.",
-            message: error instanceof Error ? error.message : "Unknown error"
+            message: error instanceof Error
+                ? error.message
+                : typeof error === "object" && error !== null
+                    ? JSON.stringify(error)
+                    : String(error)
         }, { status: 500 });
     }
 }
