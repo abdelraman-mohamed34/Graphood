@@ -11,9 +11,10 @@ export const runtime = "nodejs";
 const payloadSchema = z.object({
     id: z.union([z.string(), z.number()]).optional(),
     eventId: z.union([z.string(), z.number()]).optional(),
-    merchantOrderId: z.string().trim().min(1).optional(),
-    orderId: z.string().trim().min(1).optional(),
-    order: z.string().trim().min(1).optional(),
+    merchantOrderId: z.union([z.string(), z.number()]).optional(),
+    orderId: z.union([z.string(), z.number()]).optional(),
+    order: z.union([z.string(), z.number()]).optional(),
+    sessionId: z.union([z.string(), z.number()]).optional(),
     transactionId: z.union([z.string(), z.number()]).optional(),
     transactionRef: z.union([z.string(), z.number()]).optional(),
     status: z.string().optional(),
@@ -24,13 +25,41 @@ const payloadSchema = z.object({
 }).passthrough();
 
 const acceptedStatuses = new Set<KashierPaymentStatus>(["SUCCESS", "PAID", "COMPLETED", "FAILED", "CANCELED", "CANCELLED"]);
-const orderIdSchema = z.string().uuid();
+const uuidSchema = z.string().uuid();
 
-function getOrderReference(payload: z.infer<typeof payloadSchema>) {
-    return payload.merchantOrderId
-        ?? payload.orderId
-        ?? payload.order
-        ?? (typeof payload.metaData?.orderId === "string" ? payload.metaData.orderId : undefined);
+function stringValue(value: unknown) {
+    const result = typeof value === "string" || typeof value === "number" ? String(value).trim() : "";
+    return result && result !== "NA" ? result : null;
+}
+
+async function resolveInternalOrderId(payload: z.infer<typeof payloadSchema>) {
+    const metadata = payload.metaData;
+    const candidates = [
+        payload.merchantOrderId,
+        payload.orderId,
+        payload.order,
+        metadata && typeof metadata.orderId === "string" ? metadata.orderId : undefined,
+    ].map(stringValue).filter((value): value is string => Boolean(value));
+
+    const admin = createAdminClient();
+    for (const candidate of candidates) {
+        if (uuidSchema.safeParse(candidate).success) {
+            const { data, error } = await admin.from("orders").select("id").eq("id", candidate).maybeSingle();
+            if (error) throw error;
+            if (data?.id) return data.id;
+        }
+
+        const { data, error } = await admin
+            .from("payments")
+            .select("order_id")
+            .eq("provider", "KASHIER")
+            .eq("provider_reference", candidate)
+            .maybeSingle();
+        if (error) throw error;
+        if (data?.order_id) return data.order_id;
+    }
+
+    return null;
 }
 
 function verifySignature(rawBody: string, signature: string, secret: string): boolean {
@@ -151,16 +180,17 @@ export async function POST(request: Request) {
     }
 
     const payload = parsed.data;
-    const orderReference = getOrderReference(payload);
-    const orderId = orderIdSchema.safeParse(orderReference).success ? orderReference : null;
+    const orderId = await resolveInternalOrderId(payload);
     const status = (payload.status ?? payload.paymentStatus ?? "").toUpperCase() as KashierPaymentStatus;
     const transactionRef = String(payload.transactionId ?? payload.transactionRef ?? "").trim();
     const eventKey = getWebhookEventKey(payload, rawBody);
 
     if (!orderId || !acceptedStatuses.has(status)) {
-        console.error("Kashier webhook did not contain a valid internal order UUID.", {
-            orderReference,
-            status,
+        console.error("Kashier webhook order could not be matched to an internal order.", {
+            merchantOrderId: payload.merchantOrderId,
+            orderId: payload.orderId,
+            order: payload.order,
+            sessionId: payload.sessionId,
         });
         return NextResponse.json({ error: "Missing payment identifiers." }, { status: 400 });
     }
