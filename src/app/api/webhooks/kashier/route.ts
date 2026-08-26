@@ -67,17 +67,38 @@ async function resolveInternalOrderId(payload: z.infer<typeof payloadSchema>) {
 function verifySignature(rawBody: string, signature: string, secret: string): boolean {
     const expected = createHmac("sha256", secret).update(rawBody, "utf8").digest();
     const normalized = signature.trim().replace(/^sha256=/i, "");
+    const logMismatch = (receivedFormat: "hex" | "base64" | "unknown") => {
+        if (process.env.NODE_ENV !== "production" || process.env.KASHIER_MODE === "test") {
+            console.warn("Kashier webhook signature mismatch", {
+                calculatedHex: expected.toString("hex"),
+                calculatedBase64: expected.toString("base64"),
+                received: normalized,
+                receivedFormat,
+            });
+        }
+    };
 
     let received: Buffer;
+    const isHex = /^[a-f\d]{64}$/i.test(normalized);
     try {
-        received = /^[a-f\d]{64}$/i.test(normalized)
-            ? Buffer.from(normalized, "hex")
-            : Buffer.from(normalized, "base64");
+        if (isHex) {
+            received = Buffer.from(normalized, "hex");
+        } else {
+            if (!/^[a-z\d+/]+={0,2}$/i.test(normalized) || normalized.length % 4 !== 0) {
+                logMismatch("unknown");
+                return false;
+            }
+            received = Buffer.from(normalized, "base64");
+        }
     } catch {
+        logMismatch(isHex ? "hex" : "base64");
         return false;
     }
 
-    return received.length === expected.length && timingSafeEqual(received, expected);
+    const valid = received.length === expected.length && timingSafeEqual(received, expected);
+    if (!valid) logMismatch(isHex ? "hex" : "base64");
+
+    return valid;
 }
 
 function getWebhookEventKey(payload: z.infer<typeof payloadSchema>, rawBody: string) {
@@ -143,6 +164,10 @@ async function markWebhookEventFailed(eventId: string, error: unknown) {
 }
 
 export async function POST(request: Request) {
+    // Read the untouched request bytes before any JSON parsing. Kashier signs
+    // this exact body representation.
+    const rawBody = await request.text();
+
     let secret: string;
     try {
         // Kashier signs notifications with the same secret key used by checkout.
@@ -154,7 +179,6 @@ export async function POST(request: Request) {
     }
 
     const signature = request.headers.get("x-kashier-signature") ?? request.headers.get("x-kashier-hmac-sha256");
-    const rawBody = await request.text();
     if (!signature) {
         return NextResponse.json({ error: "Missing signature." }, { status: 401 });
     }

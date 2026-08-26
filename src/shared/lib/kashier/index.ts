@@ -20,7 +20,7 @@ export async function createKashierCheckoutUrl({
     currency = "EGP",
     locale,
     customer,
-}: CreateKashierOrderInput): Promise<{ checkoutUrl: string; sessionId?: string }> {
+}: CreateKashierOrderInput): Promise<{ checkoutUrl: string; sessionId: string }> {
     const merchantId = process.env.KASHIER_MERCHANT_ID?.trim() ?? "";
     const secretKey = process.env.KASHIER_SECRET_KEY?.trim() ?? "";
     const apiKey = process.env.KASHIER_API_KEY?.trim() ?? "";
@@ -109,11 +109,12 @@ export async function createKashierCheckoutUrl({
         }
 
         const checkoutUrl = typeof data.sessionUrl === "string" ? data.sessionUrl : undefined;
-        if (!checkoutUrl) {
-            throw new KashierError("Invalid response payload from Kashier API (no sessionUrl found).");
+        const sessionId = typeof data._id === "string" ? data._id : undefined;
+        if (!checkoutUrl || !sessionId) {
+            throw new KashierError("Invalid response payload from Kashier API (missing sessionUrl or _id).");
         }
 
-        return { checkoutUrl, sessionId: typeof data._id === "string" ? data._id : undefined };
+        return { checkoutUrl, sessionId };
     } catch (error) {
         if (error instanceof KashierError) {
             throw error;
