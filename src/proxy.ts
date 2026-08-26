@@ -56,6 +56,10 @@ function addDeveloperCorsHeaders(
 export async function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
+  if (pathname === "/api/webhooks/kashier") {
+    return NextResponse.next();
+  }
+
   if (pathname.startsWith("/api/developer")) {
     const origin = req.headers.get("origin") ?? "";
 

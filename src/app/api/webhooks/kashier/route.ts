@@ -1,7 +1,6 @@
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getKashierCheckoutEnv } from "@/shared/lib/env/server";
 import { processKashierPayment, provisionOrder, type KashierPaymentStatus } from "@/shared/lib/supabase/services/billing";
 import { createAdminClient } from "@/shared/lib/supabase/admin";
 import type { Json } from "@/shared/types/database.types";
@@ -168,13 +167,9 @@ export async function POST(request: Request) {
     // this exact body representation.
     const rawBody = await request.text();
 
-    let secret: string;
-    try {
-        // Kashier signs notifications with the same secret key used by checkout.
-        const env = getKashierCheckoutEnv();
-        secret = env.KASHIER_SECRET_KEY;
-    } catch {
-        console.error("Kashier webhook secret is not configured.");
+    const secret = process.env.KASHIER_API_KEY?.trim();
+    if (!secret) {
+        console.error("Kashier webhook API key is not configured.");
         return NextResponse.json({ error: "Webhook is not configured." }, { status: 503 });
     }
 
@@ -241,7 +236,7 @@ export async function POST(request: Request) {
         webhookEventId = webhookEvent.eventId;
 
         if (webhookEvent.isDuplicate && webhookEvent.processedAt) {
-            return NextResponse.json({ received: true, duplicate: true, orderId, status });
+            return new Response("OK", { status: 200 });
         }
 
         await processKashierPayment({
@@ -263,7 +258,7 @@ export async function POST(request: Request) {
             if (error) throw error;
         }
 
-        return NextResponse.json({ received: true, orderId, status });
+        return new Response("OK", { status: 200 });
     } catch (error) {
         console.error(`Kashier webhook processing failed for order ${orderId}:`, error);
         if (webhookEventId) {

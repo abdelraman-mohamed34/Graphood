@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect } from "react";
+import { use, useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import { useOrder } from "@/features/billing/use-order";
 import { useInitiatePayment } from "@/features/billing/use-initiate-payment";
@@ -8,24 +8,41 @@ import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { OrderSummaryCard } from "./_components/order-summary-card";
 import { PriceBreakdownCard } from "./_components/price-breakdown-card";
+import { finalizeKashierRedirectAction } from "@/shared/lib/actions/billing/finalize-kashier-redirect.action";
 
 interface PageProps {
     params: Promise<{
         order_id: string;
     }>;
+    searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default function Page({ params }: PageProps) {
+export default function Page({ params, searchParams }: PageProps) {
     const t = useTranslations("checkout");
     const locale = useLocale();
     const router = useRouter();
     const { order_id } = use(params);
+    const callbackParams = use(searchParams);
+    const callbackHandled = useRef(false);
     const { order, isLoading, error } = useOrder(order_id);
 
     const { mutate: initiatePayment, isPending: isInitiating } = useInitiatePayment();
 
     const isPaid = order?.status === "PAID";
     const tenantSlug = order?.tenant_slug;
+
+    useEffect(() => {
+        if (callbackHandled.current) return;
+        const paymentStatus = typeof callbackParams.paymentStatus === "string" ? callbackParams.paymentStatus : undefined;
+        if (!paymentStatus) return;
+        callbackHandled.current = true;
+        void finalizeKashierRedirectAction({
+            orderId: order_id,
+            paymentStatus,
+            merchantOrderId: typeof callbackParams.merchantOrderId === "string" ? callbackParams.merchantOrderId : undefined,
+            signature: typeof callbackParams.signature === "string" ? callbackParams.signature : undefined,
+        }).then(() => undefined).catch(() => undefined);
+    }, [callbackParams, order_id]);
 
     useEffect(() => {
         if (isPaid && tenantSlug) {
