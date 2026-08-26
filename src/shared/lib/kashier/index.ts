@@ -50,8 +50,8 @@ export async function createKashierCheckoutUrl({
     }
 
     const baseUrl = mode === "live"
-        ? "https://api.kashier.io/v3/payment/sessions"
-        : "https://test-api.kashier.io/v3/payment/sessions";
+        ? "https://merchant.kashier.io/v3/payment/sessions"
+        : "https://test-merchant.kashier.io/v3/payment/sessions";
 
     const cleanOrigin = siteUrl.origin.replace(/\/+$/, "");
 
@@ -65,6 +65,7 @@ export async function createKashierCheckoutUrl({
         amount: Number(amount).toFixed(2),
         currency: currency,
         order: orderId,
+        mid: merchantId,
         merchantId: merchantId,
         merchantRedirect: `${cleanOrigin}/${locale}/marketplace/checkout/${orderId}`,
         display: locale,
