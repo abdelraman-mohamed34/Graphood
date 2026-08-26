@@ -102,6 +102,20 @@ function verifySignature(rawBody: string, signature: string, secret: string): bo
     return valid;
 }
 
+function verifySignatureKeys(data: Record<string, unknown>, signature: string, secret: string): boolean {
+    const keys = Array.isArray(data.signatureKeys)
+        ? data.signatureKeys.filter((key): key is string => typeof key === "string")
+        : [];
+    if (!keys.length) return false;
+
+    const signedValues = keys.map((key) => {
+        const value = data[key];
+        return value === null || value === undefined ? "" : String(value);
+    }).join("");
+
+    return verifySignature(signedValues, signature, secret);
+}
+
 async function verifyKashierSession(sessionId: string) {
     const mode = process.env.KASHIER_MODE?.trim().toLowerCase() || "test";
     const baseUrl = mode === "live"
@@ -223,16 +237,27 @@ export async function POST(request: Request) {
     }
 
     const root = typeof json === "object" && json !== null ? json as Record<string, unknown> : {};
-    const data = typeof root.data === "object" && root.data !== null ? root.data as Record<string, unknown> : {};
+    const payloadRoot = typeof root.payload === "object" && root.payload !== null
+        ? root.payload as Record<string, unknown>
+        : {};
+    const data = typeof root.data === "object" && root.data !== null
+        ? root.data as Record<string, unknown>
+        : typeof payloadRoot.data === "object" && payloadRoot.data !== null
+            ? payloadRoot.data as Record<string, unknown>
+            : {};
     const paymentParams = typeof root.paymentParams === "object" && root.paymentParams !== null
         ? root.paymentParams as Record<string, unknown>
         : {};
-    const candidate = { ...root, ...data, ...paymentParams };
+    const candidate = { ...root, ...payloadRoot, ...data, ...paymentParams };
     const headerSignature = request.headers.get("x-kashier-signature") ?? request.headers.get("x-kashier-hmac-sha256");
-    const bodySignature = stringValue(data.hash ?? paymentParams.hash ?? root.hash);
+    const bodySignature = stringValue(data.hash ?? paymentParams.hash ?? payloadRoot.hash ?? root.hash);
     const signature = headerSignature ?? bodySignature;
+    const apiKey = process.env.KASHIER_API_KEY?.trim();
     const signatureValid = Boolean(
-        signature && signatureSecrets.some((secret) => verifySignature(rawBody, signature, secret)),
+        signature && (
+            (apiKey && verifySignatureKeys(data, signature, apiKey)) ||
+            signatureSecrets.some((secret) => verifySignature(rawBody, signature, secret))
+        ),
     );
 
     const parsed = payloadSchema.safeParse(candidate);
