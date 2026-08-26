@@ -270,6 +270,10 @@ export async function POST(request: Request) {
         return new Response("OK", { status: 200 });
     } catch (error) {
         console.error(`Kashier webhook processing failed for order ${orderId}:`, error);
+        const details = error instanceof Error
+            ? { name: error.name, message: error.message, stack: error.stack }
+            : error;
+        console.error("CRITICAL_PROVISION_ERROR:", JSON.stringify(details, null, 2));
         if (webhookEventId) {
             await markWebhookEventFailed(webhookEventId, error);
         }
