@@ -50,8 +50,8 @@ export async function createKashierCheckoutUrl({
     }
 
     const baseUrl = mode === "live"
-        ? "https://merchant.kashier.io/v3/payment/sessions"
-        : "https://test-merchant.kashier.io/v3/payment/sessions";
+        ? "https://api.kashier.io/v3/payment/sessions"
+        : "https://test-api.kashier.io/v3/payment/sessions";
 
     const cleanOrigin = siteUrl.origin.replace(/\/+$/, "");
 
@@ -65,7 +65,6 @@ export async function createKashierCheckoutUrl({
         amount: Number(amount).toFixed(2),
         currency: currency,
         order: orderId,
-        mid: merchantId,
         merchantId: merchantId,
         merchantRedirect: `${cleanOrigin}/${locale}/marketplace/checkout/${orderId}`,
         display: locale,
@@ -84,15 +83,21 @@ export async function createKashierCheckoutUrl({
     };
 
     try {
-        const response = await fetch(baseUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": secretKey,
-                "api-key": apiKey,
-            },
-            body: JSON.stringify(payload),
-        });
+        let response: Response;
+        try {
+            response = await fetch(baseUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": process.env.KASHIER_SECRET_KEY ?? secretKey,
+                    "api-key": apiKey,
+                },
+                body: JSON.stringify(payload),
+            });
+        } catch (error) {
+            console.error("Kashier Fetch Error:", error);
+            throw error;
+        }
 
         const responseText = await response.text();
         let data: Record<string, unknown>;
