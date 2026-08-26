@@ -20,8 +20,9 @@ const payloadSchema = z.object({
     reference: z.union([z.string(), z.number()]).optional(),
     status: z.string().optional(),
     paymentStatus: z.string().optional(),
-    amount: z.coerce.number().positive(),
-    currency: z.string().trim().length(3),
+    amount: z.coerce.number().positive().optional(),
+    currency: z.string().trim().length(3).optional(),
+    hash: z.string().optional(),
     metaData: z.record(z.string(), z.any()).optional(),
 }).passthrough();
 
@@ -39,6 +40,7 @@ async function resolveInternalOrderId(payload: z.infer<typeof payloadSchema>) {
         payload.merchantOrderId,
         payload.orderId,
         payload.order,
+        payload.sessionId,
         metadata && typeof metadata.orderId === "string" ? metadata.orderId : undefined,
     ].map(stringValue).filter((value): value is string => Boolean(value));
 
@@ -98,6 +100,43 @@ function verifySignature(rawBody: string, signature: string, secret: string): bo
     if (!valid) logMismatch(isHex ? "hex" : "base64");
 
     return valid;
+}
+
+async function verifyKashierSession(sessionId: string) {
+    const mode = process.env.KASHIER_MODE?.trim().toLowerCase() || "test";
+    const baseUrl = mode === "live"
+        ? "https://api.kashier.io/v3/payment/sessions"
+        : "https://test-api.kashier.io/v3/payment/sessions";
+    const secretKey = process.env.KASHIER_SECRET_KEY?.trim();
+    const apiKey = process.env.KASHIER_API_KEY?.trim();
+
+    if (!secretKey || !apiKey) return null;
+
+    try {
+        const response = await fetch(`${baseUrl}/${encodeURIComponent(sessionId)}`, {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+                Authorization: secretKey,
+                "api-key": apiKey,
+            },
+            cache: "no-store",
+        });
+        if (!response.ok) return null;
+        const body = await response.json() as Record<string, unknown>;
+        const data = typeof body.data === "object" && body.data !== null
+            ? body.data as Record<string, unknown>
+            : body;
+        return {
+            status: stringValue(data.status ?? data.paymentStatus),
+            amount: typeof data.amount === "number" || typeof data.amount === "string" ? Number(data.amount) : undefined,
+            currency: stringValue(data.currency)?.toUpperCase(),
+            transactionRef: stringValue(data.transactionId ?? data.transactionRef ?? data.transactionReference),
+        };
+    } catch (error) {
+        console.error("Kashier session verification failed:", error);
+        return null;
+    }
 }
 
 function getWebhookEventKey(payload: z.infer<typeof payloadSchema>, rawBody: string) {
@@ -167,20 +206,13 @@ export async function POST(request: Request) {
     // this exact body representation.
     const rawBody = await request.text();
 
-    const secret = process.env.KASHIER_API_KEY?.trim();
-    if (!secret) {
-        console.error("Kashier webhook API key is not configured.");
+    const signatureSecrets = [
+        process.env.KASHIER_API_KEY?.trim(),
+        process.env.KASHIER_SECRET_KEY?.trim(),
+    ].filter((value): value is string => Boolean(value));
+    if (!signatureSecrets.length) {
+        console.error("Kashier webhook signing key is not configured.");
         return NextResponse.json({ error: "Webhook is not configured." }, { status: 503 });
-    }
-
-    const signature = request.headers.get("x-kashier-signature") ?? request.headers.get("x-kashier-hmac-sha256");
-    if (!signature) {
-        return NextResponse.json({ error: "Missing signature." }, { status: 401 });
-    }
-
-    if (!verifySignature(rawBody, signature, secret)) {
-        console.error("Kashier webhook signature verification failed.");
-        return NextResponse.json({ error: "Invalid signature." }, { status: 401 });
     }
 
     let json: unknown;
@@ -190,9 +222,18 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
     }
 
-    const candidate = typeof json === "object" && json !== null && "data" in json
-        ? (json as { data: unknown }).data
-        : json;
+    const root = typeof json === "object" && json !== null ? json as Record<string, unknown> : {};
+    const data = typeof root.data === "object" && root.data !== null ? root.data as Record<string, unknown> : {};
+    const paymentParams = typeof root.paymentParams === "object" && root.paymentParams !== null
+        ? root.paymentParams as Record<string, unknown>
+        : {};
+    const candidate = { ...root, ...data, ...paymentParams };
+    const headerSignature = request.headers.get("x-kashier-signature") ?? request.headers.get("x-kashier-hmac-sha256");
+    const bodySignature = stringValue(data.hash ?? paymentParams.hash ?? root.hash);
+    const signature = headerSignature ?? bodySignature;
+    const signatureValid = Boolean(
+        signature && signatureSecrets.some((secret) => verifySignature(rawBody, signature, secret)),
+    );
 
     const parsed = payloadSchema.safeParse(candidate);
     if (!parsed.success) {
@@ -202,9 +243,21 @@ export async function POST(request: Request) {
 
     const payload = parsed.data;
     const orderId = await resolveInternalOrderId(payload);
-    const status = (payload.status ?? payload.paymentStatus ?? "").toUpperCase() as KashierPaymentStatus;
-    const transactionRef = stringValue(payload.transactionId ?? payload.transactionRef ?? payload.transactionReference ?? payload.reference) ?? "";
+    const sessionId = stringValue(payload.sessionId);
+    let authorityVerification: Awaited<ReturnType<typeof verifyKashierSession>> = null;
+    if (!signatureValid && orderId && sessionId) {
+        authorityVerification = await verifyKashierSession(sessionId);
+    }
+    const status = (authorityVerification?.status ?? payload.status ?? payload.paymentStatus ?? "").toUpperCase() as KashierPaymentStatus;
+    const transactionRef = authorityVerification?.transactionRef
+        ?? stringValue(payload.transactionId ?? payload.transactionRef ?? payload.transactionReference ?? payload.reference)
+        ?? "";
     const eventKey = getWebhookEventKey(payload, rawBody);
+
+    if (!signatureValid && !authorityVerification) {
+        console.error("Kashier webhook signature verification failed.");
+        return NextResponse.json({ error: "Invalid signature." }, { status: 401 });
+    }
 
     if (!orderId || !acceptedStatuses.has(status)) {
         console.error("Kashier webhook order could not be matched to an internal order.", {
@@ -242,8 +295,8 @@ export async function POST(request: Request) {
         await processKashierPayment({
             orderId,
             transactionRef,
-            amount: payload.amount,
-            currency: payload.currency.toUpperCase(),
+            amount: authorityVerification?.amount ?? payload.amount ?? 0,
+            currency: (authorityVerification?.currency ?? payload.currency ?? "").toUpperCase(),
             status
         });
 
