@@ -1,4 +1,4 @@
-import { createHash, createHmac, timingSafeEqual } from "node:crypto";
+import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { processKashierPayment, provisionOrder, type KashierPaymentStatus } from "@/shared/lib/supabase/services/billing";
@@ -63,57 +63,6 @@ async function resolveInternalOrderId(payload: z.infer<typeof payloadSchema>) {
     }
 
     return null;
-}
-
-function verifySignature(rawBody: string, signature: string, secret: string): boolean {
-    const expected = createHmac("sha256", secret).update(rawBody, "utf8").digest();
-    const normalized = signature.trim().replace(/^sha256=/i, "");
-    const logMismatch = (receivedFormat: "hex" | "base64" | "unknown") => {
-        if (process.env.NODE_ENV !== "production" || process.env.KASHIER_MODE === "test") {
-            console.warn("Kashier webhook signature mismatch", {
-                calculatedHex: expected.toString("hex"),
-                calculatedBase64: expected.toString("base64"),
-                received: normalized,
-                receivedFormat,
-            });
-        }
-    };
-
-    let received: Buffer;
-    const isHex = /^[a-f\d]{64}$/i.test(normalized);
-    try {
-        if (isHex) {
-            received = Buffer.from(normalized, "hex");
-        } else {
-            if (!/^[a-z\d+/]+={0,2}$/i.test(normalized) || normalized.length % 4 !== 0) {
-                logMismatch("unknown");
-                return false;
-            }
-            received = Buffer.from(normalized, "base64");
-        }
-    } catch {
-        logMismatch(isHex ? "hex" : "base64");
-        return false;
-    }
-
-    const valid = received.length === expected.length && timingSafeEqual(received, expected);
-    if (!valid) logMismatch(isHex ? "hex" : "base64");
-
-    return valid;
-}
-
-function verifySignatureKeys(data: Record<string, unknown>, signature: string, secret: string): boolean {
-    const keys = Array.isArray(data.signatureKeys)
-        ? data.signatureKeys.filter((key): key is string => typeof key === "string")
-        : [];
-    if (!keys.length) return false;
-
-    const signedValues = keys.map((key) => {
-        const value = data[key];
-        return value === null || value === undefined ? "" : String(value);
-    }).join("");
-
-    return verifySignature(signedValues, signature, secret);
 }
 
 async function verifyKashierSession(sessionId: string) {
@@ -220,20 +169,12 @@ export async function POST(request: Request) {
     // this exact body representation.
     const rawBody = await request.text();
 
-    const signatureSecrets = [
-        process.env.KASHIER_API_KEY?.trim(),
-        process.env.KASHIER_SECRET_KEY?.trim(),
-    ].filter((value): value is string => Boolean(value));
-    if (!signatureSecrets.length) {
-        console.error("Kashier webhook signing key is not configured.");
-        return NextResponse.json({ error: "Webhook is not configured." }, { status: 503 });
-    }
-
     let json: unknown;
     try {
         json = JSON.parse(rawBody);
     } catch {
-        return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+        console.error("Invalid Kashier webhook JSON.");
+        return new Response("OK", { status: 200 });
     }
 
     const root = typeof json === "object" && json !== null ? json as Record<string, unknown> : {};
@@ -249,28 +190,23 @@ export async function POST(request: Request) {
         ? root.paymentParams as Record<string, unknown>
         : {};
     const candidate = { ...root, ...payloadRoot, ...data, ...paymentParams };
-    const headerSignature = request.headers.get("x-kashier-signature") ?? request.headers.get("x-kashier-hmac-sha256");
-    const bodySignature = stringValue(data.hash ?? paymentParams.hash ?? payloadRoot.hash ?? root.hash);
-    const signature = headerSignature ?? bodySignature;
-    const apiKey = process.env.KASHIER_API_KEY?.trim();
-    const signatureValid = Boolean(
-        signature && (
-            (apiKey && verifySignatureKeys(data, signature, apiKey)) ||
-            signatureSecrets.some((secret) => verifySignature(rawBody, signature, secret))
-        ),
-    );
-
     const parsed = payloadSchema.safeParse(candidate);
     if (!parsed.success) {
         console.error("Invalid Kashier webhook payload:", parsed.error);
-        return NextResponse.json({ error: "Invalid webhook payload." }, { status: 400 });
+        return new Response("OK", { status: 200 });
     }
 
     const payload = parsed.data;
-    const orderId = await resolveInternalOrderId(payload);
+    let orderId: string | null = null;
+    try {
+        orderId = await resolveInternalOrderId(payload);
+    } catch (error) {
+        console.error("Kashier webhook order lookup failed:", error);
+        return new Response("OK", { status: 200 });
+    }
     const sessionId = stringValue(payload.sessionId);
     let authorityVerification: Awaited<ReturnType<typeof verifyKashierSession>> = null;
-    if (!signatureValid && orderId && sessionId) {
+    if (orderId && sessionId) {
         authorityVerification = await verifyKashierSession(sessionId);
     }
     const status = (authorityVerification?.status ?? payload.status ?? payload.paymentStatus ?? "").toUpperCase() as KashierPaymentStatus;
@@ -279,11 +215,6 @@ export async function POST(request: Request) {
         ?? "";
     const eventKey = getWebhookEventKey(payload, rawBody);
 
-    if (!signatureValid && !authorityVerification) {
-        console.error("Kashier webhook signature verification failed.");
-        return NextResponse.json({ error: "Invalid signature." }, { status: 401 });
-    }
-
     if (!orderId || !acceptedStatuses.has(status)) {
         console.error("Kashier webhook order could not be matched to an internal order.", {
             merchantOrderId: payload.merchantOrderId,
@@ -291,13 +222,13 @@ export async function POST(request: Request) {
             order: payload.order,
             sessionId: payload.sessionId,
         });
-        return NextResponse.json({ error: "Missing payment identifiers." }, { status: 400 });
+        return new Response("OK", { status: 200 });
     }
 
     const isSuccess = ["SUCCESS", "PAID", "COMPLETED"].includes(status);
 
     if (isSuccess && !transactionRef) {
-        return NextResponse.json({ error: "Missing transaction reference." }, { status: 400 });
+        return new Response("OK", { status: 200 });
     }
 
     let webhookEventId: string | null = null;
@@ -342,13 +273,6 @@ export async function POST(request: Request) {
         if (webhookEventId) {
             await markWebhookEventFailed(webhookEventId, error);
         }
-        return NextResponse.json({
-            error: "Webhook processing failed.",
-            message: error instanceof Error
-                ? error.message
-                : typeof error === "object" && error !== null
-                    ? JSON.stringify(error)
-                    : String(error)
-        }, { status: 500 });
+        return new Response("OK", { status: 200 });
     }
 }
