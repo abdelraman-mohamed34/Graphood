@@ -45,6 +45,19 @@ export default function Page({ params, searchParams }: PageProps) {
     }, [callbackParams, order_id]);
 
     useEffect(() => {
+        const paymentStatus = typeof callbackParams.paymentStatus === "string"
+            ? callbackParams.paymentStatus.toUpperCase()
+            : "";
+        if (paymentStatus !== "SUCCESS") return;
+
+        const timeout = window.setTimeout(() => {
+            window.location.href = `/${locale}/workspaces`;
+        }, 5_000);
+
+        return () => window.clearTimeout(timeout);
+    }, [callbackParams.paymentStatus, locale]);
+
+    useEffect(() => {
         if (isPaid && tenantSlug) {
             router.replace(`/${tenantSlug}/dashboard/quickview`);
         }

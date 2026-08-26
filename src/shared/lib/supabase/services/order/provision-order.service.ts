@@ -44,6 +44,43 @@ export async function provisionOrder({
             : error;
         console.error("CRITICAL_PROVISION_ERROR:", JSON.stringify(details, null, 2));
 
+        const message = error instanceof Error ? error.message.toLowerCase() : "";
+        if (message.includes("duplicate") || message.includes("unique") || message.includes("already exists")) {
+            try {
+                const admin = createAdminClient();
+                const { data: order } = await admin
+                    .from("orders")
+                    .select("subscription_id")
+                    .eq("id", orderId)
+                    .maybeSingle();
+                const subscriptionId = order?.subscription_id;
+                if (subscriptionId) {
+                    const { data: tenant } = await admin
+                        .from("tenants")
+                        .select("id")
+                        .eq("subscription_id", subscriptionId)
+                        .maybeSingle();
+                    if (tenant?.id) {
+                        const { data: membership } = await admin
+                            .from("memberships")
+                            .select("id")
+                            .eq("tenant_id", tenant.id)
+                            .maybeSingle();
+                        if (membership?.id) {
+                            return {
+                                subscription: { id: subscriptionId },
+                                tenant: { id: tenant.id },
+                                membership: { id: membership.id },
+                                isExisting: true,
+                            };
+                        }
+                    }
+                }
+            } catch (lookupError) {
+                console.error("CRITICAL_PROVISION_ERROR: duplicate recovery lookup failed", lookupError);
+            }
+        }
+
         if (webhookEventId) {
             try {
                 const { error: recordError } = await createAdminClient().rpc("mark_payment_webhook_event_failed", {
