@@ -197,6 +197,9 @@ export async function POST(request: Request) {
     }
 
     const payload = parsed.data;
+    const metadata = payload.metaData ?? {};
+    const extractedProfileId = stringValue(metadata.profileId ?? payloadRoot.profileId ?? data.profileId ?? paymentParams.profileId);
+    const extractedSystemId = stringValue(metadata.systemId ?? payloadRoot.systemId ?? data.systemId ?? paymentParams.systemId);
     let orderId: string | null = null;
     try {
         orderId = await resolveInternalOrderId(payload);
@@ -257,6 +260,11 @@ export async function POST(request: Request) {
         });
 
         if (isSuccess) {
+            console.info("Kashier provisioning identifiers", {
+                orderId,
+                profileId: extractedProfileId,
+                systemId: extractedSystemId,
+            });
             await provisionOrder({ orderId, webhookEventId });
         }
 

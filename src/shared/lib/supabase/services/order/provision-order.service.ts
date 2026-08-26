@@ -11,6 +11,112 @@ const provisionOrderResultSchema = z.object({
     is_existing: z.boolean(),
 });
 
+async function fallbackProvisionOrder(orderId: string) {
+    const admin = createAdminClient();
+    let order: { id: string; profile_id: string; system_id: string; subscription_id: string | null; license_type: string; plan: string | null; amount: number; currency: string | null; status: string | null } | null = null;
+    try {
+        const result = await admin.from("orders").select("id, profile_id, system_id, subscription_id, license_type, plan, amount, currency, status").eq("id", orderId).single();
+        if (result.error) throw result.error;
+        order = result.data;
+    } catch (error) {
+        console.error("CRITICAL_PROVISION_ERROR: order lookup failed", error);
+        throw error;
+    }
+
+    if (!order) throw new Error("Order not found during fallback provisioning.");
+
+    let subscriptionId = order.subscription_id;
+    try {
+        if (!subscriptionId) {
+            const existing = await admin.from("subscriptions").select("id").eq("order_id", order.id).maybeSingle();
+            if (existing.error) throw existing.error;
+            subscriptionId = existing.data?.id ?? null;
+        }
+        if (!subscriptionId) {
+            const inserted = await admin.from("subscriptions").insert({
+                order_id: order.id,
+                profile_id: order.profile_id,
+                system_id: order.system_id,
+                plan_name: order.license_type === "SUBSCRIPTION" ? order.plan ?? "STARTER" : order.license_type,
+                license_type: order.license_type,
+                billing_interval: order.license_type === "SUBSCRIPTION" ? "MONTHLY" : "ONE_TIME",
+                price: order.amount,
+                currency: order.currency ?? "EGP",
+                status: "ACTIVE",
+                start_date: new Date().toISOString(),
+                auto_renew: order.license_type === "SUBSCRIPTION",
+            }).select("id").single();
+            if (inserted.error) throw inserted.error;
+            subscriptionId = inserted.data.id;
+        }
+    } catch (error) {
+        console.error("CRITICAL_PROVISION_ERROR: subscription step failed", error);
+        throw error;
+    }
+
+    let tenantId: string | null = null;
+    try {
+        const existing = await admin.from("tenants").select("id").eq("subscription_id", subscriptionId).maybeSingle();
+        if (existing.error) throw existing.error;
+        tenantId = existing.data?.id ?? null;
+        if (!tenantId) {
+            const profile = await admin.from("profiles").select("email").eq("id", order.profile_id).single();
+            if (profile.error || !profile.data?.email) throw profile.error ?? new Error("Profile email is missing.");
+            const inserted = await admin.from("tenants").insert({
+                subscription_id: subscriptionId,
+                system_id: order.system_id,
+                owner_id: order.profile_id,
+                name: "Workspace",
+                slug: `workspace-${subscriptionId.replace(/-/g, "")}`,
+                email: profile.data.email,
+                status: "ACTIVE",
+            }).select("id").single();
+            if (inserted.error) throw inserted.error;
+            tenantId = inserted.data.id;
+        }
+    } catch (error) {
+        console.error("CRITICAL_PROVISION_ERROR: tenant step failed", error);
+        throw error;
+    }
+
+    let membershipId: string | null = null;
+    try {
+        const existing = await admin.from("memberships").select("id").eq("tenant_id", tenantId).eq("profile_id", order.profile_id).maybeSingle();
+        if (existing.error) throw existing.error;
+        membershipId = existing.data?.id ?? null;
+        if (!membershipId) {
+            const inserted = await admin.from("memberships").insert({
+                profile_id: order.profile_id,
+                tenant_id: tenantId,
+                current_tenant_id: tenantId,
+                role: "OWNER",
+                permissions: [],
+                status: "ACTIVE",
+            }).select("id").single();
+            if (inserted.error) throw inserted.error;
+            membershipId = inserted.data.id;
+        }
+    } catch (error) {
+        console.error("CRITICAL_PROVISION_ERROR: membership step failed", error);
+        throw error;
+    }
+
+    try {
+        const updated = await admin.from("orders").update({ status: "PAID", subscription_id: subscriptionId }).eq("id", order.id);
+        if (updated.error) throw updated.error;
+    } catch (error) {
+        console.error("CRITICAL_PROVISION_ERROR: order update failed", error);
+        throw error;
+    }
+
+    return {
+        subscription: { id: subscriptionId },
+        tenant: { id: tenantId },
+        membership: { id: membershipId },
+        isExisting: true,
+    };
+}
+
 export async function provisionOrder({
     orderId,
     webhookEventId,
@@ -79,6 +185,12 @@ export async function provisionOrder({
             } catch (lookupError) {
                 console.error("CRITICAL_PROVISION_ERROR: duplicate recovery lookup failed", lookupError);
             }
+        }
+
+        try {
+            return await fallbackProvisionOrder(orderId);
+        } catch (fallbackError) {
+            console.error("CRITICAL_PROVISION_ERROR: fallback provisioning failed", JSON.stringify(fallbackError, null, 2));
         }
 
         if (webhookEventId) {
