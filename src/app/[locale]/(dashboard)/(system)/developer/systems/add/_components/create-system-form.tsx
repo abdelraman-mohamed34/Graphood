@@ -58,6 +58,7 @@ export default function CreateSystemForm() {
             slug: "",
             description: "",
             image_url: "",
+            launch_url_template: "",
             readme: "",
             tags: [],
             starter_price: 0,
@@ -172,6 +173,17 @@ export default function CreateSystemForm() {
                                 {...form.register("description")}
                             />
                             <FieldError errors={[form.formState.errors.description]} />
+                        </Field>
+
+                        <Field>
+                            <FieldLabel>{t("fields.launchUrlTemplate.label")}</FieldLabel>
+                            <Input
+                                type="url"
+                                placeholder={t("fields.launchUrlTemplate.placeholder")}
+                                {...form.register("launch_url_template")}
+                            />
+                            <FieldDescription>{t("fields.launchUrlTemplate.description")}</FieldDescription>
+                            <FieldError errors={[form.formState.errors.launch_url_template]} />
                         </Field>
 
                         <SystemImageField

@@ -41,10 +41,15 @@
                         "placeholder": "awesome-crm",
                         "description": "Used in public URLs."
                     },
-                "description": {
-                    "label": "Short Description",
-                    "placeholder": "Describe your system capabilities and features..."
-                },
+                    "description": {
+                        "label": "Short Description",
+                        "placeholder": "Describe your system capabilities and features..."
+                    },
+                    "launchUrlTemplate": {
+                        "label": "Launch URL Template",
+                        "placeholder": "https://{tenantSlug}.yourdomain.com",
+                        "description": "{tenantSlug} is replaced with the workspace slug when launched."
+                    },
                 "image": {
                     "label": "Cover image",
                     "description": "Upload a 16:9 JPG, PNG, WEBP, or AVIF image up to 5 MB for Marketplace previews.",
@@ -278,6 +283,13 @@
         "statusActive": "Active",
         "statusInactive": "Inactive",
         "categoryLabel": "Category",
+        "launchUrlTemplate": {
+            "label": "Launch URL Template",
+            "placeholder": "https://{tenantSlug}.yourdomain.com",
+            "description": "{tenantSlug} is replaced with the workspace slug when launched.",
+            "saved": "Launch URL template updated.",
+            "saveError": "Could not save the launch URL template."
+        },
         "image": {
             "label": "Marketplace cover image",
             "description": "Manage the cover shown on the Marketplace card and system details page.",

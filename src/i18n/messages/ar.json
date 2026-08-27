@@ -45,6 +45,11 @@
                     "label": "الوصف المختصر",
                     "placeholder": "صِف إمكانات نظامك وميزاته..."
                 },
+                "launchUrlTemplate": {
+                    "label": "قالب رابط الإطلاق",
+                    "placeholder": "https://{tenantSlug}.yourdomain.com",
+                    "description": "سيتم استبدال {tenantSlug} تلقائيًا بالرابط المختصر لمساحة العمل عند الإطلاق."
+                },
                 "image": {
                     "label": "صورة الغلاف",
                     "description": "ارفع صورة بنسبة 16:9 بصيغة JPG أو PNG أو WEBP أو AVIF وبحجم لا يتجاوز 5 ميجابايت لمعاينات السوق.",
@@ -278,6 +283,13 @@
         "statusActive": "نشط",
         "statusInactive": "غير نشط",
         "categoryLabel": "الفئة",
+        "launchUrlTemplate": {
+            "label": "قالب رابط الإطلاق",
+            "placeholder": "https://{tenantSlug}.yourdomain.com",
+            "description": "سيتم استبدال {tenantSlug} تلقائيًا بالرابط المختصر لمساحة العمل عند الإطلاق.",
+            "saved": "تم تحديث قالب رابط الإطلاق.",
+            "saveError": "تعذر حفظ قالب رابط الإطلاق."
+        },
         "image": {
             "label": "صورة غلاف السوق",
             "description": "أدِر صورة الغلاف المعروضة في بطاقة السوق وصفحة تفاصيل النظام.",

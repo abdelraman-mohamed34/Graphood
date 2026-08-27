@@ -739,6 +739,7 @@ export type Database = {
             image_url: string | null
           id: string
           is_public: boolean | null
+          launch_url_template: string | null
           name: string
           owner_id: string
           pro_price: number
@@ -765,6 +766,7 @@ export type Database = {
             image_url?: string | null
           id?: string
           is_public?: boolean | null
+          launch_url_template?: string | null
           name: string
           owner_id: string
           pro_price?: number
@@ -791,6 +793,7 @@ export type Database = {
             image_url?: string | null
           id?: string
           is_public?: boolean | null
+          launch_url_template?: string | null
           name?: string
           owner_id?: string
           pro_price?: number

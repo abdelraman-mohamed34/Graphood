@@ -3,6 +3,8 @@
 import { use } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ShieldCheck, Tag } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 
 import { Badge as StatusBadge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -96,6 +98,27 @@ export default function Page({ params }: PageProps) {
                 </div>
             </div>
             <div className="py-6">
+                <Field className="mb-6 max-w-2xl">
+                    <FieldLabel>{t("launchUrlTemplate.label")}</FieldLabel>
+                    <Input
+                        type="url"
+                        defaultValue={system.launch_url_template ?? ""}
+                        placeholder={t("launchUrlTemplate.placeholder")}
+                        disabled={isUpdating}
+                        onBlur={async (event) => {
+                            const launchUrlTemplate = event.currentTarget.value.trim();
+                            if (launchUrlTemplate === (system.launch_url_template ?? "")) return;
+
+                            try {
+                                await updateSystem({ id: system.id, data: { launch_url_template: launchUrlTemplate } });
+                                toast.success(t("launchUrlTemplate.saved"));
+                            } catch {
+                                toast.error(t("launchUrlTemplate.saveError"));
+                            }
+                        }}
+                    />
+                    <FieldDescription>{t("launchUrlTemplate.description")}</FieldDescription>
+                </Field>
                 <SystemImageField
                     value={system.image_url}
                     disabled={isUpdating}
