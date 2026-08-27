@@ -13,9 +13,9 @@ export default function GoLive() {
     const { system } = useSystem(tenant?.system_id)
     const t = useTranslations('dashboard.quickview')
     const destinationUrl = tenantSlug && system
-        ? system.launch_url_template
-            ? system.launch_url_template.replaceAll('{tenantSlug}', tenantSlug)
-            : `https://${tenantSlug}.${system.slug}.graphood.com`
+        ? system.launch_type === 'SUBDOMAIN'
+            ? (() => { try { const host = new URL(system.base_launch_url || system.launch_url_template || `https://system-${system.id}.graphood.com`).host; return `https://${tenantSlug}.${host}` } catch { return `https://${tenantSlug}.system-${system.id}.graphood.com` } })()
+            : `${(system.base_launch_url || system.launch_url_template || `https://system-${system.id}.graphood.com`).replace(/\/$/, '')}?tenantSlug=${encodeURIComponent(tenantSlug)}`
         : '/not-found'
 
     return (

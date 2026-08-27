@@ -94,7 +94,7 @@ export function QuickViewCard() {
             </CardHeader>
 
             <CardContent className="space-y-6">
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="gap-4">
                     <div className="flex items-center gap-3 rounded-lg border bg-muted/30 p-4">
                         <Users className="h-5 w-5 text-muted-foreground" />
 

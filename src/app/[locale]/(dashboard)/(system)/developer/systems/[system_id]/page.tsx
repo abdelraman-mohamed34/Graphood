@@ -99,25 +99,36 @@ export default function Page({ params }: PageProps) {
             </div>
             <div className="py-6">
                 <Field className="mb-6 max-w-2xl">
-                    <FieldLabel>{t("launchUrlTemplate.label")}</FieldLabel>
+                    <FieldLabel>{t("baseLaunchUrl.label")}</FieldLabel>
                     <Input
                         type="url"
-                        defaultValue={system.launch_url_template ?? ""}
-                        placeholder={t("launchUrlTemplate.placeholder")}
+                        defaultValue={system.base_launch_url ?? system.launch_url_template ?? ""}
+                        placeholder={t("baseLaunchUrl.placeholder")}
                         disabled={isUpdating}
                         onBlur={async (event) => {
-                            const launchUrlTemplate = event.currentTarget.value.trim();
-                            if (launchUrlTemplate === (system.launch_url_template ?? "")) return;
+                            const baseLaunchUrl = event.currentTarget.value.trim();
+                            if (baseLaunchUrl === (system.base_launch_url ?? system.launch_url_template ?? "")) return;
 
                             try {
-                                await updateSystem({ id: system.id, data: { launch_url_template: launchUrlTemplate } });
-                                toast.success(t("launchUrlTemplate.saved"));
+                                await updateSystem({ id: system.id, data: { base_launch_url: baseLaunchUrl } });
+                                toast.success(t("baseLaunchUrl.saved"));
                             } catch {
-                                toast.error(t("launchUrlTemplate.saveError"));
+                                toast.error(t("baseLaunchUrl.saveError"));
                             }
                         }}
                     />
-                    <FieldDescription>{t("launchUrlTemplate.description")}</FieldDescription>
+                    <FieldDescription>{t("baseLaunchUrl.description")}</FieldDescription>
+                </Field>
+                <Field className="mb-6 max-w-2xl">
+                    <FieldLabel>{t("launchType.label")}</FieldLabel>
+                    <div className="space-y-2">
+                        {(["QUERY_PARAM", "SUBDOMAIN"] as const).map((type) => (
+                            <label key={type} className="flex items-start gap-2 text-sm">
+                                <input type="radio" name="launch_type" value={type} defaultChecked={(system.launch_type ?? "QUERY_PARAM") === type} onChange={() => updateSystem({ id: system.id, data: { launch_type: type } })} />
+                                <span><span className="font-medium">{t(`launchType.options.${type}.label`)}</span><br /><span className="text-muted-foreground">{t(`launchType.options.${type}.description`)}</span></span>
+                            </label>
+                        ))}
+                    </div>
                 </Field>
                 <SystemImageField
                     value={system.image_url}

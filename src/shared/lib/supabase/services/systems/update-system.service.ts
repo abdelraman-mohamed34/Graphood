@@ -24,7 +24,8 @@ export async function updateSystem(
 
         icon_url: data.icon_url,
         image_url: data.image_url,
-        launch_url_template: data.launch_url_template,
+        base_launch_url: data.base_launch_url,
+        launch_type: data.launch_type,
         is_public: data.is_public,
         status: data.status,
 
@@ -41,7 +42,7 @@ export async function updateSystem(
         .from("systems")
         .update(payload)
         .eq("id", id)
-        .select("id, name, slug, description, readme, owner_id, currency, status, status_reason, icon_url, image_url, launch_url_template, is_public, starter_price, pro_price, business_price, reseller_price, exclusive_price, tags, created_at, updated_at")
+        .select("id, name, slug, description, readme, owner_id, currency, status, status_reason, icon_url, image_url, base_launch_url, launch_type, launch_url_template, is_public, starter_price, pro_price, business_price, reseller_price, exclusive_price, tags, created_at, updated_at")
         .single();
 
     if (error) {

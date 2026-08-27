@@ -36,11 +36,6 @@
                         "label": "System Name",
                         "placeholder": "My Awesome CRM"
                     },
-                    "slug": {
-                        "label": "Slug",
-                        "placeholder": "awesome-crm",
-                        "description": "Used in public URLs."
-                    },
                     "description": {
                         "label": "Short Description",
                         "placeholder": "Describe your system capabilities and features..."
@@ -49,6 +44,18 @@
                         "label": "Launch URL Template",
                         "placeholder": "https://{tenantSlug}.yourdomain.com or https://app.vercel.app?tenantSlug={tenantSlug}",
                         "description": "{tenantSlug} will be dynamically replaced by the client workspace slug upon launch."
+                    },
+                    "baseLaunchUrl": {
+                        "label": "System Base URL",
+                        "placeholder": "https://my-system.com or https://my-system.vercel.app",
+                        "description": "The URL where the system is hosted."
+                    },
+                    "launchType": {
+                        "label": "Launch Routing Type",
+                        "options": {
+                            "QUERY_PARAM": { "label": "Query Param", "description": "Append ?tenantSlug=xxx to the base URL." },
+                            "SUBDOMAIN": { "label": "Custom Subdomain", "description": "Use xxx.domain.com for the workspace." }
+                        }
                     },
                 "image": {
                     "label": "Cover image",
@@ -109,7 +116,6 @@
                 },
                 "validation": {
                     "nameMin": "System name must be at least 3 characters.",
-                    "slugMin": "Slug must be at least 5 characters.",
                     "descriptionMin": "Description must be at least 10 characters.",
                     "descriptionMax": "Short description must not exceed 250 characters.",
                     "invalidTag": "Select a valid tag.",
@@ -289,6 +295,20 @@
             "description": "{tenantSlug} will be dynamically replaced by the client workspace slug upon launch.",
             "saved": "Launch URL template updated.",
             "saveError": "Could not save the launch URL template."
+        },
+        "baseLaunchUrl": {
+            "label": "System Base URL",
+            "placeholder": "https://my-system.com or https://my-system.vercel.app",
+            "description": "The URL where the system is hosted.",
+            "saved": "System base URL updated.",
+            "saveError": "Could not save the system base URL."
+        },
+        "launchType": {
+            "label": "Launch Routing Type",
+            "options": {
+                "QUERY_PARAM": { "label": "Query Param", "description": "Append ?tenantSlug=xxx to the base URL." },
+                "SUBDOMAIN": { "label": "Custom Subdomain", "description": "Use xxx.domain.com for the workspace." }
+            }
         },
         "image": {
             "label": "Marketplace cover image",

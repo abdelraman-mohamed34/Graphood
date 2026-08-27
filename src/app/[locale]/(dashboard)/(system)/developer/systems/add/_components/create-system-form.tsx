@@ -55,10 +55,10 @@ export default function CreateSystemForm() {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            slug: "",
             description: "",
             image_url: "",
-            launch_url_template: "",
+            base_launch_url: "",
+            launch_type: "QUERY_PARAM",
             readme: "",
             tags: [],
             starter_price: 0,
@@ -152,15 +152,6 @@ export default function CreateSystemForm() {
                                 <FieldError errors={[form.formState.errors.name]} />
                             </Field>
 
-                            <Field>
-                                <FieldLabel>{t("fields.slug.label")}</FieldLabel>
-                                <Input
-                                    placeholder={t("fields.slug.placeholder")}
-                                    {...form.register("slug")}
-                                />
-                                <FieldDescription>{t("fields.slug.description")}</FieldDescription>
-                                <FieldError errors={[form.formState.errors.slug]} />
-                            </Field>
                         </div>
 
                         <Field>
@@ -176,14 +167,23 @@ export default function CreateSystemForm() {
                         </Field>
 
                         <Field>
-                            <FieldLabel>{t("fields.launchUrlTemplate.label")}</FieldLabel>
+                            <FieldLabel>{t("fields.baseLaunchUrl.label")}</FieldLabel>
                             <Input
                                 type="url"
-                                placeholder={t("fields.launchUrlTemplate.placeholder")}
-                                {...form.register("launch_url_template")}
+                                placeholder={t("fields.baseLaunchUrl.placeholder")}
+                                {...form.register("base_launch_url")}
                             />
-                            <FieldDescription>{t("fields.launchUrlTemplate.description")}</FieldDescription>
-                            <FieldError errors={[form.formState.errors.launch_url_template]} />
+                            <FieldDescription>{t("fields.baseLaunchUrl.description")}</FieldDescription>
+                            <FieldError errors={[form.formState.errors.base_launch_url]} />
+                            <div className="mt-3 space-y-2">
+                                <FieldLabel>{t("fields.launchType.label")}</FieldLabel>
+                                {(["QUERY_PARAM", "SUBDOMAIN"] as const).map((type) => (
+                                    <label key={type} className="flex items-start gap-2 text-sm">
+                                        <input type="radio" value={type} {...form.register("launch_type")} />
+                                        <span><span className="font-medium">{t(`fields.launchType.options.${type}.label`)}</span><br /><span className="text-muted-foreground">{t(`fields.launchType.options.${type}.description`)}</span></span>
+                                    </label>
+                                ))}
+                            </div>
                         </Field>
 
                         <SystemImageField

@@ -36,11 +36,6 @@
                         "label": "اسم النظام",
                         "placeholder": "نظام إدارة العملاء"
                     },
-                    "slug": {
-                        "label": "الرابط المختصر",
-                        "placeholder": "awesome-crm",
-                        "description": "يُستخدم في الروابط العامة."
-                    },
                 "description": {
                     "label": "الوصف المختصر",
                     "placeholder": "صِف إمكانات نظامك وميزاته..."
@@ -49,6 +44,18 @@
                     "label": "قالب رابط الإطلاق",
                     "placeholder": "https://{tenantSlug}.yourdomain.com أو https://app.vercel.app?tenantSlug={tenantSlug}",
                     "description": "يتم استبدال {tenantSlug} تلقائيًا برابط مساحة عمل العميل عند الإطلاق."
+                },
+                "baseLaunchUrl": {
+                    "label": "رابط النظام الرئيسي",
+                    "placeholder": "https://my-system.com أو https://my-system.vercel.app",
+                    "description": "الرابط الذي يستضيف النظام."
+                },
+                "launchType": {
+                    "label": "نوع التوجيه",
+                    "options": {
+                        "QUERY_PARAM": { "label": "رابط استضافة", "description": "إضافة ?tenantSlug=xxx إلى الرابط الرئيسي." },
+                        "SUBDOMAIN": { "label": "نطاق خاص", "description": "استخدام xxx.domain.com لمساحة العمل." }
+                    }
                 },
                 "image": {
                     "label": "صورة الغلاف",
@@ -109,7 +116,6 @@
                 },
                 "validation": {
                     "nameMin": "يجب ألا يقل اسم النظام عن 3 أحرف.",
-                    "slugMin": "يجب ألا يقل الرابط المختصر عن 5 أحرف.",
                     "descriptionMin": "يجب ألا يقل الوصف عن 10 أحرف.",
                     "descriptionMax": "يجب ألا يتجاوز الوصف المختصر 250 حرفًا.",
                     "invalidTag": "اختر وسمًا صالحًا.",
@@ -289,6 +295,20 @@
             "description": "يتم استبدال {tenantSlug} تلقائيًا برابط مساحة عمل العميل عند الإطلاق.",
             "saved": "تم تحديث قالب رابط الإطلاق.",
             "saveError": "تعذر حفظ قالب رابط الإطلاق."
+        },
+        "baseLaunchUrl": {
+            "label": "رابط النظام الرئيسي",
+            "placeholder": "https://my-system.com أو https://my-system.vercel.app",
+            "description": "الرابط الذي يستضيف النظام.",
+            "saved": "تم تحديث رابط النظام الرئيسي.",
+            "saveError": "تعذر حفظ رابط النظام الرئيسي."
+        },
+        "launchType": {
+            "label": "نوع التوجيه",
+            "options": {
+                "QUERY_PARAM": { "label": "رابط استضافة", "description": "إضافة ?tenantSlug=xxx إلى الرابط الرئيسي." },
+                "SUBDOMAIN": { "label": "نطاق خاص", "description": "استخدام xxx.domain.com لمساحة العمل." }
+            }
         },
         "image": {
             "label": "صورة غلاف السوق",

@@ -51,7 +51,8 @@ export const systemSchema = z.object({
         .min(1, "Select at least one tag/category"),
     icon_url: z.string().url().optional(),
     image_url: z.string().url().optional().or(z.literal("")),
-    launch_url_template: z.string().trim().url("Launch URL template must be a valid URL").or(z.literal("")).default(""),
+    base_launch_url: z.string().trim().url("System base URL must be a valid URL").or(z.literal("")).default(""),
+    launch_type: z.enum(["QUERY_PARAM", "SUBDOMAIN"]).default("QUERY_PARAM"),
     is_public: z.boolean().default(true),
 
     created_at: z.coerce.date(),
@@ -62,6 +63,7 @@ export type System = Tables<"systems">;
 
 export const systemInsertSchema = systemSchema.omit({
     id: true,
+    slug: true,
     created_at: true,
     updated_at: true,
 });
@@ -71,7 +73,6 @@ export type SystemInsert = z.infer<typeof systemInsertSchema>;
 export const getCreateSystemSchema = (t?: (key: string) => string) =>
     systemInsertSchema.omit({ owner_id: true }).extend({
         name: z.string().min(3, t ? t("validation.nameMin") : "System name too short"),
-        slug: z.string().min(5, t ? t("validation.slugMin") : "Slug must be at least 5 characters"),
         description: z
             .string()
             .trim()
