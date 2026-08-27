@@ -25,6 +25,14 @@ async function fallbackProvisionOrder(orderId: string) {
 
     if (!order) throw new Error("Order not found during fallback provisioning.");
 
+    const existingTenant = await admin
+        .from("tenants")
+        .select("id, subscription_id")
+        .eq("owner_id", order.profile_id)
+        .eq("system_id", order.system_id)
+        .maybeSingle();
+    if (existingTenant.error) throw existingTenant.error;
+
     let subscriptionId = order.subscription_id;
     try {
         if (!subscriptionId) {
@@ -54,11 +62,8 @@ async function fallbackProvisionOrder(orderId: string) {
         throw error;
     }
 
-    let tenantId: string | null = null;
+    let tenantId: string | null = existingTenant.data?.id ?? null;
     try {
-        const existing = await admin.from("tenants").select("id").eq("subscription_id", subscriptionId).maybeSingle();
-        if (existing.error) throw existing.error;
-        tenantId = existing.data?.id ?? null;
         if (!tenantId) {
             const profile = await admin.from("profiles").select("email").eq("id", order.profile_id).single();
             if (profile.error || !profile.data?.email) throw profile.error ?? new Error("Profile email is missing.");
@@ -73,6 +78,20 @@ async function fallbackProvisionOrder(orderId: string) {
             }).select("id").single();
             if (inserted.error) throw inserted.error;
             tenantId = inserted.data.id;
+        } else if (existingTenant.data?.subscription_id !== subscriptionId) {
+            if (existingTenant.data?.subscription_id) {
+                const canceled = await admin
+                    .from("subscriptions")
+                    .update({ status: "CANCELED", auto_renew: false })
+                    .eq("id", existingTenant.data.subscription_id)
+                    .in("status", ["ACTIVE", "TRIAL", "PAST_DUE"]);
+                if (canceled.error) throw canceled.error;
+            }
+            const updated = await admin
+                .from("tenants")
+                .update({ subscription_id: subscriptionId })
+                .eq("id", tenantId);
+            if (updated.error) throw updated.error;
         }
     } catch (error) {
         console.error("CRITICAL_PROVISION_ERROR: tenant step failed", error);

@@ -25,18 +25,22 @@ export default async function InviteMemberPage({
             <SiteHeader title={t("invite.title")} />
 
             <DashboardContainer>
-                <Link
-                    href={`/${tenant_slug}/dashboard/members`}
-                    className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                >
-                    {locale === "ar" ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}
-                    {locale === "ar" ? "العودة إلى الأعضاء" : "Back to members"}
-                </Link>
-                <InviteMemberForm
-                    locale={locale}
-                    tenantSlug={tenant_slug}
-                />
+                <div className="mx-auto w-full max-w-2xl">
+                    <Link
+                        href={`/${tenant_slug}/dashboard/members`}
+                        className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                        {locale === "ar" ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}
+                        {locale === "ar" ? "العودة إلى الأعضاء" : "Back to members"}
+                    </Link>
+
+                    <InviteMemberForm
+                        locale={locale}
+                        tenantSlug={tenant_slug}
+                    />
+                </div>
             </DashboardContainer>
+
         </SidebarInset>
     );
 }

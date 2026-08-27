@@ -15,6 +15,7 @@ type CreateOrderInput = {
     licenseType: LicenseType;
     plan?: PlanType;
     couponCode?: string;
+    upgrade?: boolean;
 };
 
 export function useCreateOrder() {

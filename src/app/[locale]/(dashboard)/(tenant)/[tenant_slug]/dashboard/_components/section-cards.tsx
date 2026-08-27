@@ -48,7 +48,7 @@ export function SectionCards() {
 
   return (
     <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-card *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-3">
-      <Card className="@container/card">
+      <Card className="@container/card justify-between">
         <CardHeader>
           <CardDescription>
             {t("plan.title")}
@@ -81,7 +81,7 @@ export function SectionCards() {
         </CardFooter>
       </Card>
 
-      <Card className="@container/card">
+      <Card className="@container/card justify-between">
         <CardHeader>
           <CardDescription>
             {t("administrators.title")}
@@ -125,7 +125,7 @@ export function SectionCards() {
         </CardFooter>
       </Card>
 
-      <Card className="@container/card">
+      <Card className="@container/card justify-between">
         <CardHeader>
           <CardDescription>
             {t("ai.title")}

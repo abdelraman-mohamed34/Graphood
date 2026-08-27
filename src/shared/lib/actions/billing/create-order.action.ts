@@ -22,6 +22,7 @@ const createOrderSchema = z.object({
     licenseType: z.enum(licenseTypes),
 
     couponCode: z.string().trim().optional(),
+    upgrade: z.boolean().optional(),
 });
 
 type CreateOrderInput = z.infer<typeof createOrderSchema>;
@@ -43,6 +44,7 @@ export async function createOrderAction(
         plan,
         licenseType,
         couponCode,
+        upgrade,
     } = parsed.data;
 
     if (licenseType === "SUBSCRIPTION" && !plan) {
@@ -122,38 +124,24 @@ export async function createOrderAction(
             switch (existingOrder.license_type) {
                 case "SUBSCRIPTION":
                     if (licenseType === "SUBSCRIPTION") {
-                        return {
-                            success: false,
-                            error:
-                                "You already have an active subscription for this system.",
-                        };
+                        const planRank = { STARTER: 0, PRO: 1, BUSINESS: 2 } as const;
+                        const currentPlan = existingOrder.plan as keyof typeof planRank | null;
+                        const requestedPlan = plan as keyof typeof planRank | undefined;
+                        if (!upgrade || !currentPlan || !requestedPlan || planRank[requestedPlan] <= planRank[currentPlan]) {
+                            return {
+                                success: false,
+                                error: "Your selected plan is already active or is not an upgrade.",
+                            };
+                        }
                     }
                     break;
 
                 case "RESELLER":
-                    if (licenseType === "SUBSCRIPTION") {
-                        return {
-                            success: false,
-                            error:
-                                "You already own the reseller license for this system.",
-                        };
-                    }
-
-                    if (licenseType === "RESELLER") {
-                        return {
-                            success: false,
-                            error:
-                                "You already own the reseller license for this system.",
-                        };
-                    }
-
-                    break;
-
                 case "EXCLUSIVE":
                     return {
                         success: false,
                         error:
-                            "You already own this system exclusively.",
+                            "You already own a lifetime license for this system.",
                     };
             }
         }

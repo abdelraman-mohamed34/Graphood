@@ -18,6 +18,7 @@ import { useValidateCoupon } from "@/shared/lib/hooks/billings/use-validate-coup
 import { getPendingOrderAction } from "@/shared/lib/actions/billing/pending-order.action";
 import { Link, useRouter } from "@/i18n/navigation";
 import { queryKeys } from "@/shared/lib/query";
+import { getMarketplaceAccessAction } from "@/shared/lib/actions/billing/marketplace-access.action";
 
 export default function Page() {
     const params = useParams<{ system_id: string }>();
@@ -46,6 +47,11 @@ export default function Page() {
         queryFn: () => getPendingOrderAction(systemId),
         enabled: Boolean(systemId),
     });
+    const accessQuery = useQuery({
+        queryKey: ["marketplace", "access", systemId],
+        queryFn: () => getMarketplaceAccessAction({ systemId }),
+        enabled: Boolean(systemId),
+    });
 
     const {
         validateCoupon,
@@ -54,6 +60,13 @@ export default function Page() {
     } = useValidateCoupon();
 
     const router = useRouter();
+    const access = accessQuery.data;
+    const planRank = { STARTER: 0, PRO: 1, BUSINESS: 2 } as const;
+    const activeSubscriptionPlan = access?.licenseType === "SUBSCRIPTION" && access.isActive
+        ? access.plan as PlanType
+        : undefined;
+    const isPlanUpgrade = Boolean(activeSubscriptionPlan && planRank[selectedPlan] > planRank[activeSubscriptionPlan]);
+    const isCurrentOrLowerPlan = Boolean(activeSubscriptionPlan && planRank[selectedPlan] <= planRank[activeSubscriptionPlan]);
 
     const plans = useMemo(() => {
         if (!system) return [];
@@ -124,12 +137,17 @@ export default function Page() {
 
     const handleOrder = async () => {
         try {
+            if (access?.tenantSlug && (access.licenseType !== "SUBSCRIPTION" || isCurrentOrLowerPlan)) {
+                router.push(`/${access.tenantSlug}/dashboard/quickview`);
+                return;
+            }
             const payload = selectedLicense === "SUBSCRIPTION"
                 ? {
                     systemId,
                     licenseType: "SUBSCRIPTION" as const,
                     plan: selectedPlan,
                     couponCode: couponCode.trim() || undefined,
+                    upgrade: isPlanUpgrade,
                 }
                 : {
                     systemId,
@@ -556,7 +574,11 @@ export default function Page() {
                             </>
                         ) : (
                             <>
-                                {t("continueToCheckout", { price: displayPrice, currency: system.currency })}
+                                {access?.tenantSlug && (access.licenseType !== "SUBSCRIPTION" || isCurrentOrLowerPlan)
+                                    ? "الباقة الحالية"
+                                    : isPlanUpgrade
+                                        ? "ترقية الباقة"
+                                        : t("continueToCheckout", { price: displayPrice, currency: system.currency })}
                                 <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
                             </>
                         )}
