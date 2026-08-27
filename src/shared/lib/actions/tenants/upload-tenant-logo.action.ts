@@ -5,6 +5,7 @@ import { hasPermission } from "@/shared/lib/auth/requires/require-permission";
 import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
 import { uploadTenantLogoService } from "@/shared/lib/supabase/services/storage";
+import { createAdminClient } from "@/shared/lib/supabase/admin";
 
 const inputSchema = z.object({
     locale: z.enum(["ar", "en"]),
@@ -36,7 +37,9 @@ export async function uploadTenantLogoAction(
     }
 
     const logoUrl = await uploadTenantLogoService({
-        supabase,
+        // Authorization is checked above with the request-scoped client. The
+        // service client avoids requiring per-user Storage object policies.
+        supabase: createAdminClient(),
         tenantId: membership.tenant_id,
         file: input.file,
     });

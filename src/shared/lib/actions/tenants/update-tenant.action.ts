@@ -12,6 +12,7 @@ import {
     updateTenantSchema,
 } from "../../schemas/tenants.schema";
 import { z } from "zod";
+import { createAdminClient } from "@/shared/lib/supabase/admin";
 
 const tenantContextSchema = z.object({ tenantSlug: z.string().min(1).max(100), locale: z.enum(["ar", "en"]) }).strict();
 
@@ -69,7 +70,10 @@ export async function updateTenantAction({
         }
 
         const updatedTenant = await updateTenantService({
-            supabase,
+            // Membership and permission checks above authorize this change;
+            // perform the final write with the service client to avoid RLS
+            // blocking an otherwise authorized workspace update.
+            supabase: createAdminClient(),
             tenantId: tenant.id,
             data: parsed.data,
         });

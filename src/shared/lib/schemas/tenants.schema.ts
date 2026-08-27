@@ -43,10 +43,13 @@ export const tenantSchema = z.object({
         .optional(),
     email: z.string().email("Invalid email address"),
     phone: z
-        .string()
-        .min(10)
-        .nullable()
-        .optional(),
+        .preprocess(
+            (value) => (value === "" ? null : value),
+            z.string()
+                .min(10)
+                .nullable()
+                .optional(),
+        ),
     country: z
         .string()
         .nullable()

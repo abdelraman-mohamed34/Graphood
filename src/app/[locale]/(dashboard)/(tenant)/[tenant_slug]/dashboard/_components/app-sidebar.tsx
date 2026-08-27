@@ -53,7 +53,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             asChild
                             className="cursor-pointer data-[slot=sidebar-menu-button]:p-1.5! hover:bg-transparent! hover:text-sidebar-foreground! active:bg-transparent!"
                         >
-                            <Link href={`/${tenantSlug}/dashboard/quickview`}>
+                            <Link href="/">
                                 <IconInnerShadowTop className="size-5!" />
                                 <span className="text-base font-semibold">{brandConfig.brand}</span>
                             </Link>
