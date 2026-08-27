@@ -38,10 +38,12 @@ export const LICENSE_MODELS = {
 } as const;
 
 export function isUnlimitedLicense(
-    licenseType: LicenseType | null | undefined
+    licenseType: string | null | undefined
 ) {
     return (
         licenseType === "RESELLER" ||
-        licenseType === "EXCLUSIVE"
+        licenseType === "EXCLUSIVE" ||
+        licenseType === "LIFETIME" ||
+        licenseType === "ONE_TIME"
     );
 }

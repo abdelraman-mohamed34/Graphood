@@ -90,7 +90,7 @@ export async function createInvitationAction(
         const limitCheck = await checkTenantLimit(
             admin,
             membership.tenant_id,
-            'maxAdmins'
+            parsed.data.role === 'ADMIN' ? 'maxAdmins' : 'maxMembers'
         )
 
         if (!limitCheck.allowed) {

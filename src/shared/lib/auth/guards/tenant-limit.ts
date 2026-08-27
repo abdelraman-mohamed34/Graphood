@@ -2,6 +2,7 @@
 
 import { SupabaseClient } from '@supabase/supabase-js'
 import { getPlanLimits, FeatureKey } from '@/shared/config/plans'
+import { isUnlimitedLicense } from '@/shared/config/licensing'
 import { getSubscriptionByTenantID } from '../../supabase/services/subscriptions/get-subscription-by-tenant-id.service'
 
 export type LimitCheckResult = {
@@ -12,7 +13,8 @@ export type LimitCheckResult = {
 }
 
 const USAGE_TABLE_MAPPING: Record<string, string> = {
-    maxAdmins: 'memberships',
+  maxAdmins: 'memberships',
+  maxMembers: 'memberships',
 }
 
 export async function checkTenantLimit(
@@ -23,6 +25,24 @@ export async function checkTenantLimit(
     const subscription = await getSubscriptionByTenantID(supabase, tenantId)
     if (!subscription) {
         return { allowed: false, code: 'NO_SUBSCRIPTION' }
+    }
+
+    if (isUnlimitedLicense(subscription.license_type)) {
+        const { count, error } = await supabase
+            .from('memberships')
+            .select('id', { count: 'exact', head: true })
+            .eq('tenant_id', tenantId)
+
+        if (error) {
+            return { allowed: true, code: 'ALLOWED', max: Infinity }
+        }
+
+        return {
+            allowed: true,
+            code: 'ALLOWED',
+            current: count || 0,
+            max: Infinity,
+        }
     }
 
     const planLimits = getPlanLimits(subscription.plan_name)
