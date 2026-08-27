@@ -47,8 +47,8 @@
                     },
                     "launchUrlTemplate": {
                         "label": "Launch URL Template",
-                        "placeholder": "https://{tenantSlug}.yourdomain.com",
-                        "description": "{tenantSlug} is replaced with the workspace slug when launched."
+                        "placeholder": "https://{tenantSlug}.yourdomain.com or https://app.vercel.app?tenantSlug={tenantSlug}",
+                        "description": "{tenantSlug} will be dynamically replaced by the client workspace slug upon launch."
                     },
                 "image": {
                     "label": "Cover image",
@@ -285,8 +285,8 @@
         "categoryLabel": "Category",
         "launchUrlTemplate": {
             "label": "Launch URL Template",
-            "placeholder": "https://{tenantSlug}.yourdomain.com",
-            "description": "{tenantSlug} is replaced with the workspace slug when launched.",
+            "placeholder": "https://{tenantSlug}.yourdomain.com or https://app.vercel.app?tenantSlug={tenantSlug}",
+            "description": "{tenantSlug} will be dynamically replaced by the client workspace slug upon launch.",
             "saved": "Launch URL template updated.",
             "saveError": "Could not save the launch URL template."
         },

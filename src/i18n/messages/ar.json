@@ -47,8 +47,8 @@
                 },
                 "launchUrlTemplate": {
                     "label": "قالب رابط الإطلاق",
-                    "placeholder": "https://{tenantSlug}.yourdomain.com",
-                    "description": "سيتم استبدال {tenantSlug} تلقائيًا بالرابط المختصر لمساحة العمل عند الإطلاق."
+                    "placeholder": "https://{tenantSlug}.yourdomain.com أو https://app.vercel.app?tenantSlug={tenantSlug}",
+                    "description": "يتم استبدال {tenantSlug} تلقائيًا برابط مساحة عمل العميل عند الإطلاق."
                 },
                 "image": {
                     "label": "صورة الغلاف",
@@ -285,8 +285,8 @@
         "categoryLabel": "الفئة",
         "launchUrlTemplate": {
             "label": "قالب رابط الإطلاق",
-            "placeholder": "https://{tenantSlug}.yourdomain.com",
-            "description": "سيتم استبدال {tenantSlug} تلقائيًا بالرابط المختصر لمساحة العمل عند الإطلاق.",
+            "placeholder": "https://{tenantSlug}.yourdomain.com أو https://app.vercel.app?tenantSlug={tenantSlug}",
+            "description": "يتم استبدال {tenantSlug} تلقائيًا برابط مساحة عمل العميل عند الإطلاق.",
             "saved": "تم تحديث قالب رابط الإطلاق.",
             "saveError": "تعذر حفظ قالب رابط الإطلاق."
         },
