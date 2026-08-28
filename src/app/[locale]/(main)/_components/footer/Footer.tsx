@@ -31,7 +31,8 @@ export function Footer() {
             links: [
                 { label: t("links.about"), href: "/about" },
                 { label: t("links.changelog"), href: "/developer/docs/changelog" },
-                { label: t("links.support"), href: "/faq" },
+                { label: t("links.support"), href: "/contact" },
+                { label: t("links.faq"), href: "/faq" },
                 { label: t("refundPolicy"), href: "/refund-policy" },
             ],
         },
