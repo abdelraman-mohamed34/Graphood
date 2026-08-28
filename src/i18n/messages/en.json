@@ -26,6 +26,15 @@
         "rejected": "Invitation rejected successfully.",
         "rejectFailed": "Failed to reject the invitation. Please try again."
     },
+    "invitations": {
+        "invalidTitle": "Invalid or Expired Invitation",
+        "invalidDescription": "This invitation link is no longer valid, has expired, or is mismatched. Please ask your administrator for a new invite.",
+        "goHome": "Go back home",
+        "title": "You're Invited!",
+        "subtitle": "Join your team workspace",
+        "invitedBy": "has invited you to join:",
+        "role": "Role"
+    },
     "developer": {
         "systems": {
             "create": {
