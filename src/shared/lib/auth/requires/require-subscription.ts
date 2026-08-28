@@ -10,6 +10,7 @@ import { Subscription } from "../../schemas/subscriptions.schema";
 const ACTIVE_STATUSES = new Set([
     "ACTIVE",
     "TRIAL",
+    "PAST_DUE",
 ]);
 
 export function requireSubscription(

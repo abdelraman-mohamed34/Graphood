@@ -657,6 +657,7 @@ export type Database = {
           end_date: string | null
           id: string
           license_type: string | null
+          last_expiry_warning_at: string | null
           order_id: string | null
           plan_name: string
           price: number
@@ -675,6 +676,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           license_type?: string | null
+          last_expiry_warning_at?: string | null
           order_id?: string | null
           plan_name: string
           price: number
@@ -693,6 +695,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           license_type?: string | null
+          last_expiry_warning_at?: string | null
           order_id?: string | null
           plan_name?: string
           price?: number
