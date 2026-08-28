@@ -1,6 +1,5 @@
 import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { getResendApiKey, getResendDeliveryConfig } from '@/shared/lib/email/resend-config'
 
 type Props = {
     email: string
@@ -21,13 +20,20 @@ export async function sendInvitationEmail({
     inviterName,
     message,
 }: Props) {
+    const apiKey = getResendApiKey('Invitation email')
+    if (!apiKey) {
+        throw new Error('RESEND_API_KEY is missing; invitation email was not sent.')
+    }
+
+    const delivery = getResendDeliveryConfig(email)
+    const resend = new Resend(apiKey)
     const acceptUrl =
         `${process.env.NEXT_PUBLIC_APP_URL}` +
         `/${locale}/invitations/accept?token=${token}&tenant=${tenantSlug}`
 
     const { data, error } = await resend.emails.send({
-        from: 'Graphood <onboarding@resend.dev>',
-        to: email,
+        from: delivery.from,
+        to: delivery.to,
         subject: `You're invited to join ${tenantName}`,
         html: `
 <!DOCTYPE html>
@@ -203,6 +209,7 @@ export async function sendInvitationEmail({
     })
 
     if (error) {
+        console.error('Invitation Resend Error:', error)
         throw new Error(error.message)
     }
 
