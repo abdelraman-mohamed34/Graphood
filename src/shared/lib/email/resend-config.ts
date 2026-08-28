@@ -12,6 +12,7 @@ export function getResendApiKey(context: string) {
 export function getResendDeliveryConfig(productionRecipient: string) {
     const isProduction = process.env.NODE_ENV === "production";
     const developmentRecipient = process.env.RESEND_DEV_RECEIVER_EMAIL?.trim();
+    const configuredSender = process.env.RESEND_FROM_EMAIL?.trim();
 
     if (!isProduction && !developmentRecipient) {
         console.warn("Resend development delivery is using the requested recipient. Set RESEND_DEV_RECEIVER_EMAIL to a verified inbox when testing with Resend's development sender.");
@@ -19,8 +20,6 @@ export function getResendDeliveryConfig(productionRecipient: string) {
 
     return {
         to: !isProduction && developmentRecipient ? developmentRecipient : productionRecipient,
-        from: isProduction
-            ? process.env.RESEND_FROM_EMAIL?.trim() || "Graphood <onboarding@resend.dev>"
-            : "Graphood <onboarding@resend.dev>",
+        from: configuredSender || "Graphood <onboarding@resend.dev>",
     };
 }
