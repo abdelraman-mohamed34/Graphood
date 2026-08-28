@@ -585,6 +585,9 @@
     "auth": {
         "success": {
             "logged_in": "Welcome back!",
+            "welcome_back": "Welcome back!",
+            "welcome_first_time": "Welcome to Graphood, {name}!",
+            "default_name": "there",
             "register": "Account created successfully!",
             "password_updated": "Your password has been updated successfully!",
             "reset_password_sent": "Password reset instructions have been sent to your email.",

@@ -25,10 +25,10 @@ export function useLogin() {
 
         if (token && tenant) {
             router.push(
-                `/invitations/accept?token=${token}&tenant=${tenant}`
+                `/invitations/accept?token=${token}&tenant=${tenant}&welcome=true`
             );
         } else {
-            router.push("/");
+            router.push("/?welcome=true");
         }
 
         router.refresh();
@@ -57,9 +57,6 @@ export function useLogin() {
         },
 
         onSuccess: () => {
-            toast.success(
-                t("success.logged_in")
-            );
             redirectAfterLogin();
         },
 

@@ -585,6 +585,9 @@
     "auth": {
         "success": {
             "logged_in": "مرحباً بعودتك!",
+            "welcome_back": "أهلاً بعودتك!",
+            "welcome_first_time": "أهلاً بك في جرافهود، {name}!",
+            "default_name": "بك",
             "register": "تم إنشاء الحساب بنجاح!",
             "password_updated": "تم تحديث كلمة المرور بنجاح!",
             "reset_password_sent": "تم إرسال تعليمات إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.",

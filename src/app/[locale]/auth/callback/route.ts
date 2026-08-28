@@ -119,6 +119,11 @@ export async function GET(request: NextRequest) {
             }).catch((emailError) => console.error("Welcome OAuth email dispatch failed:", emailError));
         }
 
+        const redirectTarget = addWelcomeParams(next, {
+            firstTime: isFirstProfile,
+            name: [firstName, lastName].filter(Boolean).join(" "),
+        });
+
         const html = `
           <!DOCTYPE html>
           <html>
@@ -130,13 +135,13 @@ export async function GET(request: NextRequest) {
               <script>
                 try {
                   if (window.opener && !window.opener.closed) {
-                    window.opener.location.href = ${JSON.stringify(next)};
+                    window.opener.location.href = ${JSON.stringify(redirectTarget)};
                     window.close();
                   } else {
-                    window.location.href = ${JSON.stringify(next)};
+                    window.location.href = ${JSON.stringify(redirectTarget)};
                   }
                 } catch (e) {
-                  window.location.href = ${JSON.stringify(next)};
+                  window.location.href = ${JSON.stringify(redirectTarget)};
                 }
               </script>
             </body>
@@ -172,6 +177,16 @@ function sanitizeRedirect(next: string | null): string {
     }
 
     return next;
+}
+
+function addWelcomeParams(next: string, { firstTime, name }: { firstTime: boolean; name: string }): string {
+    const url = new URL(next, "https://graphood.local");
+    url.searchParams.set("welcome", "true");
+    if (firstTime) {
+        url.searchParams.set("firstTime", "true");
+        if (name) url.searchParams.set("name", name);
+    }
+    return `${url.pathname}${url.search}${url.hash}`;
 }
 
 function parseGoogleMetadata(metadata: Record<string, unknown>) {

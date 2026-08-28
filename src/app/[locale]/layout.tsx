@@ -6,6 +6,7 @@ import { getMessages } from "next-intl/server";
 
 import { AppProvider } from "@/shared/lib/providers/app-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthToastListener } from "@/shared/_components/auth-toast-listener";
 
 import { locales } from "../../../public/data";
 
@@ -77,6 +78,7 @@ export default async function LocaleLayout({
                 >
                     {children}
                 </AppProvider>
+                <AuthToastListener />
 
                 <Toaster
                     dir={dir}
