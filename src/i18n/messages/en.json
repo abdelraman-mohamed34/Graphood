@@ -183,6 +183,7 @@
             "perMonth": "/ month",
             "processing": "Processing order...",
             "continueToCheckout": "Continue to checkout ({price} {currency})",
+            "refundPolicyLink": "Subject to Refund Policy",
             "plans": {
                 "starter": {
                     "name": "Starter",
@@ -835,6 +836,7 @@
         }
     },
     "footer": {
+        "refundPolicy": "Refund Policy",
         "description": "The ultimate global ecosystem to discover, compare, and instantly deploy enterprise-grade SaaS solutions.",
         "rights": "All rights reserved.",
         "social": {
@@ -2011,6 +2013,29 @@
             "next": "Next",
             "page": "Page {page} of {totalPages}"
         }
+    },
+    "refundPolicy": {
+        "title": "Refund & Cancellation Policy",
+        "subtitle": "Clear terms for every Graphood purchase and subscription.",
+        "testModeTitle": "Test Mode",
+        "testModeBadge": "Free preview",
+        "oneTimeTitle": "One-time purchases",
+        "oneTimeBadge": "100% refund · 14 days",
+        "monthlyTitle": "Monthly subscriptions",
+        "monthlyBadge": "Cancel before renewal",
+        "exclusionsTitle": "Exclusions",
+        "exclusionsBadge": "Strictly non-refundable",
+        "manualTitle": "Manual processing",
+        "manualBadge": "5-10 business days",
+        "testModeClause": "Before buying, you can use Test Mode to preview the full experience free of charge.",
+        "oneTimePurchase": "One-time purchases are eligible for a 100% full refund within 14 days. After 14 days, one-time purchases are non-refundable.",
+        "monthlySubscriptions": "Monthly subscriptions are non-refundable for the current month. You may cancel at any time before the next billing cycle. Annual plans are not offered.",
+        "exclusions": "Custom Domains and setup fees are strictly non-refundable.",
+        "manualProcessing": "For assistance, contact support@graphood.com. Approved manual refunds are processed within 5-10 business days.",
+        "refundPolicyLink": "Refund Policy",
+        "agreeTermsCheck": "I have read and agree to the Refund & Cancellation Policy.",
+        "scrollInstruction": "Scroll to the bottom to continue.",
+        "proceedToPayment": "Proceed to Payment"
     },
     "NotFoundPage": {
         "title": "Page Not Found",

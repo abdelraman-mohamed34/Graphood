@@ -32,6 +32,7 @@ export function Footer() {
                 { label: t("links.about"), href: "/about" },
                 { label: t("links.changelog"), href: "/developer/docs/changelog" },
                 { label: t("links.support"), href: "/faq" },
+                { label: t("refundPolicy"), href: "/refund-policy" },
             ],
         },
     ];
@@ -55,7 +56,9 @@ export function Footer() {
 
                 <div className="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
                     <p>© 2026 Graphood. {t("rights")}</p>
-                    <LanguageMenu />
+                    <div className="flex items-center gap-4">
+                        <LanguageMenu />
+                    </div>
                 </div>
             </div>
         </footer>

@@ -1,14 +1,16 @@
 "use client";
 
-import { use, useEffect, useRef } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useOrder } from "@/features/billing/use-order";
 import { useInitiatePayment } from "@/features/billing/use-initiate-payment";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { OrderSummaryCard } from "./_components/order-summary-card";
 import { PriceBreakdownCard } from "./_components/price-breakdown-card";
 import { finalizeKashierRedirectAction } from "@/shared/lib/actions/billing/finalize-kashier-redirect.action";
+import { TermsAgreementModal } from "@/shared/_components/TermsAgreementModal";
 
 interface PageProps {
     params: Promise<{
@@ -27,6 +29,7 @@ export default function Page({ params, searchParams }: PageProps) {
     const { order, isLoading, error } = useOrder(order_id);
 
     const { mutate: initiatePayment, isPending: isInitiating } = useInitiatePayment();
+    const [termsOpen, setTermsOpen] = useState(false);
 
     const isPaid = order?.status === "PAID";
     const tenantSlug = order?.tenant_slug;
@@ -133,12 +136,14 @@ export default function Page({ params, searchParams }: PageProps) {
 
                 <button
                     type="button"
-                    onClick={handleCompletePayment}
+                    onClick={() => setTermsOpen(true)}
                     disabled={isInitiating}
                     className="w-full rounded-sm bg-maroon px-4 py-3 font-medium text-white transition-colors hover:bg-teal disabled:opacity-50"
                 >
                     {isInitiating ? t("processing") : t("completePayment")}
                 </button>
+                <Link href="/refund-policy" className="block text-center text-xs text-muted-foreground underline-offset-4 hover:underline">{t("refundPolicyLink")}</Link>
+                <TermsAgreementModal open={termsOpen} onOpenChange={setTermsOpen} onProceed={() => { setTermsOpen(false); handleCompletePayment(); }} />
             </div>
         </div>
     );

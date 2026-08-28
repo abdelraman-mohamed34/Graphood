@@ -562,6 +562,9 @@ export default function Page() {
 
                 {/* Submit CTA */}
                 <div className="flex items-center justify-end pt-4 border-t border-neutral-200/60 dark:border-neutral-800">
+                    <Link href="/refund-policy" className="me-auto text-xs text-muted-foreground underline-offset-4 hover:underline">
+                        {t("refundPolicyLink")}
+                    </Link>
                     <button
                         onClick={handleOrder}
                         disabled={isCreating}
