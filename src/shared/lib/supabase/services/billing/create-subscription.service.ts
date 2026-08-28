@@ -63,6 +63,9 @@ export async function createSubscription({
     }
 
     const now = new Date().toISOString();
+    const endDate = order.license_type === "SUBSCRIPTION"
+        ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        : null;
 
     const { data: subscription, error } = await supabase
         .from("subscriptions")
@@ -90,6 +93,7 @@ export async function createSubscription({
             status: "ACTIVE",
 
             start_date: now,
+            end_date: endDate,
 
             auto_renew:
                 order.license_type === "SUBSCRIPTION",

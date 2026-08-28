@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { processKashierPayment, provisionOrder, type KashierPaymentStatus } from "@/shared/lib/supabase/services/billing";
+import { processKashierPayment, provisionOrder, refreshSubscriptionPeriodForOrder, type KashierPaymentStatus } from "@/shared/lib/supabase/services/billing";
 import { createAdminClient } from "@/shared/lib/supabase/admin";
 import type { Json } from "@/shared/types/database.types";
 
@@ -266,6 +266,7 @@ export async function POST(request: Request) {
                 systemId: extractedSystemId,
             });
             await provisionOrder({ orderId, webhookEventId });
+            await refreshSubscriptionPeriodForOrder(orderId);
         }
 
         if (!isSuccess) {

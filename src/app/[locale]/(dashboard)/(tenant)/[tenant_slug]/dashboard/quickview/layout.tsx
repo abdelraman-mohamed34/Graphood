@@ -5,6 +5,8 @@ import {
 } from "@tanstack/react-query";
 
 import { getSubscriptionByTenantID } from "@/shared/lib/supabase/services/subscriptions";
+import { requireSubscription } from "@/shared/lib/auth/requires/require-subscription";
+import { redirect } from "next/navigation";
 import { requireMembership } from "@/shared/lib/auth/requires/require-membership";
 import { requireUser } from "@/shared/lib/auth/requires/require-user";
 import { createQueryClient, queryKeys } from "@/shared/lib/query";
@@ -44,6 +46,11 @@ export default async function QuickViewLayout({
         membership.tenant_id
       ),
   });
+
+  const subscription = await getSubscriptionByTenantID(supabase, membership.tenant_id);
+  if (!requireSubscription(subscription).isActive) {
+    redirect(`/${locale}/${tenant_slug}/dashboard/subscription?reason=expired`);
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

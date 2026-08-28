@@ -5,6 +5,7 @@ import { z } from "zod";
 import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { createAdminClient } from "@/shared/lib/supabase/admin";
+import { requireSubscription } from "@/shared/lib/auth/requires/require-subscription";
 
 const inputSchema = z.object({ systemId: z.string().uuid() });
 
@@ -27,7 +28,7 @@ export async function getMarketplaceAccessAction(input: z.infer<typeof inputSche
 
     const { data: subscription, error: subscriptionError } = await admin
         .from("subscriptions")
-        .select("id, plan_name, license_type, status")
+        .select("id, plan_name, license_type, status, end_date")
         .eq("id", tenant.subscription_id)
         .maybeSingle();
     if (subscriptionError || !subscription) return null;
@@ -36,6 +37,6 @@ export async function getMarketplaceAccessAction(input: z.infer<typeof inputSche
         tenantSlug: tenant.slug,
         plan: subscription.plan_name,
         licenseType: subscription.license_type,
-        isActive: subscription.status === "ACTIVE" || subscription.status === "TRIAL",
+        isActive: requireSubscription(subscription).isActive,
     };
 }

@@ -7,7 +7,7 @@ export async function getSubscriptionById(
 
     const { data, error } = await supabase
         .from("subscriptions")
-        .select("id, plan_name, license_type, billing_interval, status")
+        .select("id, plan_name, license_type, billing_interval, status, end_date")
         .eq("id", subscriptionId)
         .maybeSingle();
 

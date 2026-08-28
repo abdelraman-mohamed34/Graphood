@@ -52,6 +52,9 @@ async function fallbackProvisionOrder(orderId: string) {
                 currency: order.currency ?? "EGP",
                 status: "ACTIVE",
                 start_date: new Date().toISOString(),
+                end_date: order.license_type === "SUBSCRIPTION"
+                    ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                    : null,
                 auto_renew: order.license_type === "SUBSCRIPTION",
             }).select("id").single();
             if (inserted.error) throw inserted.error;
@@ -134,6 +137,26 @@ async function fallbackProvisionOrder(orderId: string) {
         membership: { id: membershipId },
         isExisting: true,
     };
+}
+
+/** Refreshes the monthly period after a payment is confirmed (including renewals). */
+export async function refreshSubscriptionPeriodForOrder(orderId: string) {
+    const admin = createAdminClient();
+    const { data: order, error: orderError } = await admin
+        .from("orders")
+        .select("subscription_id, license_type, status")
+        .eq("id", orderId)
+        .maybeSingle();
+    if (orderError) throw orderError;
+    if (!order?.subscription_id || order.license_type !== "SUBSCRIPTION" || order.status !== "PAID") return;
+
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + 1);
+    const { error } = await admin
+        .from("subscriptions")
+        .update({ status: "ACTIVE", end_date: endDate.toISOString(), auto_renew: true })
+        .eq("id", order.subscription_id);
+    if (error) throw error;
 }
 
 export async function provisionOrder({

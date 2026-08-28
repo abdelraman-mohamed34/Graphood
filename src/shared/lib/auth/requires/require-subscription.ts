@@ -13,7 +13,7 @@ const ACTIVE_STATUSES = new Set([
 ]);
 
 export function requireSubscription(
-    subscription: Pick<Subscription, "plan_name" | "license_type" | "status"> | null | undefined
+    subscription: (Pick<Subscription, "plan_name" | "license_type" | "status"> & { end_date?: string | null }) | null | undefined
 ) {
     const planName =
         subscription?.plan_name ?? "STARTER";
@@ -28,9 +28,8 @@ export function requireSubscription(
         LICENSE_MODELS[licenseType] ??
         LICENSE_MODELS.SUBSCRIPTION;
 
-    const isActive = ACTIVE_STATUSES.has(
-        subscription?.status ?? ""
-    );
+    const expiredByDate = Boolean(subscription?.end_date && new Date(subscription.end_date).getTime() <= Date.now());
+    const isActive = ACTIVE_STATUSES.has(subscription?.status ?? "") && !expiredByDate;
 
     return {
         planName,
