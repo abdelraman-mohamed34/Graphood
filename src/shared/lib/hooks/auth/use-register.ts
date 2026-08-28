@@ -10,6 +10,7 @@ import { useRouter } from "@/i18n/navigation";
 import { RegisterInputType } from "../../schemas";
 import { createClient } from "../../supabase/client";
 import { acceptInvitationAction } from "../../actions/invitations/accept-invitation.action";
+import { sendWelcomeEmailAction } from "../../actions/auth/send-welcome-email.action";
 import useOAuth from "./use-OAuth";
 
 export function useRegister() {
@@ -57,6 +58,18 @@ export function useRegister() {
         },
 
         onSuccess: async (authData) => {
+            const registeredUser = authData.user;
+            if (!registeredUser) return;
+
+            if (registeredUser.email) {
+                // Email delivery is best-effort and must not block onboarding.
+                void sendWelcomeEmailAction({
+                    to: registeredUser.email,
+                    name: [registeredUser.user_metadata?.first_name, registeredUser.user_metadata?.last_name].filter(Boolean).join(" "),
+                    locale: locale === "ar" ? "ar" : "en",
+                }).catch((error) => console.error("Welcome email dispatch failed:", error));
+            }
+
             if (!authData.session) {
                 toast.info(t("errors.confirm_email"));
                 router.replace(loginPath());
@@ -64,6 +77,7 @@ export function useRegister() {
             }
 
             toast.success(t("success.register"));
+
 
             if (token && tenant) {
                 try {

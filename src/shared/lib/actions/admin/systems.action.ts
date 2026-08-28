@@ -16,6 +16,7 @@ import {
 import { z } from "zod";
 import { checkPlatformRoleService } from "@/shared/lib/supabase/services/platform-staff";
 import { createAuditLog } from "../../supabase/services/audit-logs";
+import { sendSystemEmail } from "@/shared/lib/email/send-system-email";
 
 export interface SystemsActionResult<T> {
     success: boolean;
@@ -110,6 +111,19 @@ export async function updateSystemStatusAction(
         const { supabaseAdmin, user } = await authorizeSystemsStaff();
 
         const data = await updateSystemStatusService({ supabase: supabaseAdmin, ...parsed.data });
+
+        if (data.status === "ACTIVE") {
+            void (async () => {
+                try {
+                    const { data: system } = await supabaseAdmin.from("systems").select("name, owner_id").eq("id", data.systemId).maybeSingle();
+                    if (!system) return;
+                    const { data: owner } = await supabaseAdmin.from("profiles").select("email").eq("id", system.owner_id).maybeSingle();
+                    if (owner?.email) await sendSystemEmail({ to: owner.email, event: "SYSTEM_PUBLISHED", payload: { systemName: system.name, dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/en/dashboard`, supportUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/en/contact` } });
+                } catch (error) {
+                    console.error("System publication email dispatch failed:", error);
+                }
+            })();
+        }
 
         await createAuditLog(supabaseAdmin, {
             actor_id: user.id,

@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import type { Database } from "@/shared/types/database.types";
+import { sendSystemEmail } from "@/shared/lib/email/send-system-email";
 
 type CookieToSet = {
     name: string;
@@ -67,6 +68,24 @@ export async function GET(request: NextRequest) {
         const { firstName, lastName, avatarUrl } = parseGoogleMetadata(
             user.user_metadata
         );
+        const callbackLocale = request.nextUrl.pathname.split("/")[1] === "ar" ? "ar" : "en";
+        const isGoogleOAuth = user.app_metadata?.provider === "google" || user.identities?.some((identity) => identity.provider === "google");
+        let isFirstProfile = false;
+
+        if (isGoogleOAuth) {
+            const { data: existingProfile, error: profileLookupError } = await supabase
+                .from("profiles")
+                .select("id")
+                .eq("id", user.id)
+                .maybeSingle();
+
+            if (profileLookupError) {
+                console.error("[AUTH_CALLBACK_PROFILE_LOOKUP]", profileLookupError);
+            } else {
+                isFirstProfile = !existingProfile;
+            }
+        }
+
         const { error: profileError } = await supabase.from("profiles").upsert(
             {
                 id: user.id,
@@ -85,6 +104,19 @@ export async function GET(request: NextRequest) {
                 new URL("/en/login?error=profile_sync_failed", origin),
                 cookiesToSetInResponse
             );
+        }
+
+        if (isFirstProfile && user.email) {
+            // Welcome delivery is best-effort and must never delay OAuth completion.
+            void sendSystemEmail({
+                to: user.email,
+                event: "WELCOME_USER",
+                locale: callbackLocale,
+                payload: {
+                    name: [firstName, lastName].filter(Boolean).join(" ") || undefined,
+                    loginUrl: `${origin}/${callbackLocale}/login`,
+                },
+            }).catch((emailError) => console.error("Welcome OAuth email dispatch failed:", emailError));
         }
 
         const html = `

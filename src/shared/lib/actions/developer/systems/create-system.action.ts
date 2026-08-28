@@ -9,6 +9,7 @@ import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.s
 import { createApiKey } from "@/shared/lib/supabase/services/developer/api-keys";
 import { createSystem } from "@/shared/lib/supabase/services/systems";
 import { sanitizeMarkdownSource } from "@/shared/lib/markdown";
+import { sendSystemEmail } from "@/shared/lib/email/send-system-email";
 
 export async function createSystemAction(
     data: CreateSystemInput
@@ -32,6 +33,14 @@ export async function createSystemAction(
         is_active: true,
         expires_at: null,
     });
+
+    if (user.email) {
+        void sendSystemEmail({
+            to: user.email,
+            event: "SYSTEM_PUBLISHED",
+            payload: { systemName: system.name, dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/en/dashboard`, supportUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/en/contact` },
+        }).catch((error) => console.error("System submission email dispatch failed:", error));
+    }
 
     return {
         system: { id: system.id },
