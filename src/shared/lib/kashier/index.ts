@@ -100,14 +100,17 @@ export async function createKashierCheckoutUrl({
         }
 
         const responseText = await response.text();
+        const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
         let data: Record<string, unknown>;
         try {
             data = JSON.parse(responseText) as Record<string, unknown>;
         } catch {
+            console.error("Kashier non-JSON response:", { status: response.status, statusText: response.statusText, contentType, body: responseText.slice(0, 500) });
             throw new KashierError(`Kashier returned a non-JSON response (HTTP ${response.status}): ${responseText.slice(0, 300)}`);
         }
 
         if (!response.ok) {
+            console.error("Kashier API error response:", { status: response.status, statusText: response.statusText, contentType, body: responseText.slice(0, 500) });
             const errorMsg = typeof data.error === "object" && data.error !== null && "message" in data.error
                 ? String((data.error as { message?: unknown }).message)
                 : typeof data.message === "string" ? data.message : JSON.stringify(data);

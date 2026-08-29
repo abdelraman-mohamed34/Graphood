@@ -85,8 +85,19 @@ async function verifyKashierSession(sessionId: string) {
             },
             cache: "no-store",
         });
-        if (!response.ok) return null;
-        const body = await response.json() as Record<string, unknown>;
+        const responseText = await response.text();
+        const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
+        if (!response.ok) {
+            console.error("Kashier session verification HTTP error:", { status: response.status, statusText: response.statusText, contentType, body: responseText.slice(0, 500) });
+            return null;
+        }
+        let body: Record<string, unknown>;
+        try {
+            body = JSON.parse(responseText) as Record<string, unknown>;
+        } catch (error) {
+            console.error("Kashier session verification non-JSON response:", { status: response.status, contentType, body: responseText.slice(0, 500), error });
+            return null;
+        }
         const data = typeof body.data === "object" && body.data !== null
             ? body.data as Record<string, unknown>
             : body;
