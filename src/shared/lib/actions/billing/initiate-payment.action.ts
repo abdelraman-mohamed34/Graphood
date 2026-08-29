@@ -9,7 +9,7 @@ import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.s
 const initiatePaymentSchema = z.object({
     orderId: z.string().uuid(),
     locale: z.enum(["ar", "en"]),
-});
+}).strip();
 
 export type InitiatePaymentInput = z.infer<typeof initiatePaymentSchema>;
 
