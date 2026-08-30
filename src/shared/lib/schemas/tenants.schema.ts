@@ -14,6 +14,8 @@ export const tenantSchema = z.object({
         .min(3, "Tenant name must be at least 3 characters"),
     slug: z
         .string()
+        .trim()
+        .toLowerCase()
         .min(3)
         .regex(
             /^[a-z0-9-]+$/,

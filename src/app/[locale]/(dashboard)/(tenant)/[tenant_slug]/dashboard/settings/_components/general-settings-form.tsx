@@ -119,9 +119,9 @@ export function GeneralSettingsForm({ tenant }: { tenant: Tenant }) {
         }
 
         updateTenant({
-            name: values.name,
-            slug: values.slug,
-            email: values.email,
+            name: values.name.trim(),
+            slug: values.slug.trim().toLowerCase(),
+            email: values.email.trim(),
             phone: values.phone,
             country: values.country,
             city: values.city,

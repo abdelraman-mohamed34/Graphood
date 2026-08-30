@@ -65,7 +65,8 @@ export function useTenant() {
 
         onSuccess: async (result) => {
             if (!result.success) {
-                toast.error(t("tenantUpdate"));
+                console.error("Workspace update failed:", result);
+                toast.error(result.message || t("tenantUpdate"));
                 return;
             }
 

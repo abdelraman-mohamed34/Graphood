@@ -14,7 +14,12 @@ import {
 import { z } from "zod";
 import { createAdminClient } from "@/shared/lib/supabase/admin";
 
-const tenantContextSchema = z.object({ tenantSlug: z.string().min(1).max(100), locale: z.enum(["ar", "en"]) }).strict();
+const tenantContextSchema = z
+    .object({
+        tenantSlug: z.string().trim().toLowerCase().min(1).max(100),
+        locale: z.enum(["ar", "en"]),
+    })
+    .strict();
 
 type UpdateTenantActionProps = {
     tenantSlug: string;
@@ -32,9 +37,11 @@ export async function updateTenantAction({
         const parsed = updateTenantSchema.safeParse(data);
 
         if (!parsed.success) {
+            console.error("Workspace update validation error:", parsed.error.flatten());
+
             return {
                 success: false,
-                message: "Invalid input.",
+                message: parsed.error.issues[0]?.message ?? "Invalid workspace settings.",
                 errors: parsed.error.flatten(),
             };
         }
@@ -84,13 +91,14 @@ export async function updateTenantAction({
             tenant: updatedTenant,
         };
     } catch (error) {
+        console.error("Workspace update action error:", {
+            tenantSlug,
+            error,
+        });
 
         return {
             success: false,
-            message:
-                error instanceof Error
-                    ? error.message
-                    : "Failed to update tenant.",
+            message: "Failed to update workspace. Please try again.",
         };
     }
 }
