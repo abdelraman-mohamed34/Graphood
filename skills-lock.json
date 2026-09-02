@@ -7,6 +7,12 @@
       "skillPath": "skills/accessibility/SKILL.md",
       "computedHash": "88c64dead9bb55925c7b983f5fd95cfecf30bd8c076fd384cdb17019d1becd87"
     },
+    "jest-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "jest-skill/SKILL.md",
+      "computedHash": "a91e7c7361388b3070c7d6a6ca829c30ce64dd19568e0bd0491ec0775446b987"
+    },
     "security-best-practices": {
       "source": "openai/skills",
       "sourceType": "github",
