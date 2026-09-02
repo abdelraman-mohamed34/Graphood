@@ -14,6 +14,16 @@ const redirectInputSchema = z.object({
     signature: z.string().trim().min(1).optional(),
 });
 
+type OrderSystemSummary = { name?: string | null };
+
+function getSystemName(systems: unknown) {
+    const summary = Array.isArray(systems)
+        ? systems[0] as OrderSystemSummary | undefined
+        : systems as OrderSystemSummary | null | undefined;
+
+    return summary?.name ?? "Graphood system";
+}
+
 export async function finalizeKashierRedirectAction(input: z.infer<typeof redirectInputSchema>) {
     const parsed = redirectInputSchema.safeParse(input);
     if (!parsed.success) return { success: false as const, error: "Invalid payment callback." };
@@ -52,7 +62,7 @@ export async function finalizeKashierRedirectAction(input: z.infer<typeof redire
             event: "PURCHASE_SUCCESS",
             locale: parsed.data.paymentStatus.toLowerCase() === "success" ? "en" : "en",
             payload: {
-                systemName: Array.isArray(order.systems) ? order.systems[0]?.name ?? "Graphood system" : order.systems?.name ?? "Graphood system",
+                systemName: getSystemName(order.systems),
                 orderId: order.id,
                 amount: `${order.amount} ${order.currency ?? "EGP"}`,
                 workspaceUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/en/${order.tenant_slug ?? "workspaces"}/dashboard/quickview`,
