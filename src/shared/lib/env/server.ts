@@ -14,6 +14,7 @@ const kashierCheckoutEnvSchema = z.object({
     KASHIER_API_KEY: nonEmptyString,
     KASHIER_SECRET_KEY: nonEmptyString,
     KASHIER_MODE: z.enum(["test", "live"]).default("test"),
+    KASHIER_API_URL: z.string().trim().url().optional(),
     NEXT_PUBLIC_APP_URL: z.string().trim().url().optional(),
     KASHIER_REDIRECT_URL: z.string().trim().url().optional(),
 });

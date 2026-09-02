@@ -67,9 +67,9 @@ async function resolveInternalOrderId(payload: z.infer<typeof payloadSchema>) {
 
 async function verifyKashierSession(sessionId: string) {
     const mode = process.env.KASHIER_MODE?.trim().toLowerCase() || "test";
-    const baseUrl = mode === "live"
+    const baseUrl = process.env.KASHIER_API_URL?.trim() || (mode === "live"
         ? "https://api.kashier.io/v3/payment/sessions"
-        : "https://test-api.kashier.io/v3/payment/sessions";
+        : "https://test-api.kashier.io/v3/payment/sessions");
     const secretKey = process.env.KASHIER_SECRET_KEY?.trim();
     const apiKey = process.env.KASHIER_API_KEY?.trim();
 

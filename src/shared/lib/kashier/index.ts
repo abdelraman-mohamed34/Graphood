@@ -1,3 +1,5 @@
+import { headers } from "next/headers";
+
 export class KashierError extends Error {
     constructor(message: string) { super(message); this.name = "KashierError"; }
 }
@@ -25,13 +27,29 @@ export async function createKashierCheckoutUrl({
     const secretKey = process.env.KASHIER_SECRET_KEY?.trim() ?? "";
     const apiKey = process.env.KASHIER_API_KEY?.trim() ?? "";
     const mode = process.env.KASHIER_MODE?.trim().toLowerCase() || "test";
-    const webhookUrl = process.env.KASHIER_WEBHOOK_URL?.trim() ?? "";
+    let webhookUrl = process.env.KASHIER_WEBHOOK_URL?.trim() ?? "";
 
     if (!merchantId || !secretKey || !apiKey || (mode !== "test" && mode !== "live")) {
         throw new KashierError("Kashier credentials or mode are invalid.");
     }
 
-    const redirectBase = (process.env.KASHIER_REDIRECT_URL || process.env.NEXT_PUBLIC_APP_URL || "").trim();
+    const configuredRedirectBase = (process.env.KASHIER_REDIRECT_URL || process.env.NEXT_PUBLIC_APP_URL || "").trim();
+    let redirectBase = configuredRedirectBase;
+
+    // In development, provider redirects must return to the host that invoked
+    // the action. A production URL in .env.local otherwise creates a valid
+    // session that sends the browser to the wrong application instance.
+    if (process.env.NODE_ENV !== "production") {
+        const requestHeaders = await headers();
+        const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
+        const protocol = requestHeaders.get("x-forwarded-proto") ?? "http";
+        if (host) {
+            const requestOrigin = `${protocol}://${host}`;
+            redirectBase = requestOrigin;
+            webhookUrl = `${requestOrigin}/api/webhooks/kashier`;
+        }
+    }
+
     if (!redirectBase) throw new KashierError("Kashier redirect URL is missing.");
 
     let siteUrl: URL;
@@ -49,16 +67,20 @@ export async function createKashierCheckoutUrl({
         throw new KashierError("Invalid Kashier amount or currency.");
     }
 
-    const baseUrl = mode === "live"
+    const baseUrl = process.env.KASHIER_API_URL?.trim() || (mode === "live"
         ? "https://api.kashier.io/v3/payment/sessions"
-        : "https://test-api.kashier.io/v3/payment/sessions";
+        : "https://test-api.kashier.io/v3/payment/sessions");
 
     const cleanOrigin = siteUrl.origin.replace(/\/+$/, "");
 
     if (webhookUrl) {
         let webhook: URL;
         try { webhook = new URL(webhookUrl); } catch { throw new KashierError("Kashier webhook URL is invalid."); }
-        if (webhook.protocol !== "https:") throw new KashierError("Kashier webhook URL must use HTTPS.");
+        const isLocalDevelopmentWebhook = process.env.NODE_ENV !== "production"
+            && ["localhost", "127.0.0.1"].includes(webhook.hostname);
+        if (webhook.protocol !== "https:" && !isLocalDevelopmentWebhook) {
+            throw new KashierError("Kashier webhook URL must use HTTPS.");
+        }
     }
 
     const payload = {
@@ -105,12 +127,12 @@ export async function createKashierCheckoutUrl({
         try {
             data = JSON.parse(responseText) as Record<string, unknown>;
         } catch {
-            console.error("Kashier non-JSON response:", { status: response.status, statusText: response.statusText, contentType, body: responseText.slice(0, 500) });
+            console.error("Kashier non-JSON response:", { requestUrl: baseUrl, status: response.status, statusText: response.statusText, contentType, body: responseText.slice(0, 500) });
             throw new KashierError(`Kashier returned a non-JSON response (HTTP ${response.status}): ${responseText.slice(0, 300)}`);
         }
 
         if (!response.ok) {
-            console.error("Kashier API error response:", { status: response.status, statusText: response.statusText, contentType, body: responseText.slice(0, 500) });
+            console.error("Kashier API error response:", { requestUrl: baseUrl, status: response.status, statusText: response.statusText, contentType, body: responseText.slice(0, 500) });
             const errorMsg = typeof data.error === "object" && data.error !== null && "message" in data.error
                 ? String((data.error as { message?: unknown }).message)
                 : typeof data.message === "string" ? data.message : JSON.stringify(data);
