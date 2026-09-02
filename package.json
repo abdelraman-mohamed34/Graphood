@@ -1,6 +1,6 @@
 {
-  "name": "online-platform",
-  "version": "0.1.0",
+  "name": "graphood",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
