@@ -10,6 +10,12 @@ export async function getWhatByFrom<T = unknown>(
     value2?: string,
     by2?: string,
 ): Promise<T | null> {
+    const allowedTables = new Set(["tenants", "profiles"]);
+    const allowedColumns = new Set(["id", "slug", "name", "first_name", "last_name", "email"]);
+    const selectedColumns = what.split(",").map((column) => column.trim());
+    if (!allowedTables.has(from) || selectedColumns.some((column) => !allowedColumns.has(column)) || !allowedColumns.has(by) || (by2 && !allowedColumns.has(by2))) {
+        throw new Error("Unsupported lookup target");
+    }
     let query = supabase
         .from(from)
         .select(what)

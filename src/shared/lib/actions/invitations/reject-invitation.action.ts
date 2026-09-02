@@ -32,14 +32,7 @@ export async function rejectInvitationAction(token: string, tenant: string) {
             return { success: false, message: 'Invalid invitation link.' }
         }
 
-        const { error } = await updateInvitationByToken(supabase, tokenHash, 'REJECTED')
-
-        if (error) {
-            return {
-                success: false,
-                message: 'Could not reject the invitation.'
-            }
-        }
+        await updateInvitationByToken(supabase, tokenHash, 'REJECTED')
 
         revalidatePath(`/invitations/accept`)
 

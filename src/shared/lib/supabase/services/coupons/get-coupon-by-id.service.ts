@@ -16,9 +16,7 @@ export async function getCouponById({
         .maybeSingle();
 
     if (error) {
-        throw new Error(
-            `Failed to fetch coupon: ${error.message}`
-        );
+        throw new Error("coupons.fetchFailed", { cause: error });
     }
 
     return data;

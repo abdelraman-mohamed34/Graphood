@@ -48,7 +48,7 @@ export async function updateTenantAction({
 
         const { user, supabase } = await requireUser(context.locale);
 
-        const tenant = await getTenantBySlug(context.tenantSlug);
+        const tenant = await getTenantBySlug(supabase, context.tenantSlug);
 
         if (!tenant) {
             return {

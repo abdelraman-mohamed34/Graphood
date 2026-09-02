@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Ban, CalendarClock, FlaskConical, Mail, ReceiptText, ShieldCheck } from "lucide-react";
+import { isAppLocale, publicMetadata } from "@/shared/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
     const { locale } = await params;
+    if (!isAppLocale(locale)) return {};
     const t = await getTranslations({ locale, namespace: "refundPolicy" });
-    return { title: t("title"), description: t("oneTimePurchase") };
+    return publicMetadata({ locale, path: "/refund-policy", title: t("title"), description: t("subtitle") });
 }
 
 export default async function RefundPolicyPage({ params }: { params: Promise<{ locale: string }> }) {

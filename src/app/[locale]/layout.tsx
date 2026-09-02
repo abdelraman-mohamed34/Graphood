@@ -15,12 +15,18 @@ import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.s
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { fetchProfile } from "@/shared/lib/supabase/services/profile";
 import type { MembershipWithTenant } from "@/shared/lib/supabase/services/auth/membership/get-memberships-by-profile-id.service";
+import { isAppLocale, localizedAlternates, SITE_NAME } from "@/shared/lib/seo";
 
 export async function generateMetadata({ params }: Pick<LocaleLayoutProps, "params">): Promise<Metadata> {
     const { locale } = await params;
-    if (!locales.includes(locale)) return {};
+    if (!locales.includes(locale) || !isAppLocale(locale)) return {};
     const t = await getTranslations({ locale, namespace: "seo.site" });
-    return { title: { default: t("title"), template: `%s | ${t("name")}` }, description: t("description") };
+    return {
+        title: { default: t("title"), template: `%s | ${t("name") || SITE_NAME}` },
+        description: t("description"),
+        alternates: localizedAlternates(locale),
+        openGraph: { title: t("title"), description: t("description"), url: localizedAlternates(locale)?.canonical, locale: locale === "ar" ? "ar_EG" : "en_US" },
+    };
 }
 
 interface LocaleLayoutProps {

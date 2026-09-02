@@ -33,7 +33,7 @@ create or replace function public.record_payment_webhook_event(
   p_status text,
   p_payload jsonb
 ) returns table(event_id uuid, is_duplicate boolean, processed_at timestamptz)
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = '' as $$
 declare v_event public.payment_webhook_events%rowtype;
 begin
   if nullif(trim(p_event_key), '') is null then raise exception 'webhook event key is required'; end if;
@@ -48,14 +48,14 @@ begin
 end; $$;
 
 create or replace function public.mark_payment_webhook_event_processed(p_event_id uuid)
-returns void language sql security definer set search_path = public as $$
+returns void language sql security definer set search_path = '' as $$
   update public.payment_webhook_events
   set processed_at = coalesce(processed_at, now()), error = null, updated_at = now()
   where id = p_event_id;
 $$;
 
 create or replace function public.mark_payment_webhook_event_failed(p_event_id uuid, p_error text)
-returns void language sql security definer set search_path = public as $$
+returns void language sql security definer set search_path = '' as $$
   update public.payment_webhook_events
   set error = left(coalesce(p_error, 'Unknown webhook processing error'), 2000), updated_at = now()
   where id = p_event_id;
@@ -63,7 +63,7 @@ $$;
 
 create or replace function public.process_kashier_payment_atomic(
   p_order_id uuid, p_transaction_ref text, p_amount numeric, p_currency text, p_status text
-) returns jsonb language plpgsql security definer set search_path = public as $$
+) returns jsonb language plpgsql security definer set search_path = '' as $$
 declare v_status text := upper(trim(p_status)); v_payment_status public.payment_status; v_order_status public.order_status; v_payment_id uuid;
 begin
   perform 1 from public.orders where id = p_order_id for update;
@@ -83,7 +83,7 @@ end; $$;
 
 create or replace function public.provision_paid_order_atomic(p_order_id uuid, p_webhook_event_id uuid default null)
 returns table(subscription_id uuid, tenant_id uuid, membership_id uuid, is_existing boolean)
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = '' as $$
 declare v_order public.orders%rowtype; v_email text; v_subscription_id uuid; v_tenant_id uuid; v_membership_id uuid; v_existing boolean := true; v_now timestamptz := now();
 begin
   select * into v_order from public.orders where id = p_order_id for update;

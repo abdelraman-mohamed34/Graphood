@@ -14,9 +14,7 @@ export async function deleteCoupon({
         .delete()
         .eq("id", couponId);
 
-    if (error) {
-        throw error;
-    }
+    if (error) throw new Error("coupons.deleteFailed", { cause: error });
 
     return true;
 }

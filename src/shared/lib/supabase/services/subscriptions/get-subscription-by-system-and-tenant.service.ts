@@ -1,10 +1,9 @@
-import { createAdminClient } from "../../admin";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export async function getSubscriptionById(
+    supabase: SupabaseClient,
     subscriptionId: string
 ) {
-    const supabase = await createAdminClient();
-
     const { data, error } = await supabase
         .from("subscriptions")
         .select("id, plan_name, license_type, billing_interval, status, end_date")

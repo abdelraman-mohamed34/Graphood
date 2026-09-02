@@ -38,19 +38,14 @@ export async function getOrderAction(
 
     const order = await getOrderById({
         orderId: parsed.data.orderId,
+        supabase,
+        profileId: user.id,
     });
 
     if (!order) {
         return {
             success: false,
             error: "Order not found.",
-        };
-    }
-
-    if (order.profile_id !== user.id) {
-        return {
-            success: false,
-            error: "Unauthorized",
         };
     }
 

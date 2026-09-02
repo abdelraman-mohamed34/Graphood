@@ -48,6 +48,7 @@ type PublicMetadataInput = {
 export function publicMetadata({ locale, path = "", title, description, image, type = "website" }: PublicMetadataInput): Metadata {
     const url = absoluteUrl(locale, path);
     const socialImage = image || DEFAULT_OG_IMAGE;
+    const socialImageUrl = socialImage.startsWith("http") ? socialImage : `${SITE_URL}${socialImage.startsWith("/") ? socialImage : `/${socialImage}`}`;
     return {
         title,
         description,
@@ -71,9 +72,9 @@ export function publicMetadata({ locale, path = "", title, description, image, t
             locale: locale === "ar" ? "ar_EG" : "en_US",
             alternateLocale: locale === "ar" ? ["en_US"] : ["ar_EG"],
             type,
-            images: [{ url: socialImage, width: 1200, height: 630, alt: title }],
+            images: [{ url: socialImageUrl, width: 1200, height: 630, alt: title }],
         },
-        twitter: { card: "summary_large_image", title, description, images: [socialImage] },
+        twitter: { card: "summary_large_image", title, description, images: [socialImageUrl] },
     };
 }
 

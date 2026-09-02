@@ -1,15 +1,17 @@
 // src/shared/lib/supabase/services/billing/get-order-by-id.service.ts
 
-import { createAdminClient } from "../../admin";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export async function getOrderById({
     orderId,
+    supabase,
+    profileId,
 }: {
     orderId: string;
+    supabase: SupabaseClient;
+    profileId: string;
 }) {
-    const supabase = createAdminClient();
-
-    const { data, error } = await supabase
+    let query = supabase
         .from("orders")
         .select(`
         id,
@@ -31,8 +33,11 @@ export async function getOrderById({
             icon_url
         )
     `)
-        .eq("id", orderId)
-        .maybeSingle();
+        .eq("id", orderId);
+
+    query = query.eq("profile_id", profileId);
+
+    const { data, error } = await query.maybeSingle();
 
     if (error) {
         throw error;

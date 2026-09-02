@@ -112,14 +112,11 @@ export async function acceptInvitationAction(
             };
         }
 
-        const { error: updateError } = await updateInvitationByToken(
+        await updateInvitationByToken(
             supabaseAdmin,
             tokenHash,
             "ACCEPTED"
         );
-
-        if (updateError) {
-        }
 
         revalidatePath("/invitations/accept");
 

@@ -44,5 +44,15 @@ export const createAuditLogSchema = auditLogSchema.omit({
     created_at: true,
 });
 
+// Server actions must derive attribution from the authenticated request.
+export const createClientAuditLogSchema = createAuditLogSchema
+    .omit({
+        actor_id: true,
+        tenant_id: true,
+        ip_address: true,
+    })
+    .strict();
+
 export type AuditLog = z.infer<typeof auditLogSchema>;
 export type CreateAuditLogInput = z.infer<typeof createAuditLogSchema>;
+export type CreateClientAuditLogInput = z.infer<typeof createClientAuditLogSchema>;

@@ -64,10 +64,17 @@ export default async function SystemDetailsLayout({
             .filter((entry): entry is [string, number] => typeof entry[1] === 'number')
             .map(([name, price]) => ({ "@type": "Offer", name, price, priceCurrency: system.currency || 'EGP', url: absoluteUrl(appLocale, `/marketplace/systems/${system_id}`) })),
     } : null;
+    const breadcrumbSchema = system?.is_public ? {
+        "@context": "https://schema.org", "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: locale === "ar" ? "السوق" : "Marketplace", item: absoluteUrl(appLocale, "/marketplace") },
+            { "@type": "ListItem", position: 2, name: system.name, item: absoluteUrl(appLocale, `/marketplace/systems/${system_id}`) },
+        ],
+    } : null;
 
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
-            {productSchema ? <JsonLd data={productSchema} /> : null}
+            {productSchema ? <JsonLd data={breadcrumbSchema ? [productSchema, breadcrumbSchema] : productSchema} /> : null}
             <Dir unroutableSegments={["systems"]} />
             {children}
         </HydrationBoundary>

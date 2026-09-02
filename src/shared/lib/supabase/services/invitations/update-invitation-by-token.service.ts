@@ -15,16 +15,11 @@ export async function updateInvitationByToken(
         .eq('token', token)
         .select("id, status");
 
-    if (error) {
-        return { data: null, error };
-    }
+    if (error) throw new Error("invitations.updateFailed", { cause: error });
 
     if (!data || data.length === 0) {
-        return {
-            data: null,
-            error: new Error(`No invitation found with the provided token.`)
-        };
+        throw new Error("invitations.notFound");
     }
 
-    return { data: data[0], error: null };
+    return data[0];
 }

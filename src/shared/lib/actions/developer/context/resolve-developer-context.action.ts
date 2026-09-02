@@ -3,6 +3,7 @@ import { getTenantBySlug } from "@/shared/lib/supabase/services/tenants/get-tena
 import { getSubscriptionById } from "@/shared/lib/supabase/services/subscriptions";
 import { requireSubscription } from "@/shared/lib/auth/requires/require-subscription";
 import { DeveloperApiErrorCodes } from "@/shared/lib/api/developer/errors";
+import { createAdminClient } from "@/shared/lib/supabase/admin";
 
 interface ResolveDeveloperContextInput {
     apiKey: string;
@@ -26,9 +27,10 @@ export async function resolveDeveloperContextAction(
         );
     }
 
+    const admin = createAdminClient();
     const [apiKeyContext, tenant] = await Promise.all([
         verifyApiKeyAction(apiKey),
-        getTenantBySlug(tenantSlug),
+        getTenantBySlug(admin, tenantSlug),
     ]);
 
     if (!tenant) {
@@ -49,7 +51,7 @@ export async function resolveDeveloperContextAction(
         );
     }
 
-    const subscription = await getSubscriptionById(tenant.subscription_id);
+    const subscription = await getSubscriptionById(admin, tenant.subscription_id);
 
     if (!subscription) {
         throw new Error(

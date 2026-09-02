@@ -40,7 +40,7 @@ export async function createAuditLog(supabase: SupabaseClient, payload: CreateAu
 
     if (error) {
         console.error("Audit Log Creation Error:", error.message);
-        return null;
+        throw new Error("auditLogs.createFailed", { cause: error });
     }
 
     return data;

@@ -26,8 +26,12 @@ export async function finalizeKashierRedirectAction(input: z.infer<typeof redire
     const user = await fetchUser(supabase);
     if (!user) return { success: false as const, error: "Unauthorized." };
 
-    const order = await getOrderById({ orderId: parsed.data.orderId });
-    if (!order || order.profile_id !== user.id) {
+    const order = await getOrderById({
+        orderId: parsed.data.orderId,
+        supabase,
+        profileId: user.id,
+    });
+    if (!order) {
         return { success: false as const, error: "Order not found." };
     }
 

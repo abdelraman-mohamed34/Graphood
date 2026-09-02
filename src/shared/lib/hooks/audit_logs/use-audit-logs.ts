@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CreateAuditLogInput } from "../../schemas";
+import { CreateClientAuditLogInput } from "../../schemas";
 import { createAuditLogAction } from "../../actions/audit-logs/create-audit-log.action";
 import { getAuditLogsAction } from "../../actions/audit-logs/get-audit-logs.action";
 
@@ -55,7 +55,7 @@ export function useAuditLogs({
     });
 
     const createLogMutation = useMutation({
-        mutationFn: async (input: CreateAuditLogInput) => {
+        mutationFn: async (input: CreateClientAuditLogInput) => {
             const res = await createAuditLogAction(input, locale);
             if (!res.success) throw new Error(res.error);
             return res.log;

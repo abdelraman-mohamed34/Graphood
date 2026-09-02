@@ -21,10 +21,10 @@ export async function createAuditLogAction(
             tenant_id: null,
         });
 
+        if (!log) return { success: false, error: "auditLogs.createFailed" };
         return { success: true, log };
     } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : "Failed to create audit log";
-        console.error("Error in createAuditLogAction:", message);
-        return { success: false, error: message };
+        console.error("Error in createAuditLogAction:", error);
+        return { success: false, error: "auditLogs.createFailed" };
     }
 }

@@ -43,13 +43,11 @@ export default async function CheckoutLayout({
 
     const order = await getOrderById({
         orderId: order_id,
+        supabase,
+        profileId: user.id,
     });
 
     if (!order) {
-        notFound();
-    }
-
-    if (order.profile_id !== user.id) {
         notFound();
     }
 

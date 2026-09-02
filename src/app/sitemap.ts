@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { SITE_URL, SUPPORTED_LOCALES } from "@/shared/lib/seo";
 
-const staticRoutes = ["", "/about", "/faq", "/marketplace"] as const;
+const staticRoutes = ["", "/about", "/faq", "/contact", "/refund-policy", "/marketplace"] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const now = new Date();

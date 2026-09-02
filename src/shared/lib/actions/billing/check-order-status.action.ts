@@ -55,9 +55,13 @@ export async function checkOrderStatusAction(
             return { success: false, isPaid: false, error: "Unauthorized." };
         }
 
-        const order = await getOrderById({ orderId: parsed.data.orderId });
+        const order = await getOrderById({
+            orderId: parsed.data.orderId,
+            supabase,
+            profileId: user.id,
+        });
 
-        if (!order || order.profile_id !== user.id) {
+        if (!order) {
             return { success: false, isPaid: false, error: "Order not found." };
         }
 

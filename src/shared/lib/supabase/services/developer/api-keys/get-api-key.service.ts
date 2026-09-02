@@ -11,7 +11,7 @@ export async function getApiKey(
         .from("developer_api_keys")
         .select("id, system_id, name, is_active, expires_at")
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
     if (error) {
         throw error;
