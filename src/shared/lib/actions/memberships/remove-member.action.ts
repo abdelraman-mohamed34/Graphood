@@ -51,7 +51,10 @@ export async function removeMemberAction(
 
         await removeMemberFromTenant(
             supabase,
-            input.membershipId
+            {
+                membershipId: input.membershipId,
+                tenantId: currentMembership.tenant_id,
+            },
         );
 
         return {

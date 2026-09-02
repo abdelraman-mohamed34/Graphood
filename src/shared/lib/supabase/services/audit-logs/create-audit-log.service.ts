@@ -27,6 +27,7 @@ export async function createAuditLog(supabase: SupabaseClient, payload: CreateAu
         .insert([
             {
                 actor_id: actorId,
+                tenant_id: payload.tenant_id ?? null,
                 action: payload.action,
                 entity_type: payload.entity_type,
                 entity_id: payload.entity_id,

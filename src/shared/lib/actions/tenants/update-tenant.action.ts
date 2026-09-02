@@ -76,12 +76,24 @@ export async function updateTenantAction({
             };
         }
 
+        if (tenant.id !== membership.tenant_id) {
+            console.error("Workspace update tenant scope mismatch:", {
+                tenantId: tenant.id,
+                membershipTenantId: membership.tenant_id,
+            });
+
+            return {
+                success: false,
+                message: "Unauthorized.",
+            };
+        }
+
         const updatedTenant = await updateTenantService({
             // Membership and permission checks above authorize this change;
             // perform the final write with the service client to avoid RLS
             // blocking an otherwise authorized workspace update.
             supabase: createAdminClient(),
-            tenantId: tenant.id,
+            tenantId: membership.tenant_id,
             data: parsed.data,
         });
 

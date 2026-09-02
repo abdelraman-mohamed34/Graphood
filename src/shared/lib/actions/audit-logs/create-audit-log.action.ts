@@ -1,17 +1,24 @@
 "use server";
 
-import { CreateAuditLogInput, createAuditLogSchema } from "../../schemas";
+import {
+    CreateClientAuditLogInput,
+    createClientAuditLogSchema,
+} from "../../schemas";
 import { createAuditLog } from "@/shared/lib/supabase/services/audit-logs";
 import { requireUser } from "../../auth/requires/require-user";
 
-export async function createAuditLogAction(input: CreateAuditLogInput, locale: string) {
+export async function createAuditLogAction(
+    input: CreateClientAuditLogInput,
+    locale: string,
+) {
     try {
         const { user, supabase } = await requireUser(locale);
-        const validatedData = createAuditLogSchema.parse(input);
+        const validatedData = createClientAuditLogSchema.parse(input);
 
         const log = await createAuditLog(supabase, {
             ...validatedData,
-            actor_id: validatedData.actor_id || user.id,
+            actor_id: user.id,
+            tenant_id: null,
         });
 
         return { success: true, log };

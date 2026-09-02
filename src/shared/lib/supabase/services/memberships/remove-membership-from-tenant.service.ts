@@ -1,9 +1,14 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { hasPermission } from "@/shared/lib/auth/requires/require-permission";
 
+type RemoveMemberFromTenantInput = {
+    membershipId: string;
+    tenantId: string;
+};
+
 export async function removeMemberFromTenant(
     supabase: SupabaseClient,
-    membershipId: string
+    { membershipId, tenantId }: RemoveMemberFromTenantInput,
 ) {
     const {
         data: {
@@ -20,6 +25,7 @@ export async function removeMemberFromTenant(
         .from("memberships")
         .select("id, profile_id, tenant_id, role, permissions")
         .eq("id", membershipId)
+        .eq("tenant_id", tenantId)
         .single();
 
     if (targetError || !targetMembership) {
@@ -42,9 +48,10 @@ export async function removeMemberFromTenant(
             throw new Error("No tenant membership found");
         }
 
-        const canRemoveOthers =
-            currentMembership.role === "OWNER" &&
-            hasPermission(currentMembership, "members.remove");
+        const canRemoveOthers = hasPermission(
+            currentMembership,
+            "members.remove",
+        );
 
         if (!canRemoveOthers) {
             throw new Error("You don't have permission to remove members");
@@ -54,7 +61,8 @@ export async function removeMemberFromTenant(
     const { error } = await supabase
         .from("memberships")
         .delete()
-        .eq("id", membershipId);
+        .eq("id", membershipId)
+        .eq("tenant_id", tenantId);
 
     if (error) throw error;
 
