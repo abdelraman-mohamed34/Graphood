@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     applicationName: SITE_NAME,
     manifest: "/manifest.webmanifest",
     icons: {
-        icon: [{ url: "/favicon.ico", sizes: "any" }, { url: "/icon.svg", type: "image/svg+xml" }],
+        icon: [{ url: "/favicon.ico", sizes: "any" }, { url: "/icon.png", type: "image/png" }],
         apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
     },
     robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
@@ -52,7 +52,7 @@ export default async function RootLayout({
             <head>
                 <link rel="preconnect" href="https://fvmfqtplyzfxuhiqgklm.supabase.co" crossOrigin="anonymous" />
                 <link rel="dns-prefetch" href="https://fvmfqtplyzfxuhiqgklm.supabase.co" />
-                <link rel="preload" href="/icon.svg" as="image" type="image/svg+xml" />
+                <link rel="preload" href="/icon.png" as="image" type="image/png" />
             </head>
             <body className="antialiased font-sans">
                 {children}

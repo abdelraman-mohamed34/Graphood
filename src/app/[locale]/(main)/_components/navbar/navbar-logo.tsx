@@ -2,6 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { Boxes } from "lucide-react";
+import Image from "next/image";
 
 export default function NavbarLogo() {
     return (
@@ -10,9 +11,13 @@ export default function NavbarLogo() {
             className="flex shrink-0 items-center gap-2 whitespace-nowrap md:gap-2.5"
             aria-label="Graphood"
         >
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-sm bg-primary text-primary-foreground md:size-9">
-                <Boxes className="size-4 md:size-5" aria-hidden="true" />
-            </span>
+            <Image
+                src="/logo-oklch-0.25-0.05.png"
+                alt="Graphood Logo"
+                width={30}
+                height={30}
+                className="size-full object-contain"
+            />
 
             <span className="whitespace-nowrap text-base font-bold leading-none text-maroon sm:text-lg">
                 Graphood

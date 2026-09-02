@@ -50,7 +50,7 @@ export function FooterBrand({ description }: FooterBrandProps) {
     return (
         <div className="space-y-5">
             <Link href="/" className="inline-flex items-center gap-3" aria-label="Graphood home">
-                <Image src="/icon.svg" alt="" width={40} height={40} className="size-10 rounded-lg" />
+                <Image src="/icon.png" alt="" width={40} height={40} className="size-6 object-cover" />
                 <span className="text-xl font-bold tracking-tight text-white">Graphood</span>
             </Link>
 

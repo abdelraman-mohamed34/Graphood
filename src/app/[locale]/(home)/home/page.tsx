@@ -25,7 +25,7 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
   return (
     <main className="min-h-screen">
       <JsonLd data={[
-        { "@context": "https://schema.org", "@type": "Organization", name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/icon.svg` },
+        { "@context": "https://schema.org", "@type": "Organization", name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/icon.png` },
         { "@context": "https://schema.org", "@type": "WebSite", name: SITE_NAME, url: absoluteUrl(locale), inLanguage: locale },
         { "@context": "https://schema.org", "@type": "SoftwareApplication", name: SITE_NAME, applicationCategory: "BusinessApplication", operatingSystem: "Web", description: t("description"), url: absoluteUrl(locale), offers: { "@type": "Offer", price: "0", priceCurrency: "EGP" } },
       ]} />

@@ -31,7 +31,7 @@ export function WorkspaceCard({
             <Card className="group overflow-hidden pt-0 transition-all duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-xl">
                 <div className="relative aspect-video overflow-hidden">
                     <Image
-                        src={image || "/logo.svg"}
+                        src={image || "/icon.png"}
                         alt={title}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
