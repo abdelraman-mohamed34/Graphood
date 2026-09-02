@@ -5,7 +5,6 @@ import { z } from "zod";
 import { fetchUser } from "@/shared/lib/supabase/services/auth/user/fetch-user.service";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { getOrderById, provisionOrder } from "@/shared/lib/supabase/services/billing";
-import { sendSystemEmail } from "@/shared/lib/email/send-system-email";
 
 const redirectInputSchema = z.object({
     orderId: z.string().uuid(),
@@ -13,16 +12,6 @@ const redirectInputSchema = z.object({
     merchantOrderId: z.string().trim().min(1).optional(),
     signature: z.string().trim().min(1).optional(),
 });
-
-type OrderSystemSummary = { name?: string | null };
-
-function getSystemName(systems: unknown) {
-    const summary = Array.isArray(systems)
-        ? systems[0] as OrderSystemSummary | undefined
-        : systems as OrderSystemSummary | null | undefined;
-
-    return summary?.name ?? "Graphood system";
-}
 
 export async function finalizeKashierRedirectAction(input: z.infer<typeof redirectInputSchema>) {
     const parsed = redirectInputSchema.safeParse(input);
@@ -56,19 +45,6 @@ export async function finalizeKashierRedirectAction(input: z.infer<typeof redire
     }
 
     const provisioned = await provisionOrder({ orderId: order.id });
-    if (user.email) {
-        void sendSystemEmail({
-            to: user.email,
-            event: "PURCHASE_SUCCESS",
-            locale: parsed.data.paymentStatus.toLowerCase() === "success" ? "en" : "en",
-            payload: {
-                systemName: getSystemName(order.systems),
-                orderId: order.id,
-                amount: `${order.amount} ${order.currency ?? "EGP"}`,
-                workspaceUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/en/${order.tenant_slug ?? "workspaces"}/dashboard/quickview`,
-            },
-        }).catch((error) => console.error("Purchase confirmation email dispatch failed:", error));
-    }
     return {
         success: true as const,
         processed: true as const,

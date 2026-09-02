@@ -72,17 +72,24 @@ function buildTemplate<T extends EmailEventType>(event: T, payload: EventPayload
 export async function sendSystemEmail<T extends EmailEventType>({ to, event, payload, locale = "en" }: SendSystemEmailArgs<T>) {
     const apiKey = getResendApiKey(`${event} email`);
     if (!apiKey) return { success: false as const, error: new Error("RESEND_API_KEY is missing") };
+    const recipient = to.trim();
+    if (!recipient || !/^\S+@\S+\.\S+$/.test(recipient)) {
+        const error = new Error("A valid recipient email address is required");
+        console.error("System email skipped: invalid recipient", { event });
+        return { success: false as const, error };
+    }
     const template = buildTemplate(event, payload, locale);
-    const delivery = getResendDeliveryConfig(to);
+    const delivery = getResendDeliveryConfig(recipient);
     try {
         const result = await new Resend(apiKey).emails.send({ from: delivery.from, to: delivery.to, subject: template.subject, html: GraphoodEmailLayout({ locale, template }), text: `${template.title}\n\n${template.body.replace(/<[^>]+>/g, "")}` });
         if (result.error) {
-            console.error("System Email Resend Error:", result.error);
+            console.error("System email delivery rejected by Resend", { event, recipient: delivery.to, sender: delivery.from, error: result.error });
             return { success: false as const, error: result.error };
         }
+        console.info("System email accepted by Resend", { event, recipient: delivery.to, sender: delivery.from, emailId: result.data?.id });
         return { success: true as const, data: result.data };
     } catch (error) {
-        console.error("System Email Resend Error:", error);
+        console.error("System email delivery request failed", { event, recipient: delivery.to, sender: delivery.from, error });
         return { success: false as const, error: error instanceof Error ? error : new Error("Email delivery failed") };
     }
 }

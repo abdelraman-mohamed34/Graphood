@@ -1,9 +1,9 @@
 import { createHash } from "node:crypto";
-import { NextResponse } from "next/server";
 import { z } from "zod";
 import { processKashierPayment, provisionOrder, refreshSubscriptionPeriodForOrder, type KashierPaymentStatus } from "@/shared/lib/supabase/services/billing";
 import { createAdminClient } from "@/shared/lib/supabase/admin";
 import type { Json } from "@/shared/types/database.types";
+import { sendSystemEmail } from "@/shared/lib/email/send-system-email";
 
 export const runtime = "nodejs";
 
@@ -175,6 +175,61 @@ async function markWebhookEventFailed(eventId: string, error: unknown) {
     }
 }
 
+async function sendPurchaseConfirmationEmail(orderId: string, tenantId: string, requestUrl: string) {
+    try {
+        const admin = createAdminClient();
+        const { data: order, error: orderError } = await admin
+            .from("orders")
+            .select("id, profile_id, system_id, amount, currency")
+            .eq("id", orderId)
+            .maybeSingle();
+        if (orderError) throw orderError;
+        if (!order) {
+            console.error("Purchase confirmation skipped: order was not found", { orderId, tenantId });
+            return;
+        }
+
+        const [profileResult, systemResult, tenantResult] = await Promise.all([
+            admin.from("profiles").select("email").eq("id", order.profile_id).maybeSingle(),
+            admin.from("systems").select("name").eq("id", order.system_id).maybeSingle(),
+            admin.from("tenants").select("slug").eq("id", tenantId).maybeSingle(),
+        ]);
+        if (profileResult.error) throw profileResult.error;
+        if (systemResult.error) throw systemResult.error;
+        if (tenantResult.error) throw tenantResult.error;
+        const recipient = profileResult.data?.email?.trim();
+        if (!recipient) {
+            console.error("Purchase confirmation skipped: customer has no email address", { orderId, tenantId });
+            return;
+        }
+
+        const configuredBase = process.env.NEXT_PUBLIC_APP_URL?.trim();
+        let appOrigin: string;
+        try {
+            appOrigin = new URL(configuredBase || requestUrl).origin;
+        } catch {
+            appOrigin = new URL(requestUrl).origin;
+            console.warn("Invalid NEXT_PUBLIC_APP_URL; using webhook request origin for purchase email", { orderId });
+        }
+        const result = await sendSystemEmail({
+            to: recipient,
+            event: "PURCHASE_SUCCESS",
+            locale: "en",
+            payload: {
+                systemName: systemResult.data?.name ?? "Graphood system",
+                orderId: order.id,
+                amount: `${order.amount} ${order.currency ?? "EGP"}`,
+                workspaceUrl: `${appOrigin}/en/${tenantResult.data?.slug ?? "workspaces"}/dashboard/quickview`,
+            },
+        });
+        if (!result.success) {
+            console.error("Purchase confirmation email failed after successful payment", { orderId, tenantId, error: result.error });
+        }
+    } catch (error) {
+        console.error("Purchase confirmation email preparation failed", { orderId, tenantId, error });
+    }
+}
+
 export async function POST(request: Request) {
     // Read the untouched request bytes before any JSON parsing. Kashier signs
     // this exact body representation.
@@ -276,8 +331,9 @@ export async function POST(request: Request) {
                 profileId: extractedProfileId,
                 systemId: extractedSystemId,
             });
-            await provisionOrder({ orderId, webhookEventId });
+            const provisioned = await provisionOrder({ orderId, webhookEventId });
             await refreshSubscriptionPeriodForOrder(orderId);
+            await sendPurchaseConfirmationEmail(orderId, provisioned.tenant.id, request.url);
         }
 
         if (!isSuccess) {
