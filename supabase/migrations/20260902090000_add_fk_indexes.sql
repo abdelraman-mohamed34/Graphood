@@ -1,0 +1,22 @@
+-- Index foreign-key columns used by tenant isolation, joins, and service lookups.
+create index if not exists audit_logs_tenant_id_idx on public.audit_logs (tenant_id);
+create index if not exists audit_logs_actor_id_idx on public.audit_logs (actor_id);
+create index if not exists invitations_tenant_id_idx on public.invitations (tenant_id);
+create index if not exists invitations_invited_by_idx on public.invitations (invited_by);
+create index if not exists memberships_tenant_id_idx on public.memberships (tenant_id);
+create index if not exists orders_profile_id_idx on public.orders (profile_id);
+create index if not exists orders_system_id_idx on public.orders (system_id);
+create index if not exists orders_coupon_id_idx on public.orders (coupon_id) where coupon_id is not null;
+create index if not exists orders_subscription_id_idx on public.orders (subscription_id) where subscription_id is not null;
+create index if not exists subscriptions_profile_id_idx on public.subscriptions (profile_id);
+create index if not exists subscriptions_system_id_idx on public.subscriptions (system_id);
+create index if not exists tenants_owner_id_idx on public.tenants (owner_id);
+create index if not exists tenants_system_id_idx on public.tenants (system_id);
+create index if not exists developer_api_keys_system_id_idx on public.developer_api_keys (system_id);
+create index if not exists coupons_system_id_idx on public.coupons (system_id);
+create index if not exists coupons_created_by_idx on public.coupons (created_by);
+create index if not exists coupon_usages_coupon_id_idx on public.coupon_usages (coupon_id);
+create index if not exists coupon_usages_order_id_idx on public.coupon_usages (order_id);
+create index if not exists coupon_usages_profile_id_idx on public.coupon_usages (profile_id);
+create index if not exists coupon_usages_system_id_idx on public.coupon_usages (system_id);
+create index if not exists payment_webhook_events_order_id_idx on public.payment_webhook_events (order_id) where order_id is not null;
