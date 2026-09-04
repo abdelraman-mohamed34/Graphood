@@ -31,14 +31,33 @@ const PLATFORM_HOSTS = new Set([
   "127.0.0.1",
 ]);
 
-function tenantSlugFromHost(hostHeader: string | null) {
-  const host = (hostHeader ?? "").split(":")[0].toLowerCase().replace(/\.$/, "");
+const TENANT_SLUG_PATTERN = /^[a-z0-9-]+$/;
+
+function normalizeTenantSlug(value: string | null) {
+  const slug = value?.trim().toLowerCase() ?? "";
+  return slug && TENANT_SLUG_PATTERN.test(slug) ? slug : null;
+}
+
+function hostnameFromRequest(req: NextRequest) {
+  return (req.headers.get("host") ?? "")
+    .split(":")[0]
+    .toLowerCase()
+    .replace(/\.$/, "");
+}
+
+function tenantSlugFromHost(req: NextRequest) {
+  const host = hostnameFromRequest(req);
+
+  // Platform hosts must never honor a client-supplied tenant header.
   if (!host || PLATFORM_HOSTS.has(host)) return null;
+
+  const headerSlug = normalizeTenantSlug(req.headers.get("x-tenant-slug"));
+  if (headerSlug) return headerSlug;
 
   if (host.endsWith(".localhost") || host.endsWith(".graphood.com")) {
     const suffix = host.endsWith(".localhost") ? ".localhost" : ".graphood.com";
     const slug = host.slice(0, -suffix.length);
-    return slug && !slug.includes(".") ? slug : null;
+    return slug && !slug.includes(".") ? normalizeTenantSlug(slug) : null;
   }
 
   return null;
@@ -77,7 +96,7 @@ function addDeveloperCorsHeaders(
 export async function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
-  const tenantSlug = tenantSlugFromHost(req.headers.get("host"));
+  const tenantSlug = tenantSlugFromHost(req);
   if (tenantSlug && !pathname.startsWith("/api/") && !pathname.startsWith("/_next/")) {
     return NextResponse.rewrite(new URL(`/tenants/${encodeURIComponent(tenantSlug)}${pathname === "/" ? "" : pathname}`, req.url));
   }
