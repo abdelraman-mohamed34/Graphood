@@ -23,6 +23,27 @@ const PUBLIC_ROUTES = [
   "/auth/reset-password/callback",
 ];
 
+const PLATFORM_HOSTS = new Set([
+  "graphood.com",
+  "www.graphood.com",
+  "app.graphood.com",
+  "localhost",
+  "127.0.0.1",
+]);
+
+function tenantSlugFromHost(hostHeader: string | null) {
+  const host = (hostHeader ?? "").split(":")[0].toLowerCase().replace(/\.$/, "");
+  if (!host || PLATFORM_HOSTS.has(host)) return null;
+
+  if (host.endsWith(".localhost") || host.endsWith(".graphood.com")) {
+    const suffix = host.endsWith(".localhost") ? ".localhost" : ".graphood.com";
+    const slug = host.slice(0, -suffix.length);
+    return slug && !slug.includes(".") ? slug : null;
+  }
+
+  return null;
+}
+
 function isAllowedLocalhostOrigin(origin: string): boolean {
   try {
     const url = new URL(origin);
@@ -55,6 +76,11 @@ function addDeveloperCorsHeaders(
 
 export async function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
+
+  const tenantSlug = tenantSlugFromHost(req.headers.get("host"));
+  if (tenantSlug && !pathname.startsWith("/api/") && !pathname.startsWith("/_next/")) {
+    return NextResponse.rewrite(new URL(`/tenants/${encodeURIComponent(tenantSlug)}${pathname === "/" ? "" : pathname}`, req.url));
+  }
 
   if (pathname === "/api/webhooks/kashier") {
     return NextResponse.next();
