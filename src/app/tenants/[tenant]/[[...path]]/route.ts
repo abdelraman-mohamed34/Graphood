@@ -41,8 +41,32 @@ function rewriteLocation(value: string | null, target: URL, request: Request) {
 async function proxyTenantRequest(request: Request, context: { params: Promise<{ tenant: string; path?: string[] }> }) {
   const { tenant, path = [] } = await context.params;
   const supabase = await createSupabaseServerClient();
-  const record = await getTenantProxyTargetBySlug(supabase, tenant);
-  if (!record || record.status !== "ACTIVE") return new NextResponse("Not found", { status: 404 });
+  let record: Awaited<ReturnType<typeof getTenantProxyTargetBySlug>>;
+
+  try {
+    record = await getTenantProxyTargetBySlug(supabase, tenant);
+  } catch (error) {
+    console.error("Tenant proxy resolution failed", {
+      tenant,
+      reason: "lookup-failed",
+      error,
+    });
+    return new NextResponse("Tenant website unavailable", { status: 502 });
+  }
+
+  if (record.kind === "tenant-not-found" || record.kind === "tenant-inactive") {
+    console.warn("Tenant proxy target rejected", { tenant, reason: record.kind });
+    return new NextResponse("Not found", { status: 404 });
+  }
+
+  if (record.kind === "system-not-found" || record.kind === "target-missing") {
+    console.warn("Tenant proxy target rejected", {
+      tenant,
+      tenantId: record.tenantId,
+      reason: record.kind,
+    });
+    return new NextResponse("Tenant website is not configured", { status: 502 });
+  }
 
   const target = validateTargetUrl(record.targetUrl);
   if (!target) {
