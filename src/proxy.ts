@@ -45,12 +45,27 @@ function hostnameFromRequest(req: NextRequest) {
     .replace(/\.$/, "");
 }
 
+function matchesPublicRoute(pathname: string, route: string) {
+  if (route === "/") return pathname === "/";
+  return pathname === route || pathname.startsWith(`${route}/`);
+}
+
+function removeLeadingLocale(pathname: string) {
+  const firstSegment = pathname.split("/")[1];
+  if (routing.locales.includes(firstSegment as (typeof routing.locales)[number])) {
+    return pathname.slice(firstSegment.length + 1) || "/";
+  }
+  return pathname;
+}
+
 function tenantSlugFromHost(req: NextRequest) {
   const host = hostnameFromRequest(req);
 
   // Platform hosts must never honor a client-supplied tenant header.
   if (!host || PLATFORM_HOSTS.has(host)) return null;
 
+  // This header is a routing hint only. Tenant layouts still enforce auth,
+  // membership, permissions, and database row-level security.
   const headerSlug = normalizeTenantSlug(req.headers.get("x-tenant-slug"));
   if (headerSlug) return headerSlug;
 
@@ -97,8 +112,17 @@ export async function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
   const tenantSlug = tenantSlugFromHost(req);
-  if (tenantSlug && !pathname.startsWith("/api/") && !pathname.startsWith("/_next/")) {
-    return NextResponse.rewrite(new URL(`/tenants/${encodeURIComponent(tenantSlug)}${pathname === "/" ? "" : pathname}`, req.url));
+  if (tenantSlug) {
+    const rewriteUrl = req.nextUrl.clone();
+    const tenantPath = removeLeadingLocale(pathname);
+    rewriteUrl.pathname = `/tenants/${encodeURIComponent(tenantSlug)}${tenantPath === "/" ? "" : tenantPath}`;
+    return NextResponse.rewrite(rewriteUrl);
+  }
+
+  // The matcher includes dotted tenant asset paths; platform assets still pass
+  // through untouched when no tenant routing hint was resolved.
+  if (!tenantSlug && (pathname.startsWith("/_next/") || pathname.includes("."))) {
+    return NextResponse.next();
   }
 
   if (pathname === "/api/webhooks/kashier") {
@@ -118,6 +142,12 @@ export async function proxy(req: NextRequest) {
     return addDeveloperCorsHeaders(NextResponse.next(), origin);
   }
 
+  // The matcher must include /api for tenant hosts, but platform APIs remain
+  // owned by their route handlers and must not enter locale/auth routing.
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
   const locales = routing.locales;
   type Locale = (typeof locales)[number];
 
@@ -125,8 +155,7 @@ export async function proxy(req: NextRequest) {
 
   const isLocaleInPath = locales.includes(pathLocale);
 
-  const cleanPath =
-    pathname.replace(new RegExp(`^/(${locales.join("|")})`), "") || "/";
+  const cleanPath = isLocaleInPath ? removeLeadingLocale(pathname) : pathname;
 
   const locale = isLocaleInPath
     ? pathLocale
@@ -140,9 +169,7 @@ export async function proxy(req: NextRequest) {
     return createRedirect(new URL(`/${locale}`, req.url), response, 308);
   }
 
-  const isPublic = PUBLIC_ROUTES.some((route) =>
-    cleanPath.startsWith(route)
-  );
+  const isPublic = PUBLIC_ROUTES.some((route) => matchesPublicRoute(cleanPath, route));
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -270,6 +297,6 @@ export const config = {
     "/",
     "/(ar|en)/:path*",
     "/api/developer/:path*",
-    "/((?!api|_next|_vercel|.*\\..*).*)",
+    "/((?!_vercel).*)",
   ],
 };

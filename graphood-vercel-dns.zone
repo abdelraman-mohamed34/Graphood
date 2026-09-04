@@ -1,0 +1,22 @@
+; DNS records for graphood.com
+; SOA and NS records are intentionally omitted.
+; Review Vercel-managed website records before importing if they already exist.
+$ORIGIN graphood.com.
+$TTL 3600
+
+graphood.com. 3600 IN A 76.76.21.21
+
+app.graphood.com. 3600 IN CNAME cname.vercel-dns.com.
+*.graphood.com. 3600 IN CNAME app.graphood.com.
+www.graphood.com. 3600 IN CNAME a052a8c459256ca7.vercel-dns-017.com.
+
+graphood.com. 3600 IN MX 46 route1.mx.cloudflare.net.
+graphood.com. 3600 IN MX 76 route2.mx.cloudflare.net.
+graphood.com. 3600 IN MX 87 route3.mx.cloudflare.net.
+send.graphood.com. 3600 IN MX 10 feedback-smtp.eu-west-1.amazonses.com.
+
+cf2024-1._domainkey.graphood.com. 3600 IN TXT "v=DKIM1; h=sha256; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiweykoi+o48IOGuP7GR3X0MOExCUDY/BCRHoWBnh3rChl7WhdyCxW3jgq1daEjPPqoi7sJvdg5hEQVsgVRQP4DcnQDVjGMbASQtrY4WmB1VebF+RPJB2ECPsEDTpeiI5ZyUAwJaVX7r6bznU67g7LvFq35yIo4sdlmtZGV+i0H4cpYH9+3JJ78km4KXwaf9xUJCWF6nxeD+qG6Fyruw1Qlbds2r85U9dkNDVAS3gioCvELryh1TxKGiVTkg4wqHTyHfWsp7KD3WQHYJn0RyfJJu6YEmL77zonn7p2SRMvTMP3ZEXibnC9gz3nnhR6wcYL8Q7zXypKTMD58bTixDSJwIDAQAB"
+graphood.com. 3600 IN TXT "v=spf1 include:_spf.mx.cloudflare.net ~all"
+graphood.com. 3600 IN TXT "google-site-verification=H1NyaDyyni9Qp57xyMXVuguSsNg0j0-6LykOnt7mOtQ"
+resend._domainkey.graphood.com. 3600 IN TXT "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDjP6RUFQmijwdHzKJyDE7VFuel9UwDlDU3ye6zuhuk5/A9xVAv7wmdwOAEmD+zJ4mfk0nrZ4FUKOcfN6q1Vs7SN+oH+jtNH3mEeAlLKT9z+OAsx2xNRHTnO5yHS5mhzjeB8PUgvGNvo0x5233rNLSbFHKzDhK8n9337Ku/x5VtTwIDAQAB"
+send.graphood.com. 3600 IN TXT "v=spf1 include:amazonses.com ~all"
