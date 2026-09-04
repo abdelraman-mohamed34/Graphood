@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import { ExternalLink } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useSystem, useTenant } from '@/shared/lib/hooks'
+import { tenantSchema } from '@/shared/lib/schemas/tenants.schema'
 
 export default function GoLive() {
     const params = useParams()
@@ -12,10 +13,12 @@ export default function GoLive() {
     const { tenant } = useTenant()
     const { system } = useSystem(tenant?.system_id)
     const t = useTranslations('dashboard.quickview')
-    const destinationUrl = tenantSlug && system
-        ? system.launch_type === 'SUBDOMAIN'
-            ? (() => { try { const host = new URL(system.base_launch_url || system.launch_url_template || `https://system-${system.id}.graphood.com`).host; return `https://${tenantSlug}.${host}` } catch { return `https://${tenantSlug}.system-${system.id}.graphood.com` } })()
-            : `${(system.base_launch_url || system.launch_url_template || `https://system-${system.id}.graphood.com`).replace(/\/$/, '')}?tenantSlug=${encodeURIComponent(tenantSlug)}`
+    const resolvedTenantSlug = tenant?.slug ?? tenantSlug
+    const validTenantSlug = resolvedTenantSlug && tenantSchema.shape.slug.safeParse(resolvedTenantSlug).success
+        ? resolvedTenantSlug
+        : undefined
+    const destinationUrl = validTenantSlug && system
+        ? `https://${validTenantSlug}.graphood.com`
         : '/not-found'
 
     return (
