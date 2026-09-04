@@ -11,6 +11,7 @@ export type TenantProxyTargetResult =
       slug: string;
       status: string;
       targetUrl: string;
+      launchType: string;
     };
 
 export async function getTenantProxyTargetBySlug(
@@ -34,7 +35,7 @@ export async function getTenantProxyTargetBySlug(
 
   const { data: system, error: systemError } = await supabase
     .from("systems")
-    .select("base_launch_url")
+    .select("base_launch_url, launch_type")
     .eq("id", tenant.system_id)
     .maybeSingle();
 
@@ -50,5 +51,6 @@ export async function getTenantProxyTargetBySlug(
     slug: tenant.slug,
     status: tenant.status,
     targetUrl: system.base_launch_url,
+    launchType: system.launch_type,
   };
 }

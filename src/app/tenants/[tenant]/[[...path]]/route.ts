@@ -17,12 +17,13 @@ function validateTargetUrl(value: string | null) {
   }
 }
 
-function upstreamHeaders(request: Request) {
+function upstreamHeaders(request: Request, tenantSlug: string) {
   const headers = new Headers();
   for (const name of SAFE_REQUEST_HEADERS) {
     const value = request.headers.get(name);
     if (value) headers.set(name, value);
   }
+  headers.set("x-tenant-slug", tenantSlug);
   return headers;
 }
 
@@ -74,13 +75,20 @@ async function proxyTenantRequest(request: Request, context: { params: Promise<{
     return new NextResponse("Tenant website is not configured", { status: 502 });
   }
 
+  if (record.launchType === "SUBDOMAIN") {
+    target.hostname = `${tenant}.${target.hostname}`;
+  }
+
   target.pathname = `/${path.map((segment) => encodeURIComponent(segment)).join("/")}`;
   const incoming = new URL(request.url);
   target.search = incoming.search;
+  if (record.launchType !== "SUBDOMAIN") {
+    target.searchParams.set("tenantSlug", tenant);
+  }
   const body = BODY_METHODS.has(request.method) ? await request.arrayBuffer() : undefined;
   let upstream: Response;
   try {
-    upstream = await fetch(target, { method: request.method, headers: upstreamHeaders(request), body, redirect: "manual", cache: "no-store" });
+    upstream = await fetch(target, { method: request.method, headers: upstreamHeaders(request, tenant), body, redirect: "manual", cache: "no-store" });
   } catch (error) {
     console.error("Tenant upstream request failed", { tenant, target: target.origin, error });
     return new NextResponse("Tenant website unavailable", { status: 502 });
@@ -90,7 +98,7 @@ async function proxyTenantRequest(request: Request, context: { params: Promise<{
     const value = upstream.headers.get(name);
     if (value) responseHeaders.set(name, value);
   }
-  const location = rewriteLocation(upstream.headers.get("location"), new URL(record.targetUrl!), request);
+  const location = rewriteLocation(upstream.headers.get("location"), target, request);
   if (location) responseHeaders.set("location", location);
   return new NextResponse(request.method === "HEAD" ? null : upstream.body, { status: upstream.status, headers: responseHeaders });
 }
