@@ -39,19 +39,7 @@ function normalizeTenantSlug(value: string | null) {
 }
 
 function hostnameFromRequest(req: NextRequest) {
-  return (
-    req.headers.get("host") ||
-    req.headers.get("x-forwarded-host")?.split(",")[0]?.trim() ||
-    ""
-  )
-    .split(":")[0]
-    .toLowerCase()
-    .replace(/\.$/, "");
-}
-
-function rootDomainFromEnv() {
-  return (process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost")
-    .replace(/^https?:\/\//, "")
+  return (req.headers.get("host") ?? "")
     .split(":")[0]
     .toLowerCase()
     .replace(/\.$/, "");
@@ -72,23 +60,19 @@ function removeLeadingLocale(pathname: string) {
 
 function tenantSlugFromHost(req: NextRequest) {
   const host = hostnameFromRequest(req);
-  const rootDomain = rootDomainFromEnv();
 
   // Platform hosts must never honor a client-supplied tenant header.
-  if (!host || PLATFORM_HOSTS.has(host) || host === rootDomain || host === `www.${rootDomain}` || host === `app.${rootDomain}`) {
-    return null;
-  }
+  if (!host || PLATFORM_HOSTS.has(host)) return null;
 
-  // The header is useful behind a trusted proxy, but the public tenant URL
-  // normally identifies the tenant through its subdomain.
+  // This header is a routing hint only. Tenant layouts still enforce auth,
+  // membership, permissions, and database row-level security.
   const headerSlug = normalizeTenantSlug(req.headers.get("x-tenant-slug"));
   if (headerSlug) return headerSlug;
 
-  if (host.endsWith(`.${rootDomain}`)) {
-    const subdomain = host.slice(0, -(rootDomain.length + 1));
-    return subdomain && !subdomain.includes(".")
-      ? normalizeTenantSlug(subdomain)
-      : null;
+  if (host.endsWith(".localhost") || host.endsWith(".graphood.com")) {
+    const suffix = host.endsWith(".localhost") ? ".localhost" : ".graphood.com";
+    const slug = host.slice(0, -suffix.length);
+    return slug && !slug.includes(".") ? normalizeTenantSlug(slug) : null;
   }
 
   return null;
