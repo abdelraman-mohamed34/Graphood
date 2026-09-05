@@ -151,11 +151,6 @@ export default function Page() {
                     </Card>
 
                     <Card className="overflow-hidden border-border/70 lg:flex hidden rounded">
-                        <CardHeader className="border-b bg-muted/20 px-5 py-4">
-                            <CardTitle className="text-base font-semibold">
-                                {label('systemOverview', 'System overview', 'نظرة عامة على النظام')}
-                            </CardTitle>
-                        </CardHeader>
                         <CardContent className="divide-y p-0 text-start text-sm">
                             <div className="space-y-3 p-5">
                                 <div className="flex min-w-0 items-center gap-2 text-xs font-medium text-muted-foreground">

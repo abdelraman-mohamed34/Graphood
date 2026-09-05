@@ -82,6 +82,6 @@ export const updateTenantSchema = tenantSchema.pick({
     timezone: true,
     logo_url: true,
     primary_color: true,
-});
+}).strict();
 
 export type UpdateTenant = z.infer<typeof updateTenantSchema>;

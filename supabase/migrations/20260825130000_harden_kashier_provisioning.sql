@@ -66,7 +66,7 @@ create or replace function public.process_kashier_payment_atomic(
 ) returns jsonb language plpgsql security definer set search_path = '' as $$
 declare v_status text := upper(trim(p_status)); v_payment_status public.payment_status; v_order_status public.order_status; v_payment_id uuid;
 begin
-  perform 1 from public.orders where id = p_order_id for update;
+  perform 1 from public.orders where id = p_order_id and amount = p_amount and upper(currency) = upper(trim(p_currency)) for update;
   if not found then raise exception 'order % not found', p_order_id; end if;
   if p_amount <= 0 or nullif(trim(p_currency), '') is null then raise exception 'invalid payment amount or currency'; end if;
   if v_status in ('SUCCESS','PAID','COMPLETED') then v_payment_status := 'SUCCESS'; v_order_status := 'PAID';

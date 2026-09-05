@@ -45,29 +45,33 @@ const SystemCard = memo(function SystemCard({
             href={`/marketplace/systems/${system.id}`}
             className="group min-w-0 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
-            <article className="h-full min-w-0 overflow-hidden rounded-none border border-border bg-card shadow-xs transition-[border-color,box-shadow] duration-200 group-hover:border-primary/50 group-hover:shadow-lg">
-                <div className="relative aspect-[16/9] overflow-hidden bg-muted">
+            <article className="h-full min-w-0 rounded-none bg-card transition-all duration-200 group-hover:border-primary/50 ">
+                {/* 1. حاوية الصورة فقط */}
+                <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted group-hover:shadow-lg">
                     {system.image_url ? (
                         <Image
                             src={system.image_url}
                             alt={`${system.name} — ${labels.cardImageAlt}`}
                             fill
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                            className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                         />
                     ) : (
                         <span className="absolute inset-0 grid place-items-center border border-white/10 bg-white/40 text-center backdrop-blur-sm text-muted-foreground">
                             <Layers className="mx-auto size-8" aria-hidden="true" />
                         </span>
                     )}
-                    <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 border-t border-white/15 bg-black/65 p-3 text-white backdrop-blur-sm">
-                        <h2 className="min-w-0 break-words text-start text-lg font-bold">
-                            {system.name}
-                        </h2>
-                        <ExternalLink
-                            aria-hidden="true"
-                            className="size-4 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
-                        />
+                </div>
+
+                <div className="flex items-center justify-between gap-3 py-3 transition-transform duration-200 group-hover:-translate-y-0.5">
+                    <h2 className="min-w-0 truncate text-base font-bold text-foreground sm:text-lg">
+                        {system.name}
+                    </h2>
+
+                    <div className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground sm:text-sm">
+                        <span className="truncate max-w-[120px]">
+                            {system.profiles?.display_name || "Graphood"}
+                        </span>
                     </div>
                 </div>
             </article>

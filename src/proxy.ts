@@ -69,12 +69,9 @@ function tenantSlugFromHost(req: NextRequest) {
   const headerSlug = normalizeTenantSlug(req.headers.get("x-tenant-slug"));
   if (headerSlug) return headerSlug;
 
-  if (host.endsWith(".localhost") || host.endsWith(".graphood.com")) {
-    const suffix = host.endsWith(".localhost") ? ".localhost" : ".graphood.com";
-    const slug = host.slice(0, -suffix.length);
-    return slug && !slug.includes(".") ? normalizeTenantSlug(slug) : null;
-  }
-
+  // Tenant isolation is driven exclusively by the validated header. Do not
+  // infer a tenant from a host/subdomain, which is attacker-controlled at the
+  // edge and can be confused with a platform hostname.
   return null;
 }
 

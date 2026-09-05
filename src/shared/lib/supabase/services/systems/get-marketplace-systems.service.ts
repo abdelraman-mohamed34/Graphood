@@ -15,6 +15,8 @@ export interface MarketplaceSystem {
     id: string;
     name: string;
     description: string;
+    owner_id: string;
+    profiles?: { display_name?: string | null } | null;
     tags: MarketplaceTag[];
     icon_url: string | null;
     image_url: string | null;
@@ -24,9 +26,16 @@ interface MarketplaceSystemRecord {
     id: string;
     name: string;
     description: string;
+    owner_id: string;
+    profiles: { first_name: string | null; last_name: string | null } | { first_name: string | null; last_name: string | null }[] | null;
     tags: string[] | null;
     icon_url: string | null;
     image_url: string | null;
+}
+
+function displayName(profiles: MarketplaceSystemRecord["profiles"]) {
+    const profile = Array.isArray(profiles) ? profiles[0] : profiles;
+    return [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || null;
 }
 
 export async function getMarketplaceSystems(
@@ -35,7 +44,7 @@ export async function getMarketplaceSystems(
     const supabase = client ?? createSupabaseClient();
     const { data, error } = await supabase
         .from("systems")
-        .select("id, name, description, tags, icon_url, image_url")
+        .select("id, name, description, owner_id, tags, icon_url, image_url, profiles:owner_id(first_name, last_name)")
         .eq("is_public", true)
         .eq("status", "ACTIVE")
         .order("created_at", { ascending: false });
@@ -48,7 +57,13 @@ export async function getMarketplaceSystems(
     const tagIds = [...new Set(systems.flatMap((system) => system.tags ?? []))];
 
     if (tagIds.length === 0) {
-        return systems.map((system) => ({ ...system, tags: [] }));
+        return systems.map((system) => ({
+            ...system,
+            profiles: {
+                display_name: displayName(system.profiles),
+            },
+            tags: [],
+        }));
     }
 
     const { data: tagsData, error: tagsError } = await supabase
@@ -77,6 +92,10 @@ export async function getMarketplaceSystems(
         id: system.id,
         name: system.name,
         description: system.description,
+        owner_id: system.owner_id,
+        profiles: {
+            display_name: displayName(system.profiles),
+        },
         icon_url: system.icon_url,
         image_url: system.image_url,
         tags: (system.tags ?? [])

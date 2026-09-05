@@ -1,6 +1,6 @@
 {
   "name": "graphood",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -67,6 +67,7 @@
     "eslint-config-next": "16.2.6",
     "jest": "^30.5.1",
     "jest-environment-jsdom": "^30.5.1",
+    "supabase": "^2.116.0",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.12",
     "typescript": "^5"

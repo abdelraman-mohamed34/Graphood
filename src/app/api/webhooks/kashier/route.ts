@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import { processKashierPayment, provisionOrder, refreshSubscriptionPeriodForOrder, type KashierPaymentStatus } from "@/shared/lib/supabase/services/billing";
 import { createAdminClient } from "@/shared/lib/supabase/admin";
@@ -126,6 +126,18 @@ function getWebhookEventKey(payload: z.infer<typeof payloadSchema>, rawBody: str
     }
 
     return `payload:${createHash("sha256").update(rawBody, "utf8").digest("hex")}`;
+}
+
+function hasValidWebhookSignature(request: Request, rawBody: string, payload: z.infer<typeof payloadSchema>) {
+    const secret = process.env.KASHIER_WEBHOOK_SECRET?.trim();
+    if (!secret) return false;
+    const supplied = request.headers.get("x-kashier-signature") ?? payload.hash;
+    if (!supplied) return false;
+    const expected = createHmac("sha256", secret).update(rawBody, "utf8").digest("hex");
+    const normalized = supplied.trim().replace(/^sha256=/i, "").toLowerCase();
+    const a = Buffer.from(expected, "hex");
+    const b = Buffer.from(normalized, "hex");
+    return a.length === b.length && timingSafeEqual(a, b);
 }
 
 async function recordWebhookEvent(input: {
@@ -263,6 +275,10 @@ export async function POST(request: Request) {
     }
 
     const payload = parsed.data;
+    if (!hasValidWebhookSignature(request, rawBody, payload)) {
+        console.error("Invalid Kashier webhook signature.");
+        return new Response("OK", { status: 200 });
+    }
     const metadata = payload.metaData ?? {};
     const extractedProfileId = stringValue(metadata.profileId ?? payloadRoot.profileId ?? data.profileId ?? paymentParams.profileId);
     const extractedSystemId = stringValue(metadata.systemId ?? payloadRoot.systemId ?? data.systemId ?? paymentParams.systemId);
@@ -277,6 +293,10 @@ export async function POST(request: Request) {
     let authorityVerification: Awaited<ReturnType<typeof verifyKashierSession>> = null;
     if (orderId && sessionId) {
         authorityVerification = await verifyKashierSession(sessionId);
+    }
+    if (!authorityVerification) {
+        console.error("Kashier provider verification unavailable or failed.");
+        return new Response("OK", { status: 200 });
     }
     const status = (authorityVerification?.status ?? payload.status ?? payload.paymentStatus ?? "").toUpperCase() as KashierPaymentStatus;
     const transactionRef = authorityVerification?.transactionRef

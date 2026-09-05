@@ -23,7 +23,7 @@ const createOrderSchema = z.object({
 
     couponCode: z.string().trim().optional(),
     upgrade: z.boolean().optional(),
-});
+}).strict();
 
 type CreateOrderInput = z.infer<typeof createOrderSchema>;
 

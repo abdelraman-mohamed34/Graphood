@@ -34,7 +34,7 @@ export async function checkTenantLimit(
             .eq('tenant_id', tenantId)
 
         if (error) {
-            return { allowed: true, code: 'ALLOWED', max: Infinity }
+            return { allowed: false, code: 'FEATURE_LOCKED', max: Infinity }
         }
 
         return {
