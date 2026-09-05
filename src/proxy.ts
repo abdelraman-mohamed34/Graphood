@@ -39,7 +39,19 @@ function normalizeTenantSlug(value: string | null) {
 }
 
 function hostnameFromRequest(req: NextRequest) {
-  return (req.headers.get("host") ?? "")
+  return (
+    req.headers.get("host") ||
+    req.headers.get("x-forwarded-host")?.split(",")[0]?.trim() ||
+    ""
+  )
+    .split(":")[0]
+    .toLowerCase()
+    .replace(/\.$/, "");
+}
+
+function rootDomainFromEnv() {
+  return (process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost")
+    .replace(/^https?:\/\//, "")
     .split(":")[0]
     .toLowerCase()
     .replace(/\.$/, "");
@@ -60,18 +72,25 @@ function removeLeadingLocale(pathname: string) {
 
 function tenantSlugFromHost(req: NextRequest) {
   const host = hostnameFromRequest(req);
+  const rootDomain = rootDomainFromEnv();
 
   // Platform hosts must never honor a client-supplied tenant header.
-  if (!host || PLATFORM_HOSTS.has(host)) return null;
+  if (!host || PLATFORM_HOSTS.has(host) || host === rootDomain || host === `www.${rootDomain}` || host === `app.${rootDomain}`) {
+    return null;
+  }
 
-  // This header is a routing hint only. Tenant layouts still enforce auth,
-  // membership, permissions, and database row-level security.
+  // The header is useful behind a trusted proxy, but the public tenant URL
+  // normally identifies the tenant through its subdomain.
   const headerSlug = normalizeTenantSlug(req.headers.get("x-tenant-slug"));
   if (headerSlug) return headerSlug;
 
-  // Tenant isolation is driven exclusively by the validated header. Do not
-  // infer a tenant from a host/subdomain, which is attacker-controlled at the
-  // edge and can be confused with a platform hostname.
+  if (host.endsWith(`.${rootDomain}`)) {
+    const subdomain = host.slice(0, -(rootDomain.length + 1));
+    return subdomain && !subdomain.includes(".")
+      ? normalizeTenantSlug(subdomain)
+      : null;
+  }
+
   return null;
 }
 
